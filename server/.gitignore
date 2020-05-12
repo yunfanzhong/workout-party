@@ -1,0 +1,4 @@
+.DS_STORE # For mac plebians
+
+node_modules
+.env
