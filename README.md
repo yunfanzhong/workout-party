@@ -13,3 +13,15 @@ contents into `server/.env`. Then run
 cd server
 npm start
 ```
+
+
+## Frontend setup
+
+Open the command prompt, then run the following commands:
+
+```
+npm install -g expo-cli
+expo init ProjectNameHere
+cd ProjectNameHere
+npm start
+```
