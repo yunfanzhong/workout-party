@@ -6,46 +6,124 @@ import {
   StyleSheet,
   Button,
   ScrollView,
+  Alert,
 } from "react-native";
 import React from "react";
 import { TouchableHighlight } from "react-native-gesture-handler";
-import { render } from "react-dom";
+
+import AccountIcon from "../../assets/images/account_circle-24px.svg";
+import AddFriend from "../../assets/images/person_add-24px.svg";
+import DeleteIcon from "../../assets/images/highlight_off_24px.svg";
 
 const UserFriend = (props) => {
   return (
-    <TouchableOpacity style={styles.friend}>
+    <TouchableOpacity
+      style={styles.friend}
+      onPress={() => {
+        createDeleteFriendAlert(`${props.name}`);
+      }}
+    >
       <View style={{ flexDirection: "row", width: "65%" }}>
-        <Image
-          source={require("../../assets/images/account_circle-24px.svg")}
-          style={{
-            width: 30,
-            height: 32,
-            marginRight: 20,
-          }}
-        />
+        <AccountIcon width={30} height={30} fill="black" marginRight={20} />
         <Text style={styles.friendText}>{props.name}</Text>
       </View>
       <View>
-        <Image
-          source={require("../../assets/images/more_horiz-24px.svg")}
-          style={{ width: 30, height: 30, marginLeft: "40%" }}
-        />
+        <DeleteIcon width={30} height={30} marginLeft={"40%"} fill="black" />
       </View>
     </TouchableOpacity>
+  );
+};
+
+const createDeleteFriendAlert = (name) => {
+  Alert.alert(
+    "",
+    `Are you sure you want to delete ${name} from your friend list?`,
+    [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Yes",
+        onPress: () => deleteFriend(name),
+      },
+    ],
+    { cancelable: true }
+  );
+};
+
+const deleteFriend = (props) => {};
+
+const FriendMenu = () => {
+  return (
+    <View>
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          height: 50,
+          width: "80%",
+          alignSelf: "center",
+          justifyContent: "center",
+        }}
+      >
+        <AddFriend height={30} width={30} marginTop={15} fill="black" />
+        <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
+          Add Friend
+        </Text>
+      </TouchableOpacity>
+      <ScrollView>
+        <UserFriend name="Yunfan Zhong" />
+        <UserFriend name="Frank Zheng" />
+        <UserFriend name="Ethan Shahbazian" />
+        <UserFriend name="Albert Guan" />
+        <UserFriend name="Janet Fang" />
+        <UserFriend name="Alex Yu" />
+        <UserFriend name="Kevin Enemuo" />
+        <UserFriend name="David Smallberg" />
+        <UserFriend name="Carey Nachenburg" />
+        <UserFriend name="Glenn Reinman" />
+        <UserFriend name="Paul Eggert" />
+      </ScrollView>
+    </View>
+  );
+};
+
+const SettingsMenu = () => {
+  return (
+    <View>
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          height: 100,
+          width: "80%",
+          alignSelf: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          style={{ height: 50, width: 50, marginTop: 15, marginLeft: 40 }}
+          source={require("../../assets/images/spotify.png")}
+        />
+        <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
+          Connect your Spotify account!
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 function AccountScreen({ navigation }) {
   const [friendButtonColor, setFriendButtonColor] = React.useState("grey");
   const [settingButtonColor, setSettingButtonColor] = React.useState("white");
+  const [showFriendMenu, setShowFriendMenu] = React.useState(true);
 
   const changeButtonColors = () => {
     friendButtonColor === "white"
       ? setFriendButtonColor("grey")
-      : setFriendButtonColor("white");
+      : (setFriendButtonColor("white"), setShowFriendMenu(false));
     settingButtonColor === "white"
       ? setSettingButtonColor("grey")
-      : setSettingButtonColor("white");
+      : (setSettingButtonColor("white"), setShowFriendMenu(true));
   };
 
   return (
@@ -66,12 +144,11 @@ function AccountScreen({ navigation }) {
         <View style={styles.buttonContainer}>
           <TouchableHighlight
             style={{
-              width: "80%",
               backgroundColor: friendButtonColor,
               height: 50,
               marginLeft: "20%",
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
               borderBottomWidth: 2,
               borderBottomColor: "grey",
               justifyContent: "center",
@@ -89,12 +166,11 @@ function AccountScreen({ navigation }) {
         <View style={styles.buttonContainer}>
           <TouchableHighlight
             style={{
-              width: "80%",
               backgroundColor: settingButtonColor,
               height: 50,
               marginRight: "20%",
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
               borderBottomWidth: 2,
               borderBottomColor: "grey",
               justifyContent: "center",
@@ -117,36 +193,7 @@ function AccountScreen({ navigation }) {
           height: "51%",
         }}
       >
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            height: 50,
-            width: "80%",
-            alignSelf: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Image
-            style={{ height: 30, width: 30, marginTop: 15 }}
-            source={require("../../assets/images/person_add-24px.svg")}
-          />
-          <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
-            Add Friend
-          </Text>
-        </TouchableOpacity>
-        <ScrollView>
-          <UserFriend name="Yunfan Zhong" />
-          <UserFriend name="Frank Zheng" />
-          <UserFriend name="Ethan Shahbazian" />
-          <UserFriend name="Albert Guan" />
-          <UserFriend name="Janet Fang" />
-          <UserFriend name="Alex Yu" />
-          <UserFriend name="Kevin Enemuo" />
-          <UserFriend name="David Smallberg" />
-          <UserFriend name="Carey Nachenburg" />
-          <UserFriend name="Glenn Reinman" />
-          <UserFriend name="Paul Eggert" />
-        </ScrollView>
+        {showFriendMenu ? <FriendMenu /> : <SettingsMenu />}
       </View>
     </View>
   );
@@ -183,6 +230,7 @@ const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
     textAlignVertical: "center",
+    marginBottom: 2,
   },
   friend: {
     flexDirection: "row",
