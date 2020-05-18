@@ -11,6 +11,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Stack = createStackNavigator();
 
+import AccountIcon from "./assets/images/account_circle-24px.svg";
+import NotificationIcon from "./assets/images/notifications-24px.svg";
+import ChevronLeft from "./assets/images/chevron_left-24px.svg";
+
 function App() {
   return (
     <NavigationContainer>
@@ -46,10 +50,7 @@ function App() {
                   marginLeft: 30,
                 }}
               >
-                <Image
-                  style={{ width: 40, height: 40 }}
-                  source={require("./assets/images/account_circle-24px.svg")}
-                />
+                <AccountIcon width={40} height={40} fill="white" />
               </TouchableOpacity>
             ),
             headerRight: () => (
@@ -60,10 +61,7 @@ function App() {
                   marginRight: 15,
                 }}
               >
-                <Image
-                  style={{ width: 40, height: 40 }}
-                  source={require("./assets/images/notifications-24px.svg")}
-                />
+                <NotificationIcon width={40} height={40} fill="white" />
               </TouchableOpacity>
             ),
           })}
@@ -73,10 +71,7 @@ function App() {
           component={AccountScreen}
           options={{
             headerBackImage: () => (
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require("./assets/images/chevron_left-24px.svg")}
-              />
+              <ChevronLeft width={40} height={40} fill="white" />
             ),
           }}
         />
@@ -85,10 +80,7 @@ function App() {
           component={NotificationScreen}
           options={{
             headerBackImage: () => (
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require("./assets/images/chevron_left-24px.svg")}
-              />
+              <ChevronLeft width={40} height={40} fill="white" />
             ),
           }}
         />
