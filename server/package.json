@@ -1,5 +1,6 @@
 {
   "name": "workout-app",
+<<<<<<< HEAD
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,6 +13,14 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1"
+=======
+  "version": "1.0.0",
+  "description": "Express.js workout party",
+  "main": "app.js",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+>>>>>>> c5a2248d44ad5895414bbdc7c414845feee06875
   },
   "main": "index.js",
   "devDependencies": {},
@@ -21,5 +30,13 @@
   },
   "author": "",
   "license": "ISC",
+<<<<<<< HEAD
   "description": ""
+=======
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.13"
+  }
+>>>>>>> c5a2248d44ad5895414bbdc7c414845feee06875
 }
