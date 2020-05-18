@@ -16,7 +16,7 @@ const UserFriend = (props) => {
     <TouchableOpacity style={styles.friend}>
       <View style={{ flexDirection: "row", width: "65%" }}>
         <Image
-          source={require("../../assets/images/userIconBlack.png")}
+          source={require("../../assets/images/account_circle-24px.svg")}
           style={{
             width: 30,
             height: 32,
@@ -27,7 +27,7 @@ const UserFriend = (props) => {
       </View>
       <View>
         <Image
-          source={require("../../assets/images/dots.png")}
+          source={require("../../assets/images/more_horiz-24px.svg")}
           style={{ width: 30, height: 30, marginLeft: "40%" }}
         />
       </View>
@@ -53,7 +53,7 @@ function AccountScreen({ navigation }) {
       <View style={styles.profileImageAndInfo}>
         <Image
           style={styles.profileImage}
-          source={require("../../assets/images/profileImage.png")}
+          source={require("../../assets/images/account_circle-24px.svg")}
         />
         <View style={styles.profileInfo}>
           <Text style={styles.nameText}>Jason Jewik</Text>
@@ -128,7 +128,7 @@ function AccountScreen({ navigation }) {
         >
           <Image
             style={{ height: 30, width: 30, marginTop: 15 }}
-            source={require("../../assets/images/addFriend.png")}
+            source={require("../../assets/images/person_add-24px.svg")}
           />
           <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
             Add Friend
