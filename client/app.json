@@ -1,12 +1,12 @@
 {
   "expo": {
-    "entryPoint": "src/App.jsx",
     "name": "workout-party-frontend",
     "slug": "workout-party-frontend",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "entryPoint": "./src/App.jsx",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ff2559"
