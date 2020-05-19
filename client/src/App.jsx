@@ -6,10 +6,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import AccountIcon from './assets/images/account_circle-24px.svg'
 import ChevronLeft from './assets/images/chevron_left-24px.svg'
 import NotificationIcon from './assets/images/notifications-24px.svg'
-import AccountScreen from './src/screens/AccountScreen.jsx'
-import HomeScreen from './src/screens/HomeScreen.jsx'
-import LogInScreen from './src/screens/LogInScreen.jsx'
-import NotificationScreen from './src/screens/NotificationScreen.jsx'
+import AccountScreen from './screens/AccountScreen.jsx'
+import HomeScreen from './screens/HomeScreen.jsx'
+import LogInScreen from './screens/LogInScreen.jsx'
+import NotificationScreen from './screens/NotificationScreen.jsx'
 
 const Stack = createStackNavigator()
 

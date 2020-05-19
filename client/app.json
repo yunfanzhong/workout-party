@@ -1,5 +1,6 @@
 {
   "expo": {
+    "entryPoint": "src/App.jsx",
     "name": "workout-party-frontend",
     "slug": "workout-party-frontend",
     "platforms": ["ios", "android", "web"],
