@@ -1,11 +1,9 @@
 import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 
-function LogInScreen({ navigation }) {
-  const handleLogIn = () => {
-    navigation.navigate('Home')
-  }
+import UserContext from '../context/UserContext'
 
+function LogInScreen({ navigation }) {
   return (
     <View style={styles.screen}>
       <Image
@@ -16,13 +14,17 @@ function LogInScreen({ navigation }) {
         <Text style={styles.homeText}>Workout{'\n'}Party</Text>
       </View>
       <View>
-        <TouchableOpacity style={styles.button} onPress={handleLogIn}>
-          <Image
-            style={styles.fbLogo}
-            source={require('../../assets/images/f_logo_RGB-Hex-Blue_512.png')}
-          />
-          <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
-        </TouchableOpacity>
+        <UserContext.Consumer>
+          {(context) => (
+            <TouchableOpacity style={styles.button} onPress={context.login}>
+              <Image
+                style={styles.fbLogo}
+                source={require('../../assets/images/f_logo_RGB-Hex-Blue_512.png')}
+              />
+              <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
+            </TouchableOpacity>
+          )}
+        </UserContext.Consumer>
       </View>
     </View>
   )
