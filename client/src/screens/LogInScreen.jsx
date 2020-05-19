@@ -19,7 +19,7 @@ function LogInScreen({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleLogIn}>
           <Image
             style={styles.fbLogo}
-            source={require("../../assets/images/fblogo.png")}
+            source={require("../../assets/images/f_logo_RGB-Hex-Blue_512.png")}
           />
           <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
         </TouchableOpacity>
