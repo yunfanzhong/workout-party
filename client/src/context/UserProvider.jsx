@@ -17,7 +17,7 @@ class UserProvider extends React.Component {
       const user = await api.getUser(facebookID)
       this.setState({ user })
     } catch (err) {
-      Alert.alert('Oh no!', 'We had ran into a problem logging you in. 😔')
+      Alert.alert('uwu', 'oopsies! we had a pwobwem wogging you in. 😔')
     }
   }
 

@@ -14,6 +14,20 @@ import React from 'react'
 //     </View>
 //   )
 // }
+
+// Value stored in context.user
+// {
+//   facebookID: '10923840981234',
+//   id: '4',
+//   username: 'jk.jewik',
+//   displayName: 'JSON Jewik',
+//   lastLoggedIn: new Date(),
+//   friendsList: [
+//     { name: 'Ethan Shabhazian', id: '10934802384' },
+//     { name: 'Yunfan Zhong', id: '05829340239' }
+//   ]
+// }
+
 const UserContext = React.createContext(null)
 
 export default UserContext
