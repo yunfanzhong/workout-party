@@ -11,10 +11,9 @@ class UserProvider extends React.Component {
   }
 
   handleLogin = async () => {
-    const { id: facebookID, token } = await logInWithFacebook()
-    const api = new API(token)
+    const { id: facebookID } = await logInWithFacebook()
     try {
-      const user = await api.getUser(facebookID)
+      const user = await API.getUser(facebookID)
       this.setState({ user })
     } catch (err) {
       Alert.alert('uwu', 'oopsies! we had a pwobwem wogging you in. 😔')

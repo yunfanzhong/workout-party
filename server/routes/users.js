@@ -6,7 +6,8 @@ const userRouter = express.Router()
 
 // Before all requests under /users, authenticate the Facebook token they've
 // passed in! (feel free to comment out during testing)
-userRouter.use(authenticateWithFacebook)
+// Not doing this for ease of use!
+// userRouter.use(authenticateWithFacebook)
 
 // Currently just for testing!
 userRouter.get('/:facebookID', (req, res) => {

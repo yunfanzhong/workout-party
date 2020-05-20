@@ -15,12 +15,7 @@ function sleep(ms = 1000) {
   })
 }
 
-class API {
-  constructor(token) {
-    this.token = token
-    this.headers = { Authorization: token }
-  }
-
+const API = {
   // Currently all test code
   async getUser(facebookID) {
     const res = await fetch(`${BASE_URL}/users/${facebookID}`, {
