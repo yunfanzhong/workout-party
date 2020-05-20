@@ -8,6 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import AccountIcon from '../assets/images/account_circle-24px.svg'
 import ChevronLeft from '../assets/images/chevron_left-24px.svg'
 import NotificationIcon from '../assets/images/notifications-24px.svg'
+import UserContext from './context/UserContext'
 import UserProvider from './context/UserProvider.jsx'
 import AccountScreen from './screens/AccountScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
@@ -19,7 +20,11 @@ const Stack = createStackNavigator()
 function App() {
   return (
     <UserProvider>
-      <UnauthenticatedApp />
+      <UserContext.Consumer>
+        {(context) =>
+          context.user === null ? <UnauthenticatedApp /> : <AuthenticatedApp />
+        }
+      </UserContext.Consumer>
     </UserProvider>
   )
 }
@@ -44,7 +49,7 @@ function AuthenticatedApp() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="Home"
         screenOptions={{
           headerStyle: { backgroundColor: '#ff2559' },
           headerTintColor: 'white',
@@ -55,13 +60,6 @@ function AuthenticatedApp() {
           }
         }}
       >
-        <Stack.Screen
-          name="Login"
-          component={LogInScreen}
-          options={{
-            headerShown: false
-          }}
-        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}

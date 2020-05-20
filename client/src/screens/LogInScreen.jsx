@@ -1,33 +1,67 @@
-import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 import UserContext from '../context/UserContext'
 
-function LogInScreen({ navigation }) {
+function LogInScreen() {
   return (
     <View style={styles.screen}>
       <Image
         style={styles.logo}
         source={require('../../assets/images/bicep.png')}
       />
-      <View>
-        <Text style={styles.homeText}>Workout{'\n'}Party</Text>
-      </View>
-      <View>
-        <UserContext.Consumer>
-          {(context) => (
-            <TouchableOpacity style={styles.button} onPress={context.login}>
-              <Image
-                style={styles.fbLogo}
-                source={require('../../assets/images/f_logo_RGB-Hex-Blue_512.png')}
-              />
-              <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
-            </TouchableOpacity>
-          )}
-        </UserContext.Consumer>
-      </View>
+      <Text style={styles.homeText}>Workout{'\n'}Party</Text>
+      <LoginButton />
     </View>
   )
+}
+
+class LoginButton extends React.Component {
+  state = {
+    isLoading: false
+  }
+
+  handlePress = async (login) => {
+    // Perform a setState and login. Promise.all allows us to wait for both to
+    // finish.
+    await Promise.all([
+      new Promise((resolve) => this.setState({ isLoading: true }, resolve)),
+      login()
+    ])
+    this.setState({ isLoading: false })
+  }
+
+  render() {
+    return (
+      <UserContext.Consumer>
+        {(context) => (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => this.handlePress(context.login)}
+          >
+            <Image
+              style={styles.fbLogo}
+              source={require('../../assets/images/f_logo_RGB-Hex-Blue_512.png')}
+            />
+            {this.state.isLoading ? (
+              <View style={styles.spinner}>
+                <ActivityIndicator size="large" color="#ff2559" />
+              </View>
+            ) : (
+              <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </UserContext.Consumer>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -38,13 +72,12 @@ const styles = StyleSheet.create({
   },
   logo: { alignContent: 'center', width: 400, height: 400 },
   button: {
-    backgroundColor: '#f6e8ea',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     height: 70,
     width: '80%',
     alignSelf: 'center',
     marginTop: 30,
-    color: '#f6e8ea',
     flexDirection: 'row',
     borderRadius: 20
   },
@@ -52,7 +85,6 @@ const styles = StyleSheet.create({
     fontSize: 64,
     textAlign: 'center',
     color: 'white',
-    //fontFamily: "OpenSans-Regular",
     marginBottom: 10
   },
   fbButtonText: {
@@ -65,6 +97,12 @@ const styles = StyleSheet.create({
     width: 44,
     marginTop: 1.2,
     marginLeft: 15
+  },
+  spinner: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingRight: 44
   }
 })
 
