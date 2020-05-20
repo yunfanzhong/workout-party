@@ -17,9 +17,10 @@ npm start
 
 ## Frontend setup
 
-Open the command prompt, then run the following commands:
+There is a file in the Google Drive called `Client env.json`. Copy and paste its contents into `client/envjson`. Then run:
 
 ```
+npm i -g expo-cli
 npm i
 npm start
 ```

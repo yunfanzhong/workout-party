@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Button } from 'react-native'
+import UserContext from '../context/UserContext'
 
 const HeaderText = (props) => {
   return (
@@ -66,6 +67,15 @@ function HomeScreen({ navigation }) {
           text="Upcoming"
         />
       </View>
+      {/* test code below */}
+      <UserContext.Consumer>
+        {(context) => (
+          <Button
+            title="This is for testing logout, feel free to remove me"
+            onPress={context.logout}
+          ></Button>
+        )}
+      </UserContext.Consumer>
     </View>
   )
 }
