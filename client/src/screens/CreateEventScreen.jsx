@@ -22,21 +22,8 @@ function PartyInfoScreen({ navigation }) {
           fontSize: 40
         }}
       >
-        Party Info
+        Create Event
       </Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Party Settings')}
-        style={{ width: 50 }}
-      >
-        <MoreHorizIcon width={40} height={40} fill="black" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Create Event')}
-        style={{ width: 50, height: 50 }}
-      >
-        <AddCircleIcon width={40} height={40} fill="black" />
-      </TouchableOpacity>
     </View>
   )
 }

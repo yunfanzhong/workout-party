@@ -16,6 +16,7 @@ import UserProvider from './context/UserProvider.jsx'
 
 // Screens
 import AccountScreen from './screens/AccountScreen.jsx'
+import CreateEventScreen from './screens/CreateEventScreen.jsx'
 import CreatePartyScreen from './screens/CreatePartyScreen.jsx'
 import EventScreen from './screens/EventScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
@@ -161,6 +162,15 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Create Party"
           component={CreatePartyScreen}
+          options={{
+            headerBackImage: () => (
+              <ChevronLeft width={40} height={40} fill="white" />
+            )
+          }}
+        />
+        <Stack.Screen
+          name="Create Event"
+          component={CreateEventScreen}
           options={{
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />
