@@ -11,21 +11,10 @@ import {
 import React from 'react'
 import { TouchableHighlight } from 'react-native-gesture-handler'
 
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import AddFriend from '../../assets/images/person_add-24px.svg'
 import UserContext from '../context/UserContext'
 import RedButton from '../components/RedButton.jsx'
-
-const UserFriend = (props) => {
-  return (
-    <View style={styles.friend}>
-      <View style={{ flexDirection: 'row' }}>
-        <AccountIcon width={30} height={30} fill="black" marginRight={10} />
-        <Text style={styles.friendText}>{props.name}</Text>
-      </View>
-    </View>
-  )
-}
+import FriendsList from '../components/FriendsList.jsx'
 
 const FriendMenu = (props) => {
   return (
@@ -48,14 +37,6 @@ const FriendMenu = (props) => {
       <FriendsList friendsList={props.friendsList} />
     </View>
   )
-}
-
-const FriendsList = (props) => {
-  const friendsList = props.friendsList
-  const list = friendsList.map((friendUser) => (
-    <UserFriend name={friendUser.name} key={friendUser.name} />
-  ))
-  return <ScrollView>{list}</ScrollView>
 }
 
 const SettingsMenu = () => {

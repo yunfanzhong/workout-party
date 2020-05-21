@@ -9,9 +9,7 @@ const ListItem = (props) => {
         marginLeft: '10%',
         marginRight: '10%',
         borderTopColor: '#b4b4b4',
-        borderTopWidth: 2,
-        borderBottomColor: '#b4b4b4',
-        borderBottomWidth: 2
+        borderTopWidth: 2
       }}
     >
       <TouchableOpacity
