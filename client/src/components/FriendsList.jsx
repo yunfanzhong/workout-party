@@ -1,15 +1,23 @@
 import React from 'react'
-import { Text, View, ScrollView, StyleSheet } from 'react-native'
+import {
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet
+} from 'react-native'
 
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
 const UserFriend = (props) => {
   return (
     <View style={styles.friend}>
-      <View style={{ flexDirection: 'row' }}>
-        <AccountIcon width={30} height={30} fill="black" marginRight={10} />
-        <Text style={styles.friendText}>{props.name}</Text>
-      </View>
+      <TouchableOpacity onPress={props.onPress}>
+        <View style={{ flexDirection: 'row' }}>
+          <AccountIcon width={30} height={30} fill="black" marginRight={10} />
+          <Text style={styles.friendText}>{props.name}</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   )
 }
