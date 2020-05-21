@@ -20,6 +20,10 @@ function PartyListScreen({ navigation }) {
     navigation.navigate('Party Info')
   }
 
+  const navToCreatePartyScreen = () => {
+    navigation.navigate('Create Party')
+  }
+
   return (
     <FlingGestureHandler
       direction={Directions.RIGHT}
@@ -44,7 +48,13 @@ function PartyListScreen({ navigation }) {
 
         <RedButton text="Party 1" onPress={navToPartyInfoScreen} />
         <RedButton text="Party 2" onPress={navToPartyInfoScreen} />
-        <AddCircleIcon width={40} height={40} fill="black" />
+
+        <TouchableOpacity
+          onPress={navToCreatePartyScreen}
+          style={{ width: 50, height: 50 }}
+        >
+          <AddCircleIcon width={40} height={40} fill="black" />
+        </TouchableOpacity>
       </View>
     </FlingGestureHandler>
   )

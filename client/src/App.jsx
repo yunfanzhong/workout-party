@@ -1,23 +1,34 @@
-import { NavigationContainer } from '@react-navigation/native'
-import { createStackNavigator } from '@react-navigation/stack'
-import { registerRootComponent } from 'expo'
+// React + Expo
 import React from 'react'
+import { registerRootComponent } from 'expo'
+
+// Gesture Handler
 import 'react-native-gesture-handler'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-import AccountIcon from '../assets/images/account_circle-24px.svg'
-import ChevronLeft from '../assets/images/chevron_left-24px.svg'
-import NotificationIcon from '../assets/images/notifications-24px.svg'
+// Navigation
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+
+// Contexts
 import UserContext from './context/UserContext'
 import UserProvider from './context/UserProvider.jsx'
+
+// Screens
 import AccountScreen from './screens/AccountScreen.jsx'
+import CreatePartyScreen from './screens/CreatePartyScreen.jsx'
+import EventScreen from './screens/EventScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
 import LogInScreen from './screens/LogInScreen.jsx'
 import NotificationScreen from './screens/NotificationScreen.jsx'
-import PartyListScreen from './screens/PartyListScreen.jsx'
 import PartyInfoScreen from './screens/PartyInfoScreen.jsx'
-import EventScreen from './screens/EventScreen.jsx'
+import PartyListScreen from './screens/PartyListScreen.jsx'
 import PartySettingsScreen from './screens/PartySettingsScreen.jsx'
+
+// Image assets
+import AccountIcon from '../assets/images/account_circle-24px.svg'
+import ChevronLeft from '../assets/images/chevron_left-24px.svg'
+import NotificationIcon from '../assets/images/notifications-24px.svg'
 
 const Stack = createStackNavigator()
 
@@ -141,6 +152,15 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Party Settings"
           component={PartySettingsScreen}
+          options={{
+            headerBackImage: () => (
+              <ChevronLeft width={40} height={40} fill="white" />
+            )
+          }}
+        />
+        <Stack.Screen
+          name="Create Party"
+          component={CreatePartyScreen}
           options={{
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />
