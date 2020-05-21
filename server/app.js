@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const bodyParser = require('body-parser')
 const express = require('express')
 const mongoose = require('mongoose')
 
@@ -18,6 +19,9 @@ mongoose.connection.on('error', (err) =>
 mongoose.set('useCreateIndex', true)
 
 const app = express()
+
+// Parse request bodies into json
+app.use(bodyParser.json())
 
 app.use('/users', userRouter)
 app.use('/facebook', facebookRouter)
