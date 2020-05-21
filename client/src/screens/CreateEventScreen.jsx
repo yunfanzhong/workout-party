@@ -6,11 +6,9 @@ import {
   StyleSheet,
   Button
 } from 'react-native'
-import MoreHorizIcon from '../../assets/images/more_horiz-24px.svg'
-import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
 import React from 'react'
 
-function PartyInfoScreen({ navigation }) {
+function CreateEventScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text
@@ -35,4 +33,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PartyInfoScreen
+export default CreateEventScreen

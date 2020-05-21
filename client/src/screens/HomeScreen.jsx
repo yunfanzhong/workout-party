@@ -7,7 +7,7 @@ import {
 import { StyleSheet, Text, View, Button } from 'react-native'
 import UserContext from '../context/UserContext'
 import { NavigationContainer } from '@react-navigation/native'
-import RedButton from '../components/RedButton.jsx'
+import ListItem from '../components/ListItem.jsx'
 
 function HeaderText(props) {
   return (
@@ -57,11 +57,19 @@ function QOTDText(props) {
   )
 }
 
-function HomeScreen({ navigation }) {
-  const navToEventsScreen = () => {
-    navigation.navigate('Event')
-  }
+function UpcomingListItem(props) {
+  return (
+    <ListItem
+      onPress={() => {
+        props.nav.navigate('Event')
+      }}
+    >
+      <Text>{props.text}</Text>
+    </ListItem>
+  )
+}
 
+function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.quoteContainer}>
@@ -84,8 +92,10 @@ function HomeScreen({ navigation }) {
             paddingTop={15}
             text="Upcoming"
           />
-          <RedButton text="event 1" onPress={navToEventsScreen} />
-          <RedButton text="event 2" onPress={navToEventsScreen} />
+          <UpcomingListItem
+            text="108 1/7 Revolution"
+            nav={navigation}
+          ></UpcomingListItem>
         </View>
       </FlingGestureHandler>
     </View>
