@@ -1,8 +1,15 @@
 import React from 'react'
+import {
+  FlingGestureHandler,
+  Directions,
+  State
+} from 'react-native-gesture-handler'
 import { StyleSheet, Text, View, Button } from 'react-native'
 import UserContext from '../context/UserContext'
+import { useNavigation, NavigationContainer } from '@react-navigation/native'
+import ListItem from '../components/ListItem.jsx'
 
-const HeaderText = (props) => {
+function HeaderText(props) {
   return (
     <Text
       style={{
@@ -19,7 +26,7 @@ const HeaderText = (props) => {
   )
 }
 
-const QOTDText = (props) => {
+function QOTDText(props) {
   return (
     <View
       style={{
@@ -50,6 +57,20 @@ const QOTDText = (props) => {
   )
 }
 
+function UpcomingListItem(props) {
+  const navigation = useNavigation()
+
+  return (
+    <ListItem
+      onPress={() => {
+        navigation.navigate('Event', { partyName: props.text })
+      }}
+    >
+      <Text>{props.text}</Text>
+    </ListItem>
+  )
+}
+
 function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
@@ -58,24 +79,25 @@ function HomeScreen({ navigation }) {
           <QOTDText text="Unfortunately, sitting at your computer 24/7 won't make you any slimmer." />
         </View>
       </View>
-
-      <View>
-        <HeaderText
-          fontSize={32}
-          color="black"
-          paddingTop={15}
-          text="Upcoming"
-        />
-      </View>
-      {/* test code below */}
-      <UserContext.Consumer>
-        {(context) => (
-          <Button
-            title="This is for testing logout, feel free to remove me"
-            onPress={context.logout}
-          ></Button>
-        )}
-      </UserContext.Consumer>
+      <FlingGestureHandler
+        direction={Directions.LEFT}
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            navigation.navigate('My Parties')
+          }
+        }}
+      >
+        <View style={styles.container}>
+          <HeaderText
+            fontSize={32}
+            color="black"
+            paddingTop={15}
+            text="Upcoming"
+          />
+          <UpcomingListItem text="108 1/7 Revolution" />
+          <UpcomingListItem text="IOB" />
+        </View>
+      </FlingGestureHandler>
     </View>
   )
 }
