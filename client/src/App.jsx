@@ -17,6 +17,7 @@ import NotificationScreen from './screens/NotificationScreen.jsx'
 import PartyListScreen from './screens/PartyListScreen.jsx'
 import PartyInfoScreen from './screens/PartyInfoScreen.jsx'
 import EventScreen from './screens/EventScreen.jsx'
+import PartySettingsScreen from './screens/PartySettingsScreen.jsx'
 
 const Stack = createStackNavigator()
 
@@ -131,6 +132,15 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Party Info"
           component={PartyInfoScreen}
+          options={{
+            headerBackImage: () => (
+              <ChevronLeft width={40} height={40} fill="white" />
+            )
+          }}
+        />
+        <Stack.Screen
+          name="Party Settings"
+          component={PartySettingsScreen}
           options={{
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />

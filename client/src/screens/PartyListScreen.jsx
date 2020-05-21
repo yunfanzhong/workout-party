@@ -44,7 +44,7 @@ function PartyListScreen({ navigation }) {
 
         <RedButton text="Party 1" onPress={navToPartyInfoScreen} />
         <RedButton text="Party 2" onPress={navToPartyInfoScreen} />
-        <AddCircleIcon width={40} height={40} />
+        <AddCircleIcon width={40} height={40} fill="black" />
       </View>
     </FlingGestureHandler>
   )
