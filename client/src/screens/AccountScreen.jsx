@@ -34,7 +34,7 @@ const FriendMenu = (props) => {
           Add Friend
         </Text>
       </TouchableOpacity>
-      <FriendsList friendsList={props.friendsList} />
+      <FriendsList friendsList={props.friendsList} onPress={() => {}} />
     </View>
   )
 }
