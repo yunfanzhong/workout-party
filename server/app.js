@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 
 const userRouter = require('./routes/users')
 const facebookRouter = require('./routes/facebook')
+const workoutPartyRouter = require('./routes/workoutParty')
 
 const { MONGO_URI, PORT } = process.env
 
@@ -25,6 +26,7 @@ app.use(bodyParser.json())
 
 app.use('/users', userRouter)
 app.use('/facebook', facebookRouter)
+app.use('/workoutParty', workoutPartyRouter)
 
 app.get('/', (_req, res) => res.send('Hello World!'))
 
