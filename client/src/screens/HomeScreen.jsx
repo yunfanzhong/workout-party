@@ -1,6 +1,12 @@
 import React from 'react'
+import {
+  FlingGestureHandler,
+  Directions,
+  State
+} from 'react-native-gesture-handler'
 import { StyleSheet, Text, View, Button } from 'react-native'
 import UserContext from '../context/UserContext'
+import { NavigationContainer } from '@react-navigation/native'
 
 const HeaderText = (props) => {
   return (
@@ -58,24 +64,32 @@ function HomeScreen({ navigation }) {
           <QOTDText text="Unfortunately, sitting at your computer 24/7 won't make you any slimmer." />
         </View>
       </View>
-
-      <View>
-        <HeaderText
-          fontSize={32}
-          color="black"
-          paddingTop={15}
-          text="Upcoming"
-        />
-      </View>
-      {/* test code below */}
-      <UserContext.Consumer>
-        {(context) => (
-          <Button
-            title="This is for testing logout, feel free to remove me"
-            onPress={context.logout}
-          ></Button>
-        )}
-      </UserContext.Consumer>
+      <FlingGestureHandler
+        direction={Directions.LEFT}
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            navigation.navigate('Workout Parties')
+          }
+        }}
+      >
+        <View style={styles.container}>
+          <HeaderText
+            fontSize={32}
+            color="black"
+            paddingTop={15}
+            text="Upcoming"
+          />
+          {/* test code below */}
+          <UserContext.Consumer>
+            {(context) => (
+              <Button
+                title="This is for testing logout, feel free to remove me"
+                onPress={context.logout}
+              ></Button>
+            )}
+          </UserContext.Consumer>
+        </View>
+      </FlingGestureHandler>
     </View>
   )
 }

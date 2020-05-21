@@ -14,6 +14,7 @@ import AccountScreen from './screens/AccountScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
 import LogInScreen from './screens/LogInScreen.jsx'
 import NotificationScreen from './screens/NotificationScreen.jsx'
+import WorkoutPartyScreen from './screens/WorkoutPartyScreen.jsx'
 
 const Stack = createStackNavigator()
 
@@ -101,6 +102,15 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Notifications"
           component={NotificationScreen}
+          options={{
+            headerBackImage: () => (
+              <ChevronLeft width={40} height={40} fill="white" />
+            )
+          }}
+        />
+        <Stack.Screen
+          name="Workout Parties"
+          component={WorkoutPartyScreen}
           options={{
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />
