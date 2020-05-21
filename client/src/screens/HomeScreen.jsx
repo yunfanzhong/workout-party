@@ -7,8 +7,9 @@ import {
 import { StyleSheet, Text, View, Button } from 'react-native'
 import UserContext from '../context/UserContext'
 import { NavigationContainer } from '@react-navigation/native'
+import RedButton from '../components/RedButton.jsx'
 
-const HeaderText = (props) => {
+function HeaderText(props) {
   return (
     <Text
       style={{
@@ -25,7 +26,7 @@ const HeaderText = (props) => {
   )
 }
 
-const QOTDText = (props) => {
+function QOTDText(props) {
   return (
     <View
       style={{
@@ -57,6 +58,10 @@ const QOTDText = (props) => {
 }
 
 function HomeScreen({ navigation }) {
+  const navToEventsScreen = () => {
+    navigation.navigate('Event')
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.quoteContainer}>
@@ -68,7 +73,7 @@ function HomeScreen({ navigation }) {
         direction={Directions.LEFT}
         onHandlerStateChange={({ nativeEvent }) => {
           if (nativeEvent.state === State.ACTIVE) {
-            navigation.navigate('Workout Parties')
+            navigation.navigate('My Parties')
           }
         }}
       >
@@ -79,15 +84,8 @@ function HomeScreen({ navigation }) {
             paddingTop={15}
             text="Upcoming"
           />
-          {/* test code below */}
-          <UserContext.Consumer>
-            {(context) => (
-              <Button
-                title="This is for testing logout, feel free to remove me"
-                onPress={context.logout}
-              ></Button>
-            )}
-          </UserContext.Consumer>
+          <RedButton text="event 1" onPress={navToEventsScreen} />
+          <RedButton text="event 2" onPress={navToEventsScreen} />
         </View>
       </FlingGestureHandler>
     </View>

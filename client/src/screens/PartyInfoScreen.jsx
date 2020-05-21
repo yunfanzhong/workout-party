@@ -6,11 +6,16 @@ import {
   StyleSheet,
   Button
 } from 'react-native'
+import {
+  FlingGestureHandler,
+  Directions,
+  State
+} from 'react-native-gesture-handler'
 import React from 'react'
 
-function WorkoutPartyScreen({ navigation }) {
+function PartyInfoScreen({ navigation }) {
   return (
-    <View>
+    <View style={styles.container}>
       <Text
         style={{
           marginTop: 300,
@@ -20,10 +25,17 @@ function WorkoutPartyScreen({ navigation }) {
           fontSize: 40
         }}
       >
-        Workout Parties
+        Party Info
       </Text>
     </View>
   )
 }
 
-export default WorkoutPartyScreen
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  }
+})
+
+export default PartyInfoScreen
