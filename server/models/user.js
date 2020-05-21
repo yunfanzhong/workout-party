@@ -15,7 +15,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  lastLoggedIn: Date,
+  lastLoggedIn: {
+    type: Date,
+    default: Date.now
+  },
   workoutParties: [mongoose.ObjectId],
   workoutHistory: [mongoose.ObjectId],
   friends: [mongoose.ObjectId]
