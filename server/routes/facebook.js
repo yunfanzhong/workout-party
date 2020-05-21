@@ -9,13 +9,11 @@ facebookRouter.get('/:facebookID', async (req, res) => {
   const { facebookID } = req.params
 
   try {
-    const user = await User.findOne({ facebookID }).exec()
+    const user = await User.findOne({ facebookID })
     res.json(user)
   } catch (err) {
     res.status(404).json({ error: 'User not found.' })
   }
-
-  res.json(user)
 })
 
 module.exports = facebookRouter
