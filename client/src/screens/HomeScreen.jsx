@@ -6,7 +6,7 @@ import {
 } from 'react-native-gesture-handler'
 import { StyleSheet, Text, View, Button } from 'react-native'
 import UserContext from '../context/UserContext'
-import { NavigationContainer } from '@react-navigation/native'
+import { useNavigation, NavigationContainer } from '@react-navigation/native'
 import ListItem from '../components/ListItem.jsx'
 
 function HeaderText(props) {
@@ -58,10 +58,12 @@ function QOTDText(props) {
 }
 
 function UpcomingListItem(props) {
+  const navigation = useNavigation()
+
   return (
     <ListItem
       onPress={() => {
-        props.nav.navigate('Event')
+        navigation.navigate('Event', { partyName: props.text })
       }}
     >
       <Text>{props.text}</Text>
@@ -92,10 +94,8 @@ function HomeScreen({ navigation }) {
             paddingTop={15}
             text="Upcoming"
           />
-          <UpcomingListItem
-            text="108 1/7 Revolution"
-            nav={navigation}
-          ></UpcomingListItem>
+          <UpcomingListItem text="108 1/7 Revolution" />
+          <UpcomingListItem text="IOB" />
         </View>
       </FlingGestureHandler>
     </View>

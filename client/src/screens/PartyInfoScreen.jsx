@@ -10,7 +10,7 @@ import MoreHorizIcon from '../../assets/images/more_horiz-24px.svg'
 import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
 import React from 'react'
 
-function PartyInfoScreen({ navigation }) {
+function PartyInfoScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Text
@@ -22,7 +22,7 @@ function PartyInfoScreen({ navigation }) {
           fontSize: 40
         }}
       >
-        Party Info
+        {route.params.partyName}
       </Text>
       <TouchableOpacity
         onPress={() => navigation.navigate('Party Settings')}

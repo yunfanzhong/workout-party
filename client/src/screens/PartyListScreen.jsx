@@ -14,16 +14,24 @@ import {
 import React from 'react'
 import RedButton from '../components/RedButton.jsx'
 import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
+import ListItem from '../components/ListItem.jsx'
+import { useNavigation } from '@react-navigation/native'
+
+function PartyListItem(props) {
+  const navigation = useNavigation()
+
+  return (
+    <ListItem
+      onPress={() => {
+        navigation.navigate('Party Info', { partyName: props.text })
+      }}
+    >
+      <Text>{props.text}</Text>
+    </ListItem>
+  )
+}
 
 function PartyListScreen({ navigation }) {
-  const navToPartyInfoScreen = () => {
-    navigation.navigate('Party Info')
-  }
-
-  const navToCreatePartyScreen = () => {
-    navigation.navigate('Create Party')
-  }
-
   return (
     <FlingGestureHandler
       direction={Directions.RIGHT}
@@ -34,23 +42,12 @@ function PartyListScreen({ navigation }) {
       }}
     >
       <View style={styles.container}>
-        <Text
-          style={{
-            marginTop: 300,
-            alignContent: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            fontSize: 40
-          }}
-        >
-          My Parties
-        </Text>
-
-        <RedButton text="Party 1" onPress={navToPartyInfoScreen} />
-        <RedButton text="Party 2" onPress={navToPartyInfoScreen} />
-
+        <PartyListItem text="108 1/7 Revolution" />
+        <PartyListItem text="IOB" />
         <TouchableOpacity
-          onPress={navToCreatePartyScreen}
+          onPress={() => {
+            navigation.navigate('Create Party')
+          }}
           style={{ width: 50, height: 50 }}
         >
           <AddCircleIcon width={40} height={40} fill="black" />
