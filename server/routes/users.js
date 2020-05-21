@@ -1,6 +1,7 @@
 const express = require('express')
 
-const authenticateWithFacebook = require('../middleware/facebook-authentication')
+const User = require('../models/user')
+const WorkoutParty = require('../models/workoutParty')
 
 const userRouter = express.Router()
 
@@ -9,20 +10,18 @@ const userRouter = express.Router()
 // Not doing this for ease of use!
 // userRouter.use(authenticateWithFacebook)
 
-// Currently just for testing!
-userRouter.get('/:facebookID', (req, res) => {
-  const { facebookID } = req.params
+userRouter.get('/', async (req, res) => {})
 
-  // TODO: Find user based on their facebook ID
-  const user = {
-    facebookID,
-    id: '4',
-    username: 'jk.jewik',
-    displayName: 'JSON Jewik',
-    lastLoggedIn: new Date()
-  }
+userRouter.get('/:userID', async (req, res) => {})
 
-  res.json(user)
-})
+userRouter.post('/', async (req, res) => {})
+
+userRouter.post('/:userID/friends', async (req, res) => {})
+
+userRouter.post('/:userID/history', async (req, res) => {})
+
+userRouter.patch('/:userID', async (req, res) => {})
+
+userRouter.delete('/:userID', async (req, res) => {})
 
 module.exports = userRouter

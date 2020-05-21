@@ -3,7 +3,8 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 
-const users = require('./routes/users')
+const userRouter = require('./routes/users')
+const facebookRouter = require('./routes/facebook')
 
 const { MONGO_URI, PORT } = process.env
 
@@ -13,9 +14,13 @@ mongoose.connection.on('error', (err) =>
   console.log(`Error connecting to MongoDB: ${err}`)
 )
 
+// Remove deprecation warning
+mongoose.set('useCreateIndex', true)
+
 const app = express()
 
-app.use('/users', users)
+app.use('/users', userRouter)
+app.use('/facebook', facebookRouter)
 
 app.get('/', (_req, res) => res.send('Hello World!'))
 
