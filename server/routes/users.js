@@ -26,7 +26,10 @@ userRouter.get('/:userID', async (req, res) => {
     if (user === null) {
       throw new Error()
     }
-    res.json(user)
+    const friends = await User.find({ _id: { $in: user.friends } }).select(
+      'username _id'
+    )
+    res.json({ ...user.toObject(), friends })
   } catch (err) {
     res.status(404).json({ error: 'Error finding user.' })
   }

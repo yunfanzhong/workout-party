@@ -26,8 +26,8 @@ const FriendsList = (props) => {
   const friendsList = props.friendsList
   const list = friendsList.map((friendUser) => (
     <UserFriend
-      name={friendUser.name}
-      key={friendUser.name}
+      name={friendUser.username}
+      key={friendUser._id}
       onPress={props.onPress}
     />
   ))
