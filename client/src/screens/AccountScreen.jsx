@@ -255,7 +255,7 @@ class AccountScreen extends React.Component {
             >
               {this.state.showFriendMenu ? (
                 <FriendMenu
-                  friendsList={context.user.friendsList}
+                  friendsList={context.user.friends}
                   onPress={() => displayAddFriend()}
                 />
               ) : (
