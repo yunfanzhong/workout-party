@@ -1,10 +1,14 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 
-const RedButton = (props) => {
+const RedButton = ({ onPress, text, center }) => {
+  const buttonStyles = {
+    ...styles.button,
+    ...{ alignSelf: center ? 'center' : undefined }
+  }
   return (
-    <TouchableOpacity style={styles.button} onPress={props.onPress}>
-      <Text style={styles.buttonText}>{props.text}</Text>
+    <TouchableOpacity style={buttonStyles} onPress={onPress}>
+      <Text style={styles.buttonText}>{text}</Text>
     </TouchableOpacity>
   )
 }
