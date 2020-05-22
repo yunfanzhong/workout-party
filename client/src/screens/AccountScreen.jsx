@@ -4,8 +4,6 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  ScrollView,
-  Modal,
   TextInput
 } from 'react-native'
 import React from 'react'
@@ -13,8 +11,11 @@ import { TouchableHighlight } from 'react-native-gesture-handler'
 
 import AddFriend from '../../assets/images/person_add-24px.svg'
 import UserContext from '../context/UserContext'
+import { H3 } from '../components/Header.jsx'
 import RedButton from '../components/RedButton.jsx'
 import FriendsList from '../components/FriendsList.jsx'
+import FormInput from '../components/FormInput.jsx'
+import BlankModal from '../components/BlankModal.jsx'
 
 const FriendMenu = (props) => {
   return (
@@ -60,6 +61,26 @@ const SettingsMenu = () => {
         </Text>
       </TouchableOpacity>
     </View>
+  )
+}
+
+const AddFriendModal = ({ visible, setVisible }) => {
+  return (
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <H3>Add a Friend!</H3>
+      <Text>Username</Text>
+      <FormInput />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          width: '100%'
+        }}
+      >
+        <RedButton text="Cancel" onPress={() => setVisible(false)} />
+        <RedButton text="Enter" onPress={() => setVisible(false)} />
+      </View>
+    </BlankModal>
   )
 }
 
@@ -110,80 +131,10 @@ class AccountScreen extends React.Component {
       <UserContext.Consumer>
         {(context) => (
           <View style={styles.container}>
-            <Modal
-              animationType="fade"
+            <AddFriendModal
               visible={this.state.modalVisible}
-              transparent={true}
-            >
-              <View
-                style={{
-                  marginTop: 56,
-                  height: '100%',
-                  backgroundColor: 'rgba(0,0,0,0.6)'
-                }}
-              >
-                <View
-                  style={{
-                    height: 280,
-                    width: '80%',
-                    alignSelf: 'center',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    backgroundColor: 'white',
-                    marginTop: 80
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontSize: 40,
-                      marginTop: 10
-                    }}
-                  >
-                    Add a Friend!
-                  </Text>
-                  <View
-                    style={{
-                      marginHorizontal: '10%',
-                      marginTop: 40
-                    }}
-                  >
-                    <TextInput
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      clearButtonMode="always"
-                      clearTextOnFocus={true}
-                      autoFocus={true}
-                      placeholder="Username"
-                      textAlign="center"
-                      style={{
-                        height: 50,
-                        borderColor: '#ff2559',
-                        borderWidth: 2
-                      }}
-                    ></TextInput>
-                  </View>
-                  <View
-                    style={{
-                      marginTop: 60,
-                      flexDirection: 'row',
-                      justifyContent: 'flex-end',
-                      width: '100%',
-                      padding: 24
-                    }}
-                  >
-                    <RedButton
-                      text="Cancel"
-                      onPress={() => this.setState({ modalVisible: false })}
-                    />
-                    <RedButton
-                      text="Enter"
-                      onPress={() => this.setState({ modalVisible: false })}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Modal>
+              setVisible={(modalVisible) => this.setState({ modalVisible })}
+            />
             <View style={styles.profileImageAndInfo}>
               <Image
                 style={styles.profileImage}
