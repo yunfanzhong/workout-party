@@ -34,7 +34,6 @@ userRouter.get('/:userID', async (req, res) => {
 
 userRouter.post('/', async (req, res) => {
   try {
-    console.log(req.body)
     const user = await User.create(req.body)
     res.status(201).json(user)
   } catch (err) {

@@ -12,8 +12,9 @@ facebookRouter.get('/:facebookID', async (req, res) => {
     const user = await User.findOne({ facebookID })
     if (user === null) {
       res.status(404).json({ error: 'User not found.' })
+    } else {
+      res.json(user)
     }
-    res.json(user)
   } catch (err) {
     res.status(400).json({ error: 'Error finding user.' })
   }
