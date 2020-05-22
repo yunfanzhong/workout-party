@@ -18,7 +18,7 @@ wpRouter.get('/', async(req, res) => {
 
 // GET by id
 wpRouter.get('/:workout_party_id', async (req, res) => {
-	const { partyID } = req.params
+	const { workout_party_id } = req.params
 	try {
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
 		// if the workout party's ID doesn't exist
