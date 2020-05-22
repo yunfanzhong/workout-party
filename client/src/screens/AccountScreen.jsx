@@ -166,9 +166,10 @@ class AccountScreen extends React.Component {
                   <View
                     style={{
                       marginTop: 60,
-                      height: 50,
                       flexDirection: 'row',
-                      width: '100%'
+                      justifyContent: 'flex-end',
+                      width: '100%',
+                      padding: 24
                     }}
                   >
                     <RedButton
