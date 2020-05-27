@@ -56,7 +56,6 @@ const API = {
       headers: { 'Content-Type': 'application/json' }
     })
     const createdUser = await res.json()
-    console.log(createdUser)
     return createdUser
   },
 

@@ -31,7 +31,6 @@ class UserProvider extends React.Component {
     } catch (err) {
       console.log('[DEBUG] Error logging in:')
       console.log(err)
-      Alert.alert('uwu', 'oopsies! we had a pwobwem wogging you in. 😔')
     }
   }
 
