@@ -58,7 +58,7 @@ workoutRouter.patch('/:workout_id', async (req, res) => {
 })
 
 // DEL delete workout
-wpRouter.delete('/:workout_party_id', async (req, res) => {
+workoutRouter.delete('/:workout_party_id', async (req, res) => {
 	const { workout_id } = req.params
 	try {
 		// remove the workout from every workout party's array
