@@ -40,7 +40,7 @@ wpRouter.post('/', async (req, res) => {
 		res.status(201).json(wp)
 	}
 	catch(err) {
-		res.status(400).json({error: 'Error creating workout party. :('})
+		res.status(400).json({error: 'Error creating workout party.'})
 	}
 })
 
@@ -74,28 +74,28 @@ wpRouter.post('/:workout_party_id/workouts', async (req, res) => {
 // POST add member
 wpRouter.post('/:workout_party_id/users', async (req, res) => {
 	const { workout_party_id } = req.params
-	const { addUser } = req.body
+	const { user_id } = req.body
 	try {
 		// get the workout party and the user
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
-		const addUser = await User.findOne({ addUser })
+		const user_id = await User.findById({ user_id })
 		// workout party doesn't exist
 		if (wp == null) {
 			return res.status(400).json({ error: 'Invalid workout party.' })
 		}
 		// user doesn't exist
-		else if (addUser == null) {
+		else if (user_id == null) {
 			return res.status(400).json({ error: 'Invalid user.' })
 		}
 		// user already in workout party
-		else if (wp.members.includes(addUser._id)) {
+		else if (wp.members.includes(user_id._id)) {
 			return res.status(400).json({ error: 'User already added to party. '})
 		}
 
 		// add workout party to the user's list
-		addUser.workoutParties.push(wp.id)
-		await addUser.save()
-		wp.members.push(addUser.id)
+		user_id.workoutParties.push(wp.id)
+		await user_id.save()
+		wp.members.push(user_id.id)
 		await wp.save()
 		res.end()
 	}
