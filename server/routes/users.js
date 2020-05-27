@@ -100,7 +100,9 @@ userRouter.delete('/:userID', async (req, res) => {
     // Remove user from their friends' friends list
     const friends = await User.find({ friends: userID })
     for (const friend of friends) {
-      friend.friends = friend.friends.filter((id) => id !== userID)
+      friend.friends = friend.friends.filter((id) => {
+        return !id.equals(userID)
+      })
       await friend.save()
     }
 
