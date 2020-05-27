@@ -35,11 +35,12 @@ wpRouter.get('/:workout_party_id', async (req, res) => {
 // POST create workout party
 wpRouter.post('/', async (req, res) => {
 	try {
+		console.log(req.body)
 		const wp = await WorkoutParty.create(req.body)
 		res.status(201).json(wp)
 	}
 	catch(err) {
-		res.status(400).json({error: 'Error creating workout party.'})
+		res.status(400).json({error: 'Error creating workout party. :('})
 	}
 })
 
