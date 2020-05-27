@@ -82,7 +82,7 @@ class CreatePartyScreen extends React.Component {
         <UserContext.Consumer>
           {(context) => (
             <FriendsList
-              friendsList={context.user.friendsList}
+              friendsList={context.user.friends}
               onPress={(member) => this.addMember(member)}
             />
           )}
