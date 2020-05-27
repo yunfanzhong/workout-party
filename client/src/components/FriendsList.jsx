@@ -12,7 +12,7 @@ import AccountIcon from '../../assets/images/account_circle-24px.svg'
 const UserFriend = (props) => {
   return (
     <View style={styles.friend}>
-      <TouchableOpacity onPress={props.onPress}>
+      <TouchableOpacity onPress={() => props.onPress(props.name)}>
         <View style={{ flexDirection: 'row' }}>
           <AccountIcon width={30} height={30} fill="black" marginRight={10} />
           <Text style={styles.friendText}>{props.name}</Text>
@@ -25,7 +25,11 @@ const UserFriend = (props) => {
 const FriendsList = (props) => {
   const friendsList = props.friendsList
   const list = friendsList.map((friendUser) => (
-    <UserFriend name={friendUser.name} key={friendUser.name} />
+    <UserFriend
+      name={friendUser.username}
+      key={friendUser._id}
+      onPress={props.onPress}
+    />
   ))
   return <ScrollView>{list}</ScrollView>
 }

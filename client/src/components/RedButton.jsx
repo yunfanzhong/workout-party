@@ -1,36 +1,33 @@
 import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 
-const RedButton = (props) => {
+const RedButton = ({ onPress, text, center }) => {
+  const buttonStyles = {
+    ...styles.button,
+    ...{ alignSelf: center ? 'center' : undefined }
+  }
   return (
-    <View style={{ width: '50%' }}>
-      <TouchableOpacity
-        style={{
-          height: 50,
-          marginLeft: '10%',
-          marginRight: '5%',
-          borderRadius: 20,
-          backgroundColor: '#ff2559',
-          justifyContent: 'center'
-        }}
-        onPress={props.onPress}
-      >
-        <View>
-          <Text
-            style={{
-              textAlign: 'center',
-              textAlignVertical: 'center',
-              justifyContent: 'center',
-              fontSize: 24,
-              color: 'white'
-            }}
-          >
-            {props.text}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={buttonStyles} onPress={onPress}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </TouchableOpacity>
   )
 }
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 12,
+    backgroundColor: '#ff2559',
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginLeft: 8,
+    marginRight: 8
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'white'
+  }
+})
 
 export default RedButton

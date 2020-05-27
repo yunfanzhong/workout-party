@@ -8,6 +8,8 @@ const ListItem = (props) => {
         width: '80%',
         marginLeft: '10%',
         marginRight: '10%',
+        paddingTop: '2%',
+        paddingBottom: '2%',
         borderTopColor: '#b4b4b4',
         borderTopWidth: 2
       }}

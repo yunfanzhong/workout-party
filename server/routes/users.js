@@ -26,7 +26,10 @@ userRouter.get('/:userID', async (req, res) => {
     if (user === null) {
       throw new Error()
     }
-    res.json(user)
+    const friends = await User.find({ _id: { $in: user.friends } }).select(
+      'username _id'
+    )
+    res.json({ ...user.toObject(), friends })
   } catch (err) {
     res.status(404).json({ error: 'Error finding user.' })
   }
@@ -34,7 +37,6 @@ userRouter.get('/:userID', async (req, res) => {
 
 userRouter.post('/', async (req, res) => {
   try {
-    console.log(req.body)
     const user = await User.create(req.body)
     res.status(201).json(user)
   } catch (err) {

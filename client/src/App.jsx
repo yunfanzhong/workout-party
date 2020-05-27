@@ -46,19 +46,7 @@ function App() {
 }
 
 function UnauthenticatedApp() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={LogInScreen}
-          options={{
-            headerShown: false
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
+  return <LogInScreen />
 }
 
 function AuthenticatedApp() {
