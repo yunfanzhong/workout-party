@@ -22,7 +22,7 @@ import React from 'react'
 //   username: 'jk.jewik',
 //   displayName: 'JSON Jewik',
 //   lastLoggedIn: new Date(),
-//   friendsList: [
+//   friends: [
 //     { name: 'Ethan Shabhazian', id: '10934802384' },
 //     { name: 'Yunfan Zhong', id: '05829340239' }
 //   ]
