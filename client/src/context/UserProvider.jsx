@@ -34,6 +34,14 @@ class UserProvider extends React.Component {
     }
   }
 
+  // Update the locally stored user object.
+  // Usage: context.updateUser({ friends: [] })
+  //        ^ This clears the user's friends list (LOCALLY)
+  updateUser = (updates) => {
+    const user = { ...this.state.user, ...updates }
+    this.setState({ user })
+  }
+
   handleLogout = async () => {
     this.setState({ user: null })
   }
@@ -46,6 +54,7 @@ class UserProvider extends React.Component {
     const contextValue = {
       login: this.handleLogin,
       logout: this.handleLogout,
+      update: this.updateUser,
       user: this.state.user
     }
 
