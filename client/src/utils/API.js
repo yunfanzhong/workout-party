@@ -48,14 +48,14 @@ const API = {
     return { user, doesNotExist: false }
   },
 
-  // Untested - comment this out when you test it
   // userInfo: { username, displayName, facebookID }
   async createUser(userInfo) {
     const res = await fetch(`${BASE_URL}/users`, {
       method: 'POST',
-      body: JSON.stringify(userInfo)
+      body: JSON.stringify(userInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-    const createdUser = res.json()
+    const createdUser = await res.json()
     return createdUser
   },
 
@@ -71,7 +71,8 @@ const API = {
   async addFriendToUser(userID, friendUsername) {
     await fetch(`${BASE_URL}/users/${userID}`, {
       method: 'POST',
-      body: JSON.stringify({ username: friendUsername })
+      body: JSON.stringify({ username: friendUsername }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
@@ -80,7 +81,8 @@ const API = {
   async updateUser(userID, updates) {
     const res = await fetch(`${BASE_URL}/users/${userID}`, {
       method: 'POST',
-      body: JSON.stringify(userInfo)
+      body: JSON.stringify(userInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
     const createdUser = res.json()
     return createdUser

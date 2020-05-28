@@ -35,7 +35,6 @@ class LoginButton extends React.Component {
       new Promise((resolve) => this.setState({ isLoading: true }, resolve)),
       login()
     ])
-    this.setState({ isLoading: false })
   }
 
   render() {

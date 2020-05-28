@@ -4,59 +4,22 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Button,
-  ScrollView,
-  Alert
+  TextInput
 } from 'react-native'
 import React from 'react'
 import { TouchableHighlight } from 'react-native-gesture-handler'
 
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import AddFriend from '../../assets/images/person_add-24px.svg'
-import DeleteIcon from '../../assets/images/highlight_off_24px.svg'
+import UserContext from '../context/UserContext'
+import { H3 } from '../components/Header.jsx'
+import RedButton from '../components/RedButton.jsx'
+import FriendsList from '../components/FriendsList.jsx'
+import FormInput from '../components/FormInput.jsx'
+import BlankModal from '../components/BlankModal.jsx'
 
-const UserFriend = (props) => {
+const FriendMenu = (props) => {
   return (
-    <TouchableOpacity
-      style={styles.friend}
-      onPress={() => {
-        createDeleteFriendAlert(`${props.name}`)
-      }}
-    >
-      <View style={{ flexDirection: 'row', width: '65%' }}>
-        <AccountIcon width={30} height={30} fill="black" marginRight={20} />
-        <Text style={styles.friendText}>{props.name}</Text>
-      </View>
-      <View>
-        <DeleteIcon width={30} height={30} marginLeft={'40%'} fill="black" />
-      </View>
-    </TouchableOpacity>
-  )
-}
-
-const createDeleteFriendAlert = (name) => {
-  Alert.alert(
-    '',
-    `Are you sure you want to delete ${name} from your friend list?`,
-    [
-      {
-        text: 'Cancel',
-        style: 'cancel'
-      },
-      {
-        text: 'Yes',
-        onPress: () => deleteFriend(name)
-      }
-    ],
-    { cancelable: true }
-  )
-}
-
-const deleteFriend = (props) => {}
-
-const FriendMenu = () => {
-  return (
-    <View>
+    <View style={{ height: 290 }}>
       <TouchableOpacity
         style={{
           flexDirection: 'row',
@@ -65,25 +28,14 @@ const FriendMenu = () => {
           alignSelf: 'center',
           justifyContent: 'center'
         }}
+        onPress={props.onPress}
       >
         <AddFriend height={30} width={30} marginTop={15} fill="black" />
         <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
           Add Friend
         </Text>
       </TouchableOpacity>
-      <ScrollView>
-        <UserFriend name="Yunfan Zhong" />
-        <UserFriend name="Frank Zheng" />
-        <UserFriend name="Ethan Shahbazian" />
-        <UserFriend name="Albert Guan" />
-        <UserFriend name="Janet Fang" />
-        <UserFriend name="Alex Yu" />
-        <UserFriend name="Kevin Enemuo" />
-        <UserFriend name="David Smallberg" />
-        <UserFriend name="Carey Nachenburg" />
-        <UserFriend name="Glenn Reinman" />
-        <UserFriend name="Paul Eggert" />
-      </ScrollView>
+      <FriendsList friendsList={props.friendsList} onPress={() => {}} />
     </View>
   )
 }
@@ -112,91 +64,161 @@ const SettingsMenu = () => {
   )
 }
 
-function AccountScreen({ navigation }) {
-  const [friendButtonColor, setFriendButtonColor] = React.useState('grey')
-  const [settingButtonColor, setSettingButtonColor] = React.useState('white')
-  const [showFriendMenu, setShowFriendMenu] = React.useState(true)
-
-  const changeButtonColors = () => {
-    friendButtonColor === 'white'
-      ? setFriendButtonColor('grey')
-      : (setFriendButtonColor('white'), setShowFriendMenu(false))
-    settingButtonColor === 'white'
-      ? setSettingButtonColor('grey')
-      : (setSettingButtonColor('white'), setShowFriendMenu(true))
-  }
-
+const AddFriendModal = ({ visible, setVisible }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.profileImageAndInfo}>
-        <Image
-          style={styles.profileImage}
-          source={require('../../assets/images/account_circle-24px.svg')}
-        />
-        <View style={styles.profileInfo}>
-          <Text style={styles.nameText}>Jason Jewik</Text>
-          <Text style={styles.joinDate}>Joined May 4, 2020</Text>
-          <Text style={styles.rank}>Rank: Fitness Junkie</Text>
-          <Text style={styles.partiesAttended}>Attended 20 Parties</Text>
-        </View>
-      </View>
-      <View style={styles.buttonPair}>
-        <View style={styles.buttonContainer}>
-          <TouchableHighlight
-            style={{
-              backgroundColor: friendButtonColor,
-              height: 50,
-              marginLeft: '20%',
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              borderBottomWidth: 2,
-              borderBottomColor: 'grey',
-              justifyContent: 'center'
-            }}
-            underlayColor="grey"
-            onPress={() => {
-              changeButtonColors()
-            }}
-          >
-            <View>
-              <Text style={styles.buttonText}>Friends List</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableHighlight
-            style={{
-              backgroundColor: settingButtonColor,
-              height: 50,
-              marginRight: '20%',
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              borderBottomWidth: 2,
-              borderBottomColor: 'grey',
-              justifyContent: 'center'
-            }}
-            underlayColor="grey"
-            onPress={() => {
-              changeButtonColors()
-            }}
-          >
-            <View>
-              <Text style={styles.buttonText}>Settings</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-      </View>
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <H3>Add a Friend!</H3>
+      <Text>Username</Text>
+      <FormInput />
       <View
         style={{
-          width: '80%',
-          marginLeft: '10%',
-          height: '51%'
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          width: '100%'
         }}
       >
-        {showFriendMenu ? <FriendMenu /> : <SettingsMenu />}
+        <RedButton text="Cancel" onPress={() => setVisible(false)} />
+        <RedButton text="Enter" onPress={() => setVisible(false)} />
       </View>
-    </View>
+    </BlankModal>
   )
+}
+
+class AccountScreen extends React.Component {
+  state = {
+    friendButtonColor: 'grey',
+    settingButtonColor: 'white',
+    showFriendMenu: true,
+    modalVisible: false
+  }
+
+  render() {
+    const ranks = [
+      'Couch Potato',
+      'Boomer',
+      'Bloomer',
+      'Zoomer',
+      'Fitness Junkie',
+      'Bruce Lee',
+      'Dwayne "The Rock" Johnson',
+      'John Cena'
+    ]
+
+    const changeButtonColors = () => {
+      this.state.friendButtonColor === 'white'
+        ? this.setState({
+            friendButtonColor: 'grey',
+            settingButtonColor: 'white',
+            showFriendMenu: true
+          })
+        : this.setState({
+            friendButtonColor: 'white',
+            settingButtonColor: 'grey',
+            showFriendMenu: false
+          })
+    }
+
+    const getUserRank = (number) => {
+      if (number > 40) return ranks[7]
+      return ranks[Math.floor(number / 5)]
+    }
+
+    const displayAddFriend = () => {
+      this.setState({ modalVisible: true })
+    }
+
+    return (
+      <UserContext.Consumer>
+        {(context) => (
+          <View style={styles.container}>
+            <AddFriendModal
+              visible={this.state.modalVisible}
+              setVisible={(modalVisible) => this.setState({ modalVisible })}
+            />
+            <View style={styles.profileImageAndInfo}>
+              <Image
+                style={styles.profileImage}
+                source={require('../../assets/images/avatar.png')}
+                fill="black"
+              />
+              <View style={styles.profileInfo}>
+                <Text style={styles.nameText}>{context.user.displayName}</Text>
+                <Text style={styles.userName}>{context.user.username}</Text>
+                <Text style={styles.rank}>
+                  Rank: {getUserRank(context.user.workoutHistory.length)}
+                </Text>
+                <Text style={styles.partiesAttended}>
+                  Attended {context.user.workoutHistory.length} Parties
+                </Text>
+              </View>
+            </View>
+            <View style={styles.buttonPair}>
+              <View style={styles.buttonContainer}>
+                <TouchableHighlight
+                  style={{
+                    backgroundColor: this.state.friendButtonColor,
+                    height: 50,
+                    marginLeft: '20%',
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    borderBottomWidth: 2,
+                    borderBottomColor: 'grey',
+                    justifyContent: 'center'
+                  }}
+                  underlayColor="grey"
+                  onPress={() => {
+                    changeButtonColors()
+                  }}
+                >
+                  <View>
+                    <Text style={styles.buttonText}>Friends List</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+              <View style={styles.buttonContainer}>
+                <TouchableHighlight
+                  style={{
+                    backgroundColor: this.state.settingButtonColor,
+                    height: 50,
+                    marginRight: '20%',
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    borderBottomWidth: 2,
+                    borderBottomColor: 'grey',
+                    justifyContent: 'center'
+                  }}
+                  underlayColor="grey"
+                  onPress={() => {
+                    changeButtonColors()
+                  }}
+                >
+                  <View>
+                    <Text style={styles.buttonText}>Settings</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '80%',
+                marginLeft: '10%',
+                height: '51%'
+              }}
+            >
+              {this.state.showFriendMenu ? (
+                <FriendMenu
+                  friendsList={context.user.friends}
+                  onPress={() => displayAddFriend()}
+                />
+              ) : (
+                <SettingsMenu />
+              )}
+            </View>
+          </View>
+        )}
+      </UserContext.Consumer>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -206,12 +228,21 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginTop: 30
   },
-  profileInfo: { flexDirection: 'column', marginLeft: 30, marginTop: 10 },
-  profileImage: { height: 140, width: 140 },
-  nameText: { fontSize: 24, fontWeight: 'bold' },
-  joinDate: { fontSize: 18 },
-  rank: { marginTop: 15, fontWeight: 'bold', fontSize: 16 },
-  partiesAttended: { fontStyle: 'italic', fontSize: 16 },
+  profileInfo: { flexDirection: 'column', marginLeft: 30, marginTop: 30 },
+  profileImage: { height: 170, width: 146 },
+  nameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  userName: { fontSize: 20, textAlign: 'center' },
+  rank: {
+    marginTop: 15,
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center'
+  },
+  partiesAttended: { fontStyle: 'italic', fontSize: 16, textAlign: 'center' },
   buttonText: {
     textAlign: 'center',
     textAlignVertical: 'center',
