@@ -10,7 +10,7 @@ const workoutSchema = new mongoose.Schema({
   exercises: [
     {
       reps: Number,
-      exerciseID: mongoose.ObjectId
+      exerciseID: String
     }
   ]
 })
