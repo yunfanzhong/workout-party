@@ -110,7 +110,6 @@ wpRouter.post('/:workout_party_id/users', async (req, res) => {
 wpRouter.patch('/:workout_party_id', async (req, res) => {
 	const { workout_party_id } = req.params
 	try {
-		// TEST THIS
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
 		Object.assign(wp, req.body)
 		await wp.save()
