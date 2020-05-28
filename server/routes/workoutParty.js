@@ -2,6 +2,7 @@ const express = require('express')
 
 const WorkoutParty = require('../models/workoutParty')
 const User = require('../models/user')
+const Workout = require('../models/workout')
 
 const wpRouter = express.Router()
 
@@ -35,7 +36,6 @@ wpRouter.get('/:workout_party_id', async (req, res) => {
 // POST create workout party
 wpRouter.post('/', async (req, res) => {
 	try {
-		console.log(req.body)
 		const wp = await WorkoutParty.create(req.body)
 		res.status(201).json(wp)
 	}
@@ -48,10 +48,10 @@ wpRouter.post('/', async (req, res) => {
 // POST add workout
 wpRouter.post('/:workout_party_id/workouts', async (req, res) => {
 	const { workout_party_id } = req.params
-	const { workout } = req.body
+	const { w } = req.body
 	try {
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
-		const workout = await User.findOne({ workout })
+		const workout = await Workout.findOne({ w })
 		if (wp == null) {
 			return res.status(400).json({ error: 'Invalid workout party.' })
 		}
@@ -74,17 +74,18 @@ wpRouter.post('/:workout_party_id/workouts', async (req, res) => {
 // POST add member
 wpRouter.post('/:workout_party_id/users', async (req, res) => {
 	const { workout_party_id } = req.params
-	const { addUser } = req.body
+	const { userID } = req.body
 	try {
 		// get the workout party and the user
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
-		const user_id = await User.findById({ addUser })
+		const user_id = await User.findById({ _id: userID })
+
 		// workout party doesn't exist
-		if (wp == null) {
+		if (wp === null) {
 			return res.status(400).json({ error: 'Invalid workout party.' })
 		}
 		// user doesn't exist
-		else if (user_id == null) {
+		else if (user_id === null) {
 			return res.status(400).json({ error: 'Invalid user.' })
 		}
 		// user already in workout party
@@ -112,6 +113,7 @@ wpRouter.patch('/:workout_party_id', async (req, res) => {
 		// TEST THIS
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
 		Object.assign(wp, req.body)
+		await wp.save()
 		res.end()
 	}
 	catch(err) {
@@ -125,9 +127,11 @@ wpRouter.delete('/:workout_party_id', async (req, res) => {
 	const { workout_party_id } = req.params
 	try {
 		// remove the workout party from every member's array
-		const members = await WorkoutParty.find({ members: workout_party_id })
+		const members = await User.find({ workoutParties: workout_party_id })
 		for (const m of members) {
-			m.members = m.members.filter((id) => id !== workout_party_id)
+			m.workoutParties = m.workoutParties.filter((id) => {
+				return !id.equals(workout_party_id)
+			})
 			await m.save()
 		}
 		await WorkoutParty.deleteOne({ _id: workout_party_id })
