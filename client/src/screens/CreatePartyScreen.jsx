@@ -48,7 +48,7 @@ function PartyMemberList(props) {
   const memberList = props.memberList
 
   const list = memberList.map((member) => (
-    <PartyMember name={member} key={member} />
+    <PartyMember name={member.username} key={member._id} />
   ))
   return <ScrollView horizontal={true}>{list}</ScrollView>
 }
@@ -57,7 +57,8 @@ class CreatePartyScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      memberList: []
+      memberList: [],
+      friends: props.friends
     }
     this.navigation = props.navigation
   }
@@ -72,24 +73,49 @@ class CreatePartyScreen extends React.Component {
     return (
       <View style={styles.container}>
         <PartyNameInput />
-        <RedButton
-          text="Confirm group"
-          onPress={() => {
-            this.navigation.goBack()
+        <PartyMemberList memberList={this.state.memberList} />
+
+        <View
+          style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center' }}
+        >
+          <RedButton
+            text="Confirm group"
+            onPress={() => {
+              this.navigation.goBack()
+            }}
+          />
+        </View>
+
+        <FriendsList
+          friendsList={this.state.friends}
+          onPress={(member) => {
+            this.addMember(member)
+            console.log('MEMBER')
+            console.log(member)
+            let friends = this.state.friends
+            let idx = friends.findIndex((friend) => friend._id === member._id)
+            friends.splice(idx, 1)
+            console.log('FRIENDS')
+            console.log(friends)
+            this.setState({ friends: friends })
           }}
         />
-        <PartyMemberList memberList={this.state.memberList} />
-        <UserContext.Consumer>
-          {(context) => (
-            <FriendsList
-              friendsList={context.user.friends}
-              onPress={(member) => this.addMember(member)}
-            />
-          )}
-        </UserContext.Consumer>
       </View>
     )
   }
+}
+
+function CreatePartyScreenWrapper(props) {
+  return (
+    <UserContext.Consumer>
+      {(context) => (
+        <CreatePartyScreen
+          friends={context.user.friends.slice()}
+          navigation={props.navigation}
+        />
+      )}
+    </UserContext.Consumer>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -99,4 +125,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default CreatePartyScreen
+export default CreatePartyScreenWrapper
