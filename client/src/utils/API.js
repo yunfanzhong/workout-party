@@ -152,7 +152,7 @@ async updateWorkout(workoutID, newInfo) {
     })
     const newWorkout = res.json()
     return newWorkout
-  },
+  }
 
 
 export default API
