@@ -1,4 +1,4 @@
-const mongoose = require('mongoose').set('debug', true)
+const mongoose = require('mongoose')
 
 const workoutPartySchema = new mongoose.Schema({
   name: {

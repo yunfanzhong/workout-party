@@ -1,4 +1,4 @@
-const mongoose = require('mongoose').set('debug', true)
+const mongoose = require('mongoose')
 
 const workoutSchema = new mongoose.Schema({
   name: {
@@ -17,8 +17,8 @@ const workoutSchema = new mongoose.Schema({
         type: Number,
         minimum:0,
         maximum:59
-      },
-  }],
+      }
+    }],
   music: mongoose.ObjectId,
   exercises: [
     {
