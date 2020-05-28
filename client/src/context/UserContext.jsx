@@ -18,7 +18,7 @@ import React from 'react'
 // Value stored in context.user
 // {
 //   facebookID: '10923840981234',
-//   id: '4',
+//   _id: '4',
 //   username: 'jk.jewik',
 //   displayName: 'JSON Jewik',
 //   lastLoggedIn: new Date(),
