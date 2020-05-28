@@ -22,7 +22,10 @@ function PartyNameInput() {
       style={{
         height: 50,
         borderRadius: 15,
-        margin: '10%',
+        marginTop: '10%',
+        marginLeft: '10%',
+        marginRight: '10%',
+        marginBottom: '5%',
         backgroundColor: '#c4c4c4',
         paddingLeft: 10,
         paddingRight: 10
@@ -37,8 +40,8 @@ function PartyNameInput() {
 
 function PartyMember(props) {
   return (
-    <View style={{ alignItems: 'center' }}>
-      <AccountIcon fill="black" />
+    <View marginLeft={10} marginRight={10} style={{ alignItems: 'center' }}>
+      <AccountIcon width={40} height={40} fill="black" />
       <Text>{props.name}</Text>
     </View>
   )
@@ -50,7 +53,11 @@ function PartyMemberList(props) {
   const list = memberList.map((member) => (
     <PartyMember name={member.username} key={member._id} />
   ))
-  return <ScrollView horizontal={true}>{list}</ScrollView>
+  return (
+    <ScrollView marginLeft="10%" marginRight="10%" horizontal={true}>
+      {list}
+    </ScrollView>
+  )
 }
 
 class CreatePartyScreen extends React.Component {
@@ -73,8 +80,9 @@ class CreatePartyScreen extends React.Component {
     return (
       <View style={styles.container}>
         <PartyNameInput />
-        <PartyMemberList memberList={this.state.memberList} />
-
+        <View style={{ flex: 1 }}>
+          <PartyMemberList memberList={this.state.memberList} />
+        </View>
         <View
           style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center' }}
         >
@@ -85,21 +93,18 @@ class CreatePartyScreen extends React.Component {
             }}
           />
         </View>
-
-        <FriendsList
-          friendsList={this.state.friends}
-          onPress={(member) => {
-            this.addMember(member)
-            console.log('MEMBER')
-            console.log(member)
-            let friends = this.state.friends
-            let idx = friends.findIndex((friend) => friend._id === member._id)
-            friends.splice(idx, 1)
-            console.log('FRIENDS')
-            console.log(friends)
-            this.setState({ friends: friends })
-          }}
-        />
+        <View style={{ flex: 4, backgroundColor: '#fff' }}>
+          <FriendsList
+            friendsList={this.state.friends}
+            onPress={(member) => {
+              this.addMember(member)
+              let friends = this.state.friends
+              let idx = friends.findIndex((friend) => friend._id === member._id)
+              friends.splice(idx, 1)
+              this.setState({ friends: friends })
+            }}
+          />
+        </View>
       </View>
     )
   }
