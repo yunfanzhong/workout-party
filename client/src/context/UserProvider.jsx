@@ -18,20 +18,28 @@ class UserProvider extends React.Component {
   }
 
   handleLogin = async () => {
-    const { id: facebookID } = await logInWithFacebook()
-    try {
-      const { user, doesNotExist } = await API.getUserByFacebookID(facebookID)
-      console.log('[DEBUG] Retrieved user:')
-      console.log(user)
-      if (doesNotExist) {
-        this.setState({ facebookID, modalVisible: true })
-      } else {
-        this.setState({ user })
+    this.setState({
+      user: {
+        workoutParties: [],
+        workoutHistory: [],
+        friends: [
+          {
+            _id: '5ec5d64145eb3268f78093f2',
+            username: 'jordano'
+          },
+          {
+            _id: '5ec74ae1c79d324cecbb55b6',
+            username: 'jk.jewik'
+          }
+        ],
+        _id: '5ecef59120368361f45eba00',
+        username: 'ilikesocks',
+        displayName: 'John Doe',
+        facebookID: '2679680868944918',
+        lastLoggedIn: '2020-05-27T23:19:45.439Z',
+        __v: 2
       }
-    } catch (err) {
-      console.log('[DEBUG] Error logging in:')
-      console.log(err)
-    }
+    })
   }
 
   handleLogout = async () => {
