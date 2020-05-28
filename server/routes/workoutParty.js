@@ -48,10 +48,11 @@ wpRouter.post('/', async (req, res) => {
 // POST add workout
 wpRouter.post('/:workout_party_id/workouts', async (req, res) => {
 	const { workout_party_id } = req.params
-	const { w } = req.body
+	const { workoutID } = req.body
 	try {
+		// get workout party and the workout
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
-		const workout = await Workout.findOne({ w })
+		const workout = await Workout.findById({ _id: workoutID })
 		if (wp == null) {
 			return res.status(400).json({ error: 'Invalid workout party.' })
 		}
