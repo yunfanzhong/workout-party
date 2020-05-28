@@ -11,15 +11,21 @@ const days = [
   'saturday'
 ]
 
-function DayOfTheWeekPicker({ selectedDay, onSelect }) {
+function DayOfTheWeekPicker({ selectedDays, onSelect }) {
+  const handleSelect = (day) => {
+    if (selectedDays.includes(day)) {
+      return onSelect(selectedDays.filter((selectedDay) => selectedDay !== day))
+    }
+    return onSelect(selectedDays.concat(day))
+  }
   return (
     <View style={styles.container}>
       {days.map((day) => (
         <DayButton
           day={day}
-          selected={day === selectedDay}
+          selected={selectedDays.includes(day)}
           key={day}
-          onPress={() => onSelect(day)}
+          onPress={() => handleSelect(day)}
         />
       ))}
     </View>
