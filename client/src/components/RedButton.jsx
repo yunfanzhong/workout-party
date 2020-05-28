@@ -1,10 +1,10 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 
-const RedButton = ({ onPress, text, center }) => {
+const RedButton = ({ onPress, text, center, elevation = 0 }) => {
   const buttonStyles = {
     ...styles.button,
-    ...{ alignSelf: center ? 'center' : undefined }
+    ...{ alignSelf: center ? 'center' : undefined, elevation }
   }
   return (
     <TouchableOpacity style={buttonStyles} onPress={onPress}>
@@ -15,17 +15,17 @@ const RedButton = ({ onPress, text, center }) => {
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
+    borderRadius: 8,
     backgroundColor: '#ff2559',
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 20,
-    paddingRight: 20,
-    marginLeft: 8,
-    marginRight: 8
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    shadowOffset: { width: 1, height: 12 }
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: 'white'
   }
 })
