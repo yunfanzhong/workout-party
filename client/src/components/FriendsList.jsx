@@ -10,8 +10,17 @@ import {
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
 const UserFriend = (props) => {
-  return (
+  const baseComponent = (
     <View style={styles.friend}>
+      <View style={{ flexDirection: 'row' }}>
+        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Text style={styles.friendText}>{props.friend.username}</Text>
+      </View>
+    </View>
+  )
+
+  if (props.button) {
+    return (
       <TouchableOpacity
         onPress={() =>
           props.onPress({
@@ -20,21 +29,29 @@ const UserFriend = (props) => {
           })
         }
       >
-        <View style={{ flexDirection: 'row' }}>
-          <AccountIcon width={40} height={40} fill="black" marginRight={10} />
-          <Text style={styles.friendText}>{props.friend.username}</Text>
-        </View>
+        {baseComponent}
       </TouchableOpacity>
-    </View>
-  )
+    )
+  } else {
+    return baseComponent
+  }
 }
 
 const FriendsList = (props) => {
-  const friendsList = props.friendsList
-  const list = friendsList.map((friendUser) => (
+  const arr = []
+  const searchValue = props.searchValue || ''
+
+  for (friend of props.friendsList) {
+    if (friend.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
+      arr.push(friend)
+    }
+  }
+
+  const list = arr.map((friend) => (
     <UserFriend
-      friend={friendUser}
-      key={friendUser._id}
+      friend={friend}
+      key={friend._id}
+      button={props.button}
       onPress={props.onPress}
     />
   ))

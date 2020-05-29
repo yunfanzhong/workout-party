@@ -2,9 +2,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   StyleSheet,
-  Button,
   TextInput,
   ScrollView
 } from 'react-native'
@@ -13,8 +11,9 @@ import FriendsList from '../components/FriendsList.jsx'
 import UserContext from '../context/UserContext'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import RedButton from '../components/RedButton'
+import CancelIcon from '../../assets/images/cancel-24px.svg'
 
-function PartyNameInput() {
+function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')
 
   return (
@@ -30,7 +29,10 @@ function PartyNameInput() {
         paddingLeft: 10,
         paddingRight: 10
       }}
-      onChangeText={(text) => onChangeText(text)}
+      onChangeText={(text) => {
+        onChangeText(text)
+        props.onChangeText(text)
+      }}
       value={value}
       placeholderTextColor="#808080"
       placeholder="Find friends to add"
@@ -40,7 +42,13 @@ function PartyNameInput() {
 
 function PartyMember(props) {
   return (
-    <View marginLeft={10} marginRight={10} style={{ alignItems: 'center' }}>
+    <View
+      marginLeft={10}
+      marginRight={10}
+      width={65}
+      height={100}
+      style={{ alignItems: 'center' }}
+    >
       <TouchableOpacity
         onPress={() =>
           props.onPress({
@@ -52,8 +60,17 @@ function PartyMember(props) {
           alignItems: 'center'
         }}
       >
-        <AccountIcon width={40} height={40} fill="black" />
-        <Text>{props.member.username}</Text>
+        <View>
+          <AccountIcon width={60} height={60} fill="black" />
+          <CancelIcon
+            position="absolute"
+            right={0}
+            width={20}
+            height={20}
+            fill="black"
+          />
+        </View>
+        <Text numberOfLines={1}>{props.member.username}</Text>
       </TouchableOpacity>
     </View>
   )
@@ -66,7 +83,11 @@ function PartyMemberList(props) {
     <PartyMember member={member} onPress={props.onPress} key={member._id} />
   ))
   return (
-    <ScrollView marginHorizontal="10%" horizontal={true}>
+    <ScrollView
+      marginHorizontal="10%"
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+    >
       {list}
     </ScrollView>
   )
@@ -77,7 +98,8 @@ class CreatePartyScreen extends React.Component {
     super(props)
     this.state = {
       memberList: [],
-      friendsList: props.friends
+      friendsList: props.friends,
+      searchValue: ''
     }
     this.navigation = props.navigation
   }
@@ -104,11 +126,20 @@ class CreatePartyScreen extends React.Component {
     this.setState({ memberList: memberList })
   }
 
+  filterFriendsList(text) {
+    this.setState({ searchValue: text })
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <PartyNameInput />
-        <View style={{ flex: this.state.memberList.length > 0 ? 1 : 0 }}>
+        <PartyNameInput onChangeText={(text) => this.filterFriendsList(text)} />
+        <View
+          style={{
+            backgroundColor: '#fff',
+            height: this.state.memberList.length > 0 ? 100 : 0
+          }}
+        >
           <PartyMemberList
             memberList={this.state.memberList}
             onPress={(friend) => this.removeMember(friend)}
@@ -130,7 +161,6 @@ class CreatePartyScreen extends React.Component {
         </View>
         <View
           style={{
-            flex: 4,
             marginHorizontal: '5%',
             backgroundColor: '#fff'
           }}
@@ -138,6 +168,8 @@ class CreatePartyScreen extends React.Component {
           <FriendsList
             friendsList={this.state.friendsList}
             onPress={(member) => this.addMember(member)}
+            searchValue={this.state.searchValue}
+            button={true}
           />
         </View>
       </View>
