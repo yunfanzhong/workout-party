@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Text } from 'react-native'
+import { Text } from 'react-native'
 
 import logInWithFacebook from '../utils/logInWithFacebook.js'
 import UserContext from './UserContext.jsx'
@@ -18,28 +18,28 @@ class UserProvider extends React.Component {
   }
 
   handleLogin = async () => {
-    this.setState({
-      user: {
-        workoutParties: [],
-        workoutHistory: [],
-        friends: [
-          {
-            _id: '5ec5d64145eb3268f78093f2',
-            username: 'jordano'
-          },
-          {
-            _id: '5ec74ae1c79d324cecbb55b6',
-            username: 'jk.jewik'
-          }
-        ],
-        _id: '5ecef59120368361f45eba00',
-        username: 'ilikesocks',
-        displayName: 'John Doe',
-        facebookID: '2679680868944918',
-        lastLoggedIn: '2020-05-27T23:19:45.439Z',
-        __v: 2
+    const { id: facebookID } = await logInWithFacebook()
+    try {
+      const { user, doesNotExist } = await API.getUserByFacebookID(facebookID)
+      console.log('[DEBUG] Retrieved user:')
+      console.log(user)
+      if (doesNotExist) {
+        this.setState({ facebookID, modalVisible: true })
+      } else {
+        this.setState({ user })
       }
-    })
+    } catch (err) {
+      console.log('[DEBUG] Error logging in:')
+      console.log(err)
+    }
+  }
+
+  // Update the locally stored user object.
+  // Usage: context.updateUser({ friends: [] })
+  //        ^ This clears the user's friends list (LOCALLY)
+  updateUser = (updates) => {
+    const user = { ...this.state.user, ...updates }
+    this.setState({ user })
   }
 
   handleLogout = async () => {
@@ -54,6 +54,7 @@ class UserProvider extends React.Component {
     const contextValue = {
       login: this.handleLogin,
       logout: this.handleLogout,
+      update: this.updateUser,
       user: this.state.user
     }
 

@@ -21,7 +21,7 @@ const UserFriend = (props) => {
         }
       >
         <View style={{ flexDirection: 'row' }}>
-          <AccountIcon width={30} height={30} fill="black" marginRight={10} />
+          <AccountIcon width={40} height={40} fill="black" marginRight={10} />
           <Text style={styles.friendText}>{props.friend.username}</Text>
         </View>
       </TouchableOpacity>
@@ -44,13 +44,12 @@ const FriendsList = (props) => {
 const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
-    textAlignVertical: 'center',
-    marginBottom: 2
+    textAlignVertical: 'center'
   },
   friend: {
     flexDirection: 'row',
     marginHorizontal: '5%',
-    marginTop: 2
+    marginBottom: '1%'
   }
 })
 

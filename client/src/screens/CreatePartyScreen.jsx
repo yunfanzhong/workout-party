@@ -41,8 +41,20 @@ function PartyNameInput() {
 function PartyMember(props) {
   return (
     <View marginLeft={10} marginRight={10} style={{ alignItems: 'center' }}>
-      <AccountIcon width={40} height={40} fill="black" />
-      <Text>{props.name}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          props.onPress({
+            _id: props.member._id,
+            username: props.member.username
+          })
+        }
+        style={{
+          alignItems: 'center'
+        }}
+      >
+        <AccountIcon width={40} height={40} fill="black" />
+        <Text>{props.member.username}</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -51,10 +63,10 @@ function PartyMemberList(props) {
   const memberList = props.memberList
 
   const list = memberList.map((member) => (
-    <PartyMember name={member.username} key={member._id} />
+    <PartyMember member={member} onPress={props.onPress} key={member._id} />
   ))
   return (
-    <ScrollView marginLeft="10%" marginRight="10%" horizontal={true}>
+    <ScrollView marginHorizontal="10%" horizontal={true}>
       {list}
     </ScrollView>
   )
@@ -65,7 +77,7 @@ class CreatePartyScreen extends React.Component {
     super(props)
     this.state = {
       memberList: [],
-      friends: props.friends
+      friendsList: props.friends
     }
     this.navigation = props.navigation
   }
@@ -74,17 +86,40 @@ class CreatePartyScreen extends React.Component {
     const memberList = this.state.memberList
     memberList.push(member)
     this.setState({ memberList: memberList })
+
+    let friendsList = this.state.friendsList
+    let idx = friendsList.findIndex((friend) => friend._id === member._id)
+    friendsList.splice(idx, 1)
+    this.setState({ friendsList: friendsList })
+  }
+
+  removeMember(friend) {
+    const friendsList = this.state.friendsList
+    friendsList.push(friend)
+    this.setState({ friendsList: friendsList })
+
+    let memberList = this.state.memberList
+    let idx = memberList.findIndex((member) => member._id === friend._id)
+    memberList.splice(idx, 1)
+    this.setState({ memberList: memberList })
   }
 
   render() {
     return (
       <View style={styles.container}>
         <PartyNameInput />
-        <View style={{ flex: 1 }}>
-          <PartyMemberList memberList={this.state.memberList} />
+        <View style={{ flex: this.state.memberList.length > 0 ? 1 : 0 }}>
+          <PartyMemberList
+            memberList={this.state.memberList}
+            onPress={(friend) => this.removeMember(friend)}
+          />
         </View>
         <View
-          style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center' }}
+          style={{
+            backgroundColor: '#fff',
+            alignItems: 'center',
+            marginBottom: '5%'
+          }}
         >
           <RedButton
             text="Confirm group"
@@ -93,16 +128,16 @@ class CreatePartyScreen extends React.Component {
             }}
           />
         </View>
-        <View style={{ flex: 4, backgroundColor: '#fff' }}>
+        <View
+          style={{
+            flex: 4,
+            marginHorizontal: '5%',
+            backgroundColor: '#fff'
+          }}
+        >
           <FriendsList
-            friendsList={this.state.friends}
-            onPress={(member) => {
-              this.addMember(member)
-              let friends = this.state.friends
-              let idx = friends.findIndex((friend) => friend._id === member._id)
-              friends.splice(idx, 1)
-              this.setState({ friends: friends })
-            }}
+            friendsList={this.state.friendsList}
+            onPress={(member) => this.addMember(member)}
           />
         </View>
       </View>
