@@ -86,8 +86,7 @@ const API = {
     })
     const createdUser = res.json()
     return createdUser
-  }
-},
+  },
 
 
 
