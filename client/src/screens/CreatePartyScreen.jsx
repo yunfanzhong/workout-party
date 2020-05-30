@@ -117,7 +117,7 @@ const ConfirmGroupModal = ({ visible, setVisible }) => {
           flexDirection: 'row',
           justifyContent: 'flex-end',
           width: '100%',
-          marginBottom: '2%'
+          marginBottom: 4
         }}
       >
         <RedButton text="Cancel" onPress={() => setVisible(false)} />
@@ -145,9 +145,12 @@ class CreatePartyScreen extends React.Component {
     memberList.push(member)
     this.setState({ memberList: memberList })
 
-    let friendsList = this.state.friendsList
-    let idx = friendsList.findIndex((friend) => friend._id === member._id)
-    friendsList.splice(idx, 1)
+    const idx = this.state.friendsList.findIndex(
+      (friend) => friend._id === member._id
+    )
+    const friendsList = this.state.friendsList
+      .slice(0, idx)
+      .concat(this.state.friendsList.slice(idx + 1))
     this.setState({ friendsList: friendsList })
   }
 
@@ -156,9 +159,12 @@ class CreatePartyScreen extends React.Component {
     friendsList.push(friend)
     this.setState({ friendsList: friendsList })
 
-    let memberList = this.state.memberList
-    let idx = memberList.findIndex((member) => member._id === friend._id)
-    memberList.splice(idx, 1)
+    const idx = this.state.memberList.findIndex(
+      (member) => member._id === friend._id
+    )
+    const memberList = this.state.memberList
+      .slice(0, idx)
+      .concat(this.state.memberList.slice(idx + 1))
     this.setState({ memberList: memberList })
   }
 
