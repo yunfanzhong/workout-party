@@ -30,40 +30,35 @@ const BASE_TIME = 3600000 * 8 // The first 12 AM of all time
 
 class CreateEventScreen extends React.Component {
   state = {
-    showTimePicker: false,
-    showExerciseModal: false,
+    timePickerVisible: false,
+    exerciseModalVisible: false,
     form: {
       days: [],
       time: null,
       name: '',
       exercises: []
     },
-    exerciseForm: {
-      exerciseID: '1',
-      reps: ''
-    },
-    exerciseFormError: null,
     error: null
   }
 
   handleToggleTimePicker = () => {
-    this.setState({ showTimePicker: !this.state.showTimePicker })
+    this.setState({ timePickerVisible: !this.state.timePickerVisible })
   }
 
-  handleToggleExerciseModal = (visible) => {
+  setExerciseModalVisible = (visible) => {
     this.setState({
-      showExerciseModal:
-        visible === undefined ? !this.state.showExerciseModal : visible
+      exerciseModalVisible:
+        visible === undefined ? !this.state.exerciseModalVisible : visible
     })
   }
 
   handleTimePickerEvent = (event) => {
     if (event.type === 'set') {
-      this.setState({ showTimePicker: false }, () =>
+      this.setState({ timePickerVisible: false }, () =>
         this.handleFormChange('time', event.nativeEvent.timestamp)
       )
     } else if (event.type === 'dismissed') {
-      this.setState({ showTimePicker: false })
+      this.setState({ timePickerVisible: false })
     }
   }
 
@@ -72,17 +67,12 @@ class CreateEventScreen extends React.Component {
     this.setState({ form })
   }
 
-  handleExerciseFormChange = (name, value) => {
-    const exerciseForm = { ...this.state.exerciseForm, [name]: value }
-    this.setState({ exerciseForm })
-  }
-
   handleSubmit = () => {
     const { days, time, name, exercises } = this.state.form
     // Validate form
     if (name.length === 0 || name.length > 20) {
       this.setState({
-        error: 'The name of this workout is either too long or too short.'
+        error: 'Please enter a valid workout name.'
       })
     } else if (days.length === 0) {
       this.setState({ error: 'Please choose a day.' })
@@ -100,29 +90,17 @@ class CreateEventScreen extends React.Component {
     }
   }
 
-  handleAddExercise = () => {
-    const { exerciseID, reps } = this.state.exerciseForm
-    if (Number.isNaN(parseInt(reps))) {
-      this.setState({
-        exerciseFormError: 'Please enter a number for the number of reps.'
-      })
-    } else {
-      const exercises = this.state.form.exercises.concat({
-        id: exerciseID,
-        reps
-      })
-      this.setState(
-        {
-          showExerciseModal: false,
-          exerciseForm: {
-            exerciseID: '1',
-            reps: ''
-          },
-          exerciseFormError: null
-        },
-        () => this.handleFormChange('exercises', exercises)
-      )
-    }
+  handleAddExercise = ({ id, reps }) => {
+    const exercises = this.state.form.exercises.concat({
+      id,
+      reps
+    })
+    this.setState(
+      {
+        exerciseModalVisible: false
+      },
+      () => this.handleFormChange('exercises', exercises)
+    )
   }
 
   removeExercise = (index) => {
@@ -148,56 +126,17 @@ class CreateEventScreen extends React.Component {
   }
 
   render() {
-    const { showTimePicker, showExerciseModal, form, exerciseForm } = this.state
-    const exerciseList = Object.entries(EXERCISES).map(([id, name]) => ({
-      id,
-      name
-    }))
+    const { timePickerVisible, exerciseModalVisible, form } = this.state
 
     const timeString = form.time ? moment(form.time).format('h:mm a') : 'N/A'
 
     return (
       <>
-        <BlankModal visible={showExerciseModal}>
-          <H3>Add Exercise</H3>
-          {this.state.exerciseFormError && (
-            <ErrorText>{this.state.exerciseFormError}</ErrorText>
-          )}
-          <FormLabel>Exercise</FormLabel>
-          <FormPicker
-            selectedValue={exerciseForm.exerciseID}
-            onValueChange={(value) =>
-              this.handleExerciseFormChange('exerciseID', value)
-            }
-          >
-            {exerciseList.map(({ id, name }) => (
-              <Picker.Item label={name} value={id} key={id} />
-            ))}
-          </FormPicker>
-
-          <FormLabel style={{ marginTop: 16 }} placeholder="i.e. 30">
-            Repetitions
-          </FormLabel>
-          <FormInput
-            value={exerciseForm.reps}
-            onChangeText={(value) =>
-              this.handleExerciseFormChange('reps', value)
-            }
-          />
-          <View style={styles.modalButtonContainer}>
-            <OutlinedButton
-              text="Cancel"
-              onPress={() => this.handleToggleExerciseModal(false)}
-              style={{ marginRight: 8 }}
-            />
-            <RedButton
-              text="Save"
-              onPress={this.handleAddExercise}
-              elevation={4}
-            />
-          </View>
-        </BlankModal>
-
+        <AddExerciseModal
+          visible={exerciseModalVisible}
+          setVisible={this.setExerciseModalVisible}
+          onSubmit={this.handleAddExercise}
+        />
         <View style={styles.container}>
           {this.state.error && <ErrorText>{this.state.error}</ErrorText>}
           <FormLabel>Event Name</FormLabel>
@@ -214,7 +153,7 @@ class CreateEventScreen extends React.Component {
           <TimeField onPress={this.handleToggleTimePicker}>
             {timeString}
           </TimeField>
-          {showTimePicker && (
+          {timePickerVisible && (
             <DateTimePicker
               value={form.time || BASE_TIME}
               mode="time"
@@ -246,11 +185,83 @@ class CreateEventScreen extends React.Component {
             <OutlinedButton
               icon="add"
               text="Add Exercise"
-              onPress={() => this.handleToggleExerciseModal(true)}
+              onPress={() => this.setExerciseModalVisible(true)}
             />
           </View>
         </View>
       </>
+    )
+  }
+}
+
+class AddExerciseModal extends React.Component {
+  state = {
+    exerciseID: '1',
+    reps: '',
+    error: null
+  }
+
+  handleChange(name, value) {
+    this.setState({
+      [name]: value
+    })
+  }
+
+  handleSubmit = () => {
+    const { reps, exerciseID } = this.state
+    if (Number.isNaN(parseInt(reps))) {
+      this.setState({
+        error: 'Please enter a valid number of reps.'
+      })
+    } else {
+      this.setState(
+        {
+          exerciseID: '1',
+          reps: '',
+          error: null
+        },
+        () => this.props.onSubmit({ id: exerciseID, reps: reps })
+      )
+    }
+  }
+
+  render() {
+    const { exerciseID, reps, error } = this.state
+    const { visible, setVisible } = this.props
+    const exerciseList = Object.entries(EXERCISES).map(([id, name]) => ({
+      id,
+      name
+    }))
+    return (
+      <BlankModal visible={visible}>
+        <H3>Add Exercise</H3>
+        {error && <ErrorText>{error}</ErrorText>}
+        <FormLabel>Exercise</FormLabel>
+        <FormPicker
+          selectedValue={exerciseID}
+          onValueChange={(value) => this.handleChange('exerciseID', value)}
+        >
+          {exerciseList.map(({ id, name }) => (
+            <Picker.Item label={name} value={id} key={id} />
+          ))}
+        </FormPicker>
+
+        <FormLabel style={{ marginTop: 16 }} placeholder="i.e. 30">
+          Repetitions
+        </FormLabel>
+        <FormInput
+          value={reps}
+          onChangeText={(value) => this.handleChange('reps', value)}
+        />
+        <View style={styles.modalButtonContainer}>
+          <OutlinedButton
+            text="Cancel"
+            onPress={() => setVisible(false)}
+            style={{ marginRight: 8 }}
+          />
+          <RedButton text="Save" onPress={this.handleSubmit} elevation={4} />
+        </View>
+      </BlankModal>
     )
   }
 }
