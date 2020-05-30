@@ -10,8 +10,11 @@ import React from 'react'
 import FriendsList from '../components/FriendsList.jsx'
 import UserContext from '../context/UserContext'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
-import RedButton from '../components/RedButton'
 import CancelIcon from '../../assets/images/cancel-24px.svg'
+import RedButton from '../components/RedButton'
+import BlankModal from '../components/BlankModal'
+import FormInput from '../components/FormInput'
+import { H3 } from '../components/Header'
 
 function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')
@@ -93,13 +96,46 @@ function PartyMemberList(props) {
   )
 }
 
+const EmptyGroupModal = ({ visible, setVisible }) => {
+  return (
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <Text style={{ textAlign: 'center', width: '100%', fontSize: 18 }}>
+        Select friends to add first!
+      </Text>
+    </BlankModal>
+  )
+}
+
+const ConfirmGroupModal = ({ visible, setVisible }) => {
+  return (
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <H3>Give your party a name!</H3>
+      <Text>Party Name</Text>
+      <FormInput />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          width: '100%',
+          marginBottom: '2%'
+        }}
+      >
+        <RedButton text="Cancel" onPress={() => setVisible(false)} />
+        <RedButton text="Enter" onPress={() => setVisible(false)} />
+      </View>
+    </BlankModal>
+  )
+}
+
 class CreatePartyScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       memberList: [],
       friendsList: props.friends,
-      searchValue: ''
+      searchValue: '',
+      emptyModalVisible: false,
+      confirmModalVisible: false
     }
     this.navigation = props.navigation
   }
@@ -133,6 +169,19 @@ class CreatePartyScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <EmptyGroupModal
+          visible={this.state.emptyModalVisible}
+          setVisible={(emptyModalVisible) =>
+            this.setState({ emptyModalVisible })
+          }
+        />
+        <ConfirmGroupModal
+          visible={this.state.confirmModalVisible}
+          setVisible={(confirmModalVisible) =>
+            this.setState({ confirmModalVisible })
+          }
+        />
+
         <PartyNameInput onChangeText={(text) => this.filterFriendsList(text)} />
         <View
           style={{
@@ -155,7 +204,11 @@ class CreatePartyScreen extends React.Component {
           <RedButton
             text="Confirm group"
             onPress={() => {
-              this.navigation.goBack()
+              if (this.state.memberList.length == 0) {
+                this.setState({ emptyModalVisible: true })
+              } else {
+                this.setState({ confirmModalVisible: true })
+              }
             }}
           />
         </View>
