@@ -159,11 +159,11 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Create Event"
           component={CreateEventScreen}
-          options={{
+          options={({ navigation, route }) => ({
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />
             )
-          }}
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

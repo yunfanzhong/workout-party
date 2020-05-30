@@ -88,7 +88,12 @@ const API = {
     return createdUser
   },
 
-
+  // Stub
+  async createWorkoutEvent(data) {
+    console.log('[DEBUG] Creating workout event (not really) with data:')
+    console.log(data)
+    await sleep(2000)
+  },
 
 // WORKOUT PARTIES
 async getWorkoutParty(id) {
