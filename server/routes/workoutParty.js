@@ -49,7 +49,12 @@ wpRouter.post('/', async (req, res) => {
 				user.workoutParties.push(wpID)
 				await user.save()
 			}
-			
+			else { // delete invalid user from workout party array
+				wp.members = wp.members.filter((id) => {
+					return !id.equals(memberID)
+				})
+				await wp.save()
+			}
 		}
 		res.end()
 	}
