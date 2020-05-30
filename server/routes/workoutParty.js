@@ -23,7 +23,7 @@ wpRouter.get('/:workout_party_id', async (req, res) => {
 	try {
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
 		// if the workout party's ID doesn't exist
-		if (wp == null) {
+		if (wp === null) {
 			throw new Error()
 		}
 		res.json(wp)
@@ -38,6 +38,20 @@ wpRouter.post('/', async (req, res) => {
 	try {
 		const wp = await WorkoutParty.create(req.body)
 		res.status(201).json(wp)
+
+		// add newly created workout party to all member arrays
+		const wpID = wp._id
+		const mems = wp.members
+		for (const m in mems) {
+			const memberID = mems[m]
+			const user = await User.findById({ _id: memberID })
+			if (user !== null) { // add workout party to user's array
+				user.workoutParties.push(wpID)
+				await user.save()
+			}
+			
+		}
+		res.end()
 	}
 	catch(err) {
 		res.status(400).json({error: 'Error creating workout party.'})
@@ -53,10 +67,10 @@ wpRouter.post('/:workout_party_id/workouts', async (req, res) => {
 		// get workout party and the workout
 		const wp = await WorkoutParty.findById(workout_party_id.trim())
 		const workout = await Workout.findById({ _id: workoutID })
-		if (wp == null) {
+		if (wp === null) {
 			return res.status(400).json({ error: 'Invalid workout party.' })
 		}
-		else if (workout == null) {
+		else if (workout === null) {
 			return res.status(400).json({ error: 'Invalid workout.' })
 		}
 		else if (wp.workouts.includes(workout._id)) {
