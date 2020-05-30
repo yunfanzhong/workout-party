@@ -7,15 +7,14 @@ function FormInput(props) {
 
 const styles = StyleSheet.create({
   input: {
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderColor: '#eaecee',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderColor: '#ededed',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 16,
-    borderRadius: 12,
+    borderRadius: 8,
     width: '100%'
   }
 })
