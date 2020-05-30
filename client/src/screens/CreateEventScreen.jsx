@@ -85,7 +85,7 @@ class CreateEventScreen extends React.Component {
         const minute = moment(time).minute()
         const hour = moment(time).hour()
         await API.createWorkoutEvent({ name, minute, hour, days, exercises })
-        this.props.navigation.navigate('Home')
+        this.props.navigation.goBack()
       })
     }
   }
@@ -116,7 +116,7 @@ class CreateEventScreen extends React.Component {
         <TouchableOpacity
           onPress={() => this.handleSubmit()}
           style={{
-            marginRight: 12
+            marginRight: 16
           }}
         >
           <Icon name="done" size={32} color="white" />
