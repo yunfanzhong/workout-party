@@ -73,15 +73,24 @@ class AddFriendModal extends React.Component {
     this.setState({ friendName: text })
   }
 
-  addNewFriend = async ({ userID, friendName }) => {
-    try {
-      await API.addFriendToUser({
-        userID,
-        friendName
+  // addNewFriend = async ({ userID, friendName }) => {
+  //   try {
+  //     await API.addFriendToUser({
+  //       userID,
+  //       friendName
+  //     })
+  //   } catch (err) {
+  //     console.log('Error')
+  //   }
+  // }
+
+  addNewFriend = (userID, friendName, context) => {
+    context.update({
+      friends: context.user.friends.concat({
+        _id: '5ec5d64145eb3268f723893f2',
+        username: 'franklintzheng'
       })
-    } catch (err) {
-      console.log('Error')
-    }
+    })
   }
 
   render() {
@@ -110,7 +119,11 @@ class AddFriendModal extends React.Component {
                 text="Enter"
                 onPress={() => {
                   setVisible(false),
-                    this.addNewFriend(context.user._id, this.state.friendName)
+                    this.addNewFriend(
+                      context.user._id,
+                      this.state.friendName,
+                      context
+                    )
                 }}
               />
             </View>
