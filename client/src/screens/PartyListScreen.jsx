@@ -6,54 +6,56 @@ import {
   StyleSheet,
   Button
 } from 'react-native'
-import {
-  FlingGestureHandler,
-  Directions,
-  State
-} from 'react-native-gesture-handler'
 import React from 'react'
 import RedButton from '../components/RedButton.jsx'
-import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
+import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
 
-function PartyListItem(props) {
+function PartyListItem({ text }) {
   const navigation = useNavigation()
 
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Party Info', { partyName: props.text })
+        navigation.navigate('Party Info', { partyName: text })
       }}
     >
-      <Text>{props.text}</Text>
+      <Text>{text}</Text>
     </ListItem>
+  )
+}
+
+function PartyList({ partyList }) {
+  const list = partyList.map((party) => (
+    <ListItem key={party.id} partyName={party.name} />
+  ))
+}
+
+function CreatePartyButton() {
+  const navigation = useNavigation()
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('Create Party')
+      }}
+      style={{
+        position: 'absolute',
+        right: '6%',
+        bottom: '4%'
+      }}
+    >
+      <AddCircleIcon width={80} height={80} fill="#ff2559" />
+    </TouchableOpacity>
   )
 }
 
 function PartyListScreen({ navigation }) {
   return (
-    <FlingGestureHandler
-      direction={Directions.RIGHT}
-      onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          navigation.navigate('Home')
-        }
-      }}
-    >
-      <View style={styles.container}>
-        <PartyListItem text="108 1/7 Revolution" />
-        <PartyListItem text="IOB" />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Create Party')
-          }}
-          style={{ width: 50, height: 50 }}
-        >
-          <AddCircleIcon width={40} height={40} fill="black" />
-        </TouchableOpacity>
-      </View>
-    </FlingGestureHandler>
+    <View style={styles.container}>
+      <CreatePartyButton />
+    </View>
   )
 }
 

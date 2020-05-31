@@ -6,7 +6,7 @@ import {
   TextInput,
   ScrollView
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import FriendsList from '../components/FriendsList.jsx'
 import UserContext from '../context/UserContext'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
@@ -15,6 +15,8 @@ import RedButton from '../components/RedButton'
 import BlankModal from '../components/BlankModal'
 import FormInput from '../components/FormInput'
 import { H3 } from '../components/Header'
+import API from '../utils/API'
+import ErrorText from '../components/ErrorText'
 
 function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')
@@ -106,22 +108,46 @@ const EmptyGroupModal = ({ visible, setVisible }) => {
   )
 }
 
-const ConfirmGroupModal = ({ visible, setVisible }) => {
+const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
+  const [name, setName] = useState('')
+  const [errorVisible, setErrorVisible] = useState(false)
+
   return (
     <BlankModal visible={visible} setVisible={setVisible}>
-      <H3>Give your party a name!</H3>
+      <H3>Set Party Name</H3>
       <Text>Party Name</Text>
-      <FormInput />
+      <FormInput
+        onChangeText={(text) => {
+          setName(text)
+          setErrorVisible(false)
+        }}
+      />
+      {errorVisible && <ErrorText>Please enter a name!</ErrorText>}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'flex-end',
           width: '100%',
-          marginBottom: 4
+          marginVertical: 4
         }}
       >
         <RedButton text="Cancel" onPress={() => setVisible(false)} />
-        <RedButton text="Enter" onPress={() => setVisible(false)} />
+        <RedButton
+          text="Enter"
+          onPress={async () => {
+            if (name.length === 0) {
+              setErrorVisible(true)
+            } else {
+              await API.createWorkoutParty({
+                name: name,
+                members: members.map((member) => member.username),
+                workouts: []
+              })
+              setVisible(false)
+              navigation.goBack()
+            }
+          }}
+        />
       </View>
     </BlankModal>
   )
@@ -186,6 +212,8 @@ class CreatePartyScreen extends React.Component {
           setVisible={(confirmModalVisible) =>
             this.setState({ confirmModalVisible })
           }
+          navigation={this.navigation}
+          members={this.state.memberList.slice()}
         />
 
         <PartyNameInput onChangeText={(text) => this.filterFriendsList(text)} />
