@@ -2,12 +2,11 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   StyleSheet,
-  Button,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import RedButton from '../components/RedButton.jsx'
 import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
 import ListItem from '../components/ListItem.jsx'
@@ -25,22 +24,6 @@ function PartyListItem(props) {
     >
       <Text>{props.name}</Text>
     </ListItem>
-  )
-}
-
-function PartyList(props) {
-  const arr = props.list.map((party) => (
-    <PartyListItem key={party._id} name={party.name} />
-  ))
-  return (
-    <ScrollView
-      style={{
-        marginTop: 18,
-        marginBottom: 18
-      }}
-    >
-      {arr}
-    </ScrollView>
   )
 }
 
@@ -67,46 +50,68 @@ class PartyListScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      workoutParties: []
+      workoutParties: [],
+      refreshing: false
     }
-    this.interval = null
     this._isMounted = false
   }
 
   async componentDidMount() {
-    try {
-      const result = await API.getWorkoutParty()
-      this.setState({
-        workoutParties: result
-      })
-    } catch (error) {
-      console.log(error)
-    }
-
     if (!this._isMounted) {
-      this.interval = setInterval(async () => {
-        try {
-          const result = await API.getWorkoutParty()
-          this.setState({
-            workoutParties: result
-          })
-          this._isMounted = true
-        } catch (error) {
-          console.log(error)
-          this._isMounted = true
-        }
-      }, 2000)
+      try {
+        const result = await API.getWorkoutParty()
+        this.setState({
+          workoutParties: result
+        })
+        this._isMounted = true
+      } catch (error) {
+        console.log(error)
+        this._isMounted = true
+      }
     }
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval)
+    this._isMounted = false
+  }
+
+  _onRefresh = () => {
+    this.setState({ refreshing: true })
+    API.getWorkoutParty().then((result) => {
+      this.setState({
+        workoutParties: result,
+        refreshing: false
+      })
+    })
   }
 
   render() {
+    const sortedArr = this.state.workoutParties.sort((a, b) => {
+      if (a.name < b.name) return -1
+      else if (a.name > b.name) return 1
+      return 0
+    })
+
+    const partyList = sortedArr.map((party) => (
+      <PartyListItem key={party._id} name={party.name} />
+    ))
+
     return (
       <View style={styles.container}>
-        <PartyList list={this.state.workoutParties} />
+        <ScrollView
+          style={{
+            marginTop: 18,
+            marginBottom: 18
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
+          {partyList}
+        </ScrollView>
         <CreatePartyButton />
       </View>
     )
