@@ -32,7 +32,16 @@ function PartyList(props) {
   const arr = props.list.map((party) => (
     <PartyListItem key={party._id} name={party.name} />
   ))
-  return <ScrollView>{arr}</ScrollView>
+  return (
+    <ScrollView
+      style={{
+        marginTop: 18,
+        marginBottom: 18
+      }}
+    >
+      {arr}
+    </ScrollView>
+  )
 }
 
 function CreatePartyButton() {
@@ -60,21 +69,44 @@ class PartyListScreen extends React.Component {
     this.state = {
       workoutParties: []
     }
+    this.interval = null
+    this._isMounted = false
   }
 
-  componentDidMount() {
-    API.getWorkoutParty().then((result) => {
-      this.setState({ workoutParties: result })
-      console.log(result)
-    })
+  async componentDidMount() {
+    try {
+      const result = await API.getWorkoutParty()
+      this.setState({
+        workoutParties: result
+      })
+    } catch (error) {
+      console.log(error)
+    }
+
+    if (!this._isMounted) {
+      this.interval = setInterval(async () => {
+        try {
+          const result = await API.getWorkoutParty()
+          this.setState({
+            workoutParties: result
+          })
+          this._isMounted = true
+        } catch (error) {
+          console.log(error)
+          this._isMounted = true
+        }
+      }, 2000)
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval)
   }
 
   render() {
     return (
       <View style={styles.container}>
-        {this.state && this.state.workoutParties && (
-          <PartyList list={this.state.workoutParties} />
-        )}
+        <PartyList list={this.state.workoutParties} />
         <CreatePartyButton />
       </View>
     )
