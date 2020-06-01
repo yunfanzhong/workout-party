@@ -4,32 +4,35 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Button
+  Button,
+  ScrollView
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import RedButton from '../components/RedButton.jsx'
 import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
+import API from '../utils/API'
 
-function PartyListItem({ text }) {
+function PartyListItem(props) {
   const navigation = useNavigation()
 
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Party Info', { partyName: text })
+        navigation.navigate('Party Info', { partyName: props.name })
       }}
     >
-      <Text>{text}</Text>
+      <Text>{props.name}</Text>
     </ListItem>
   )
 }
 
-function PartyList({ partyList }) {
-  const list = partyList.map((party) => (
-    <ListItem key={party.id} partyName={party.name} />
+function PartyList(props) {
+  const arr = props.list.map((party) => (
+    <PartyListItem key={party._id} name={party.name} />
   ))
+  return <ScrollView>{arr}</ScrollView>
 }
 
 function CreatePartyButton() {
@@ -51,12 +54,31 @@ function CreatePartyButton() {
   )
 }
 
-function PartyListScreen({ navigation }) {
-  return (
-    <View style={styles.container}>
-      <CreatePartyButton />
-    </View>
-  )
+class PartyListScreen extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      workoutParties: []
+    }
+  }
+
+  componentDidMount() {
+    API.getWorkoutParty().then((result) => {
+      this.setState({ workoutParties: result })
+      console.log(result)
+    })
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        {this.state && this.state.workoutParties && (
+          <PartyList list={this.state.workoutParties} />
+        )}
+        <CreatePartyButton />
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({

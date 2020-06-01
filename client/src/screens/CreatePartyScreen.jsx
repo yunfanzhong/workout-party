@@ -132,22 +132,28 @@ const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
         }}
       >
         <RedButton text="Cancel" onPress={() => setVisible(false)} />
-        <RedButton
-          text="Enter"
-          onPress={async () => {
-            if (name.length === 0) {
-              setErrorVisible(true)
-            } else {
-              await API.createWorkoutParty({
-                name: name,
-                members: members.map((member) => member.username),
-                workouts: []
-              })
-              setVisible(false)
-              navigation.goBack()
-            }
-          }}
-        />
+        <UserContext.Consumer>
+          {(context) => (
+            <RedButton
+              text="Enter"
+              onPress={async () => {
+                if (name.length === 0) {
+                  setErrorVisible(true)
+                } else {
+                  await API.createWorkoutParty({
+                    name: name,
+                    members: members
+                      .map((member) => member._id)
+                      .concat(context.user._id),
+                    workouts: []
+                  })
+                  setVisible(false)
+                  navigation.goBack()
+                }
+              }}
+            />
+          )}
+        </UserContext.Consumer>
       </View>
     </BlankModal>
   )

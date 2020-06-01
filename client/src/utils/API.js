@@ -96,16 +96,22 @@ const API = {
   },
 
   // WORKOUT PARTIES
-  async getWorkoutParty(id) {
+  async getWorkoutParty(id = '') {
     const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
     const wp = res.json()
-    return wp
+    if (wp.error === undefined) {
+      return wp
+    } else {
+      console.log(wp.error)
+      return {}
+    }
   },
 
   async createWorkoutParty(wpInfo) {
     const res = await fetch(`${BASE_URL}/workoutParty`, {
       method: 'POST',
-      body: JSON.stringify(wpInfo)
+      body: JSON.stringify(wpInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
     const wp = res.json()
     return wp
