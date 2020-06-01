@@ -4,8 +4,10 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const mongoose = require('mongoose')
 
+const workoutRouter = require('./routes/workouts')
 const userRouter = require('./routes/users')
 const facebookRouter = require('./routes/facebook')
+const workoutPartyRouter = require('./routes/workoutParty')
 
 const { MONGO_URI, PORT } = process.env
 
@@ -23,8 +25,10 @@ const app = express()
 // Parse request bodies into json
 app.use(bodyParser.json())
 
+app.use('/workouts', workoutRouter)
 app.use('/users', userRouter)
 app.use('/facebook', facebookRouter)
+app.use('/workoutParty', workoutPartyRouter)
 
 app.get('/', (_req, res) => res.send('Hello World!'))
 

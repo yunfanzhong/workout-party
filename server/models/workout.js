@@ -5,12 +5,25 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  startTime: Date,
+  weeklyTimes: [
+    {
+      day: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"),
+      hour: {
+        type: Number,
+        minimum:0,
+        maximum:23
+      },
+      minute: {
+        type: Number,
+        minimum:0,
+        maximum:59
+      }
+    }],
   music: mongoose.ObjectId,
   exercises: [
     {
       reps: Number,
-      exerciseID: mongoose.ObjectId
+      exerciseID: String
     }
   ]
 })

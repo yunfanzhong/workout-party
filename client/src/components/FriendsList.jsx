@@ -10,24 +10,48 @@ import {
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
 const UserFriend = (props) => {
-  return (
+  const baseComponent = (
     <View style={styles.friend}>
-      <TouchableOpacity onPress={() => props.onPress(props.name)}>
-        <View style={{ flexDirection: 'row' }}>
-          <AccountIcon width={30} height={30} fill="black" marginRight={10} />
-          <Text style={styles.friendText}>{props.name}</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Text style={styles.friendText}>{props.friend.username}</Text>
+      </View>
     </View>
   )
+
+  if (props.button) {
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          props.onPress({
+            _id: props.friend._id,
+            username: props.friend.username
+          })
+        }
+      >
+        {baseComponent}
+      </TouchableOpacity>
+    )
+  } else {
+    return baseComponent
+  }
 }
 
 const FriendsList = (props) => {
-  const friendsList = props.friendsList
-  const list = friendsList.map((friendUser) => (
+  const arr = []
+  const searchValue = props.searchValue || ''
+
+  for (friend of props.friendsList) {
+    if (friend.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
+      arr.push(friend)
+    }
+  }
+
+  const list = arr.map((friend) => (
     <UserFriend
-      name={friendUser.username}
-      key={friendUser._id}
+      friend={friend}
+      key={friend._id}
+      button={props.button}
       onPress={props.onPress}
     />
   ))
@@ -37,13 +61,12 @@ const FriendsList = (props) => {
 const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
-    textAlignVertical: 'center',
-    marginBottom: 2
+    textAlignVertical: 'center'
   },
   friend: {
     flexDirection: 'row',
     marginHorizontal: '5%',
-    marginTop: 2
+    marginBottom: '1%'
   }
 })
 
