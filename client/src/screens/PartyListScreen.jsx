@@ -7,8 +7,8 @@ import {
   RefreshControl
 } from 'react-native'
 import React from 'react'
-import RedButton from '../components/RedButton.jsx'
 import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
+import GroupIcon from '../../assets/images/group-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
 import API from '../utils/API'
@@ -22,7 +22,28 @@ function PartyListItem(props) {
         navigation.navigate('Party Info', { partyName: props.name })
       }}
     >
-      <Text>{props.name}</Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          marginLeft: '10%',
+          alignItems: 'center'
+        }}
+      >
+        <GroupIcon width={40} height={40} marginRight={10} fill="black" />
+        <View style={{ flex: 1, flexDirection: 'column' }}>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontSize: 18,
+              textAlign: 'left'
+            }}
+          >
+            {props.name}
+          </Text>
+          <Text>{props.numMembers} people</Text>
+        </View>
+      </View>
     </ListItem>
   )
 }
@@ -51,7 +72,7 @@ class PartyListScreen extends React.Component {
     super(props)
     this.state = {
       workoutParties: [],
-      refreshing: false
+      refreshing: true
     }
     this._isMounted = false
   }
@@ -64,6 +85,7 @@ class PartyListScreen extends React.Component {
           workoutParties: result
         })
         this._isMounted = true
+        this.setState({ refreshing: false })
       } catch (error) {
         console.log(error)
         this._isMounted = true
@@ -93,7 +115,11 @@ class PartyListScreen extends React.Component {
     })
 
     const partyList = sortedArr.map((party) => (
-      <PartyListItem key={party._id} name={party.name} />
+      <PartyListItem
+        key={party._id}
+        name={party.name}
+        numMembers={party.members.length}
+      />
     ))
 
     return (

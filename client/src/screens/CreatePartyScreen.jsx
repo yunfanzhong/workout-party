@@ -72,7 +72,7 @@ function PartyMember(props) {
             right={0}
             width={20}
             height={20}
-            fill="black"
+            fill="red"
           />
         </View>
         <Text numberOfLines={1}>{props.member.username}</Text>
