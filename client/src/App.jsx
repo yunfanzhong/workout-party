@@ -123,11 +123,12 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Event"
           component={EventScreen}
-          options={{
+          options={({ route }) => ({
+            title: route.params.partyName,
             headerBackImage: () => (
               <ChevronLeft width={40} height={40} fill="white" />
             )
-          }}
+          })}
         />
         <Stack.Screen
           name="Party Info"
