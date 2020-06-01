@@ -160,5 +160,5 @@ async updateWorkout(workoutID, newInfo) {
     return newWorkout
   }
 
-
+}
 export default API
