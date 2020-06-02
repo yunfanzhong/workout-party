@@ -2,7 +2,7 @@
 
 Project for CS 97.
 
-Team: Ethan Shabhazian, Frank Zheng, Jason Jewik, Yunfan Zhong
+Team: Ethan Shahbazian, Frank Zheng, Jason Jewik, Yunfan Zhong
 
 ## Backend server setup
 

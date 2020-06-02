@@ -15,6 +15,7 @@ import React from 'react'
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import exercises from '../utils/exercises.json'
+import API from '../utils/API'
 
 function Event({ navigation, route }) {
   const [currentExerciseNumber, setCurrentExerciseNumber] = React.useState(0)
@@ -23,24 +24,18 @@ function Event({ navigation, route }) {
   const [currentImageSource, setCurrentImageSource] = React.useState(null)
 
   React.useEffect(() => {
-    loadMockData()
+    API.getWorkout(route.params.id).then((data) => {
+      setData(data)
+      setLoading(false)
+      setCurrentImageSource(imagesSources[data.exercises[0].exerciseID])
+    })
   }, [])
-
-  const loadMockData = () => {
-    const array = [
-      { reps: 10, exerciseID: '2' },
-      { reps: 20, exerciseID: '4' }
-    ]
-    setData(array)
-    setLoading(false)
-    setCurrentImageSource(imageSources[array[0].exerciseID])
-  }
 
   const exerciseArrayValues = []
   const exercisesArray = []
   if (!loading) {
     for (let i = 0; i < data.length; i++) {
-      exerciseArrayValues[i] = data[i].exerciseID
+      exerciseArrayValues[i] = data.exercises[i].exerciseID
       exercisesArray[i] = exercises[exerciseArrayValues[i]]
     }
   }
@@ -108,7 +103,7 @@ function Event({ navigation, route }) {
             {exercisesArray[currentExerciseNumber]}
           </Text>
           <Text style={styles.exerciseRepText}>
-            Reps: {data[currentExerciseNumber].reps}
+            Reps: {data.exercises[currentExerciseNumber].reps}
           </Text>
         </View>
         <View>

@@ -84,7 +84,14 @@ class CreateEventScreen extends React.Component {
       this.setState({ error: null }, async () => {
         const minute = moment(time).minute()
         const hour = moment(time).hour()
-        await API.createWorkoutEvent({ name, minute, hour, days, exercises })
+        //const startTime = Date()
+        //await API.createWorkout({ name, minute, hour, days, exercises })
+        const startTime = Date()
+        await API.createWorkout({
+          startTime: startTime,
+          music: '',
+          exercises: []
+        })
         this.props.navigation.navigate('Home')
       })
     }
