@@ -165,5 +165,4 @@ const API = {
     return newWorkout
   }
 }
-
 export default API
