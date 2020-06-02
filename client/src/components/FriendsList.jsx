@@ -9,23 +9,23 @@ import {
 
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
-const UserFriend = (props) => {
+const UserFriend = ({ onPress, friend, button }) => {
   const baseComponent = (
     <View style={styles.friend}>
       <View style={{ flexDirection: 'row' }}>
         <AccountIcon width={40} height={40} fill="black" marginRight={10} />
-        <Text style={styles.friendText}>{props.friend.username}</Text>
+        <Text style={styles.friendText}>{friend.username}</Text>
       </View>
     </View>
   )
 
-  if (props.button) {
+  if (button) {
     return (
       <TouchableOpacity
         onPress={() =>
-          props.onPress({
-            _id: props.friend._id,
-            username: props.friend.username
+          onPress({
+            _id: friend._id,
+            username: friend.username
           })
         }
       >
@@ -37,11 +37,10 @@ const UserFriend = (props) => {
   }
 }
 
-const FriendsList = (props) => {
+const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
   const arr = []
-  const searchValue = props.searchValue || ''
 
-  for (friend of props.friendsList) {
+  for (const friend of friendsList) {
     if (friend.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
       arr.push(friend)
     }
@@ -51,8 +50,8 @@ const FriendsList = (props) => {
     <UserFriend
       friend={friend}
       key={friend._id}
-      button={props.button}
-      onPress={props.onPress}
+      button={button}
+      onPress={onPress}
     />
   ))
   return <ScrollView>{list}</ScrollView>
