@@ -18,32 +18,49 @@ import exercises from '../utils/exercises.json'
 
 function Event({ navigation, route }) {
   const [currentExerciseNumber, setCurrentExerciseNumber] = React.useState(0)
-  // const [loading, setLoading] = React.useState(true)
-  // const [data, setData] = React.useState(null)
-  // React.useEffect(() => {
-  //   fetchData
-  // }, [])
-  const reps = [10, 20, 30, 40, 50, 60, 70]
+  const [loading, setLoading] = React.useState(true)
+  const [data, setData] = React.useState(null)
+  const [currentImageSource, setCurrentImageSource] = React.useState(null)
 
-  const exercisesArray = Object.values(exercises)
+  React.useEffect(() => {
+    loadMockData()
+  }, [])
 
-  const imageSources = [
-    require('../../assets/images/squats.png'),
-    require('../../assets/images/plank.png'),
-    require('../../assets/images/mountain-climbers.png'),
-    require('../../assets/images/push-ups.png'),
-    require('../../assets/images/sit-ups.png'),
-    require('../../assets/images/leg-raises.png'),
-    require('../../assets/images/lunges.png')
-  ]
-  const [currentImageSource, setCurrentImageSource] = React.useState(
-    imageSources[currentExerciseNumber]
-  )
+  const loadMockData = () => {
+    const array = [
+      { reps: 10, exerciseID: '2' },
+      { reps: 20, exerciseID: '4' }
+    ]
+    setData(array)
+    setLoading(false)
+    setCurrentImageSource(imageSources[array[0].exerciseID])
+  }
+
+  const exerciseArrayValues = []
+  const exercisesArray = []
+  if (!loading) {
+    for (let i = 0; i < data.length; i++) {
+      exerciseArrayValues[i] = data[i].exerciseID
+      exercisesArray[i] = exercises[exerciseArrayValues[i]]
+    }
+  }
+
+  const imageSources = {
+    '1': require('../../assets/images/exercise1.png'),
+    '2': require('../../assets/images/exercise2.png'),
+    '3': require('../../assets/images/exercise3.png'),
+    '4': require('../../assets/images/exercise4.png'),
+    '5': require('../../assets/images/exercise5.png'),
+    '6': require('../../assets/images/exercise6.png'),
+    '7': require('../../assets/images/exercise7.png')
+  }
 
   const incrementExercise = () => {
     if (currentExerciseNumber !== exercisesArray.length - 1) {
       setCurrentExerciseNumber(currentExerciseNumber + 1)
-      setCurrentImageSource(imageSources[currentExerciseNumber + 1])
+      setCurrentImageSource(
+        imageSources[exerciseArrayValues[currentExerciseNumber + 1]]
+      )
     } else {
       navigation.navigate('Home')
     }
@@ -52,11 +69,15 @@ function Event({ navigation, route }) {
   const decrementExercise = () => {
     if (currentExerciseNumber !== 0) {
       setCurrentExerciseNumber(currentExerciseNumber - 1)
-      setCurrentImageSource(imageSources[currentExerciseNumber - 1])
+      setCurrentImageSource(
+        imageSources[exerciseArrayValues[currentExerciseNumber - 1]]
+      )
     }
   }
 
-  return (
+  return loading ? (
+    <Text>Hello</Text>
+  ) : (
     <View style={styles.container}>
       <View style={styles.image}>
         <Image
@@ -87,7 +108,7 @@ function Event({ navigation, route }) {
             {exercisesArray[currentExerciseNumber]}
           </Text>
           <Text style={styles.exerciseRepText}>
-            Reps: {reps[currentExerciseNumber]}
+            Reps: {data[currentExerciseNumber].reps}
           </Text>
         </View>
         <View>
