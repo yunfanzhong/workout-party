@@ -17,9 +17,12 @@ import FormLabel from '../components/FormLabel'
 import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import FriendsList from '../components/FriendsList'
+import UserContext from '../context/UserContext'
+import { useNavigation } from '@react-navigation/native'
 
-function Member({ name, isRemoving }) {
+function Member({ name, isRemoving, partyID, id }) {
   const [visible, setVisible] = useState(true)
+  const navigation = useNavigation()
 
   const baseComponent = (
     <View style={styles.friend}>
@@ -35,34 +38,64 @@ function Member({ name, isRemoving }) {
   } else {
     return (
       visible && (
-        <TouchableOpacity
-          onPress={() => {
-            setVisible(false)
-            try {
-              console.log('removed')
-            } catch (error) {
-              console.log(error)
-            }
-          }}
-        >
-          {baseComponent}
-        </TouchableOpacity>
+        <UserContext.Consumer>
+          {(context) => (
+            <TouchableOpacity
+              onPress={async () => {
+                setVisible(false)
+                try {
+                  await API.removeMemberFromParty(partyID, id)
+                  if (context.user._id === id) {
+                    navigation.navigate('My Parties')
+                  }
+                } catch (error) {
+                  console.log(error)
+                }
+              }}
+            >
+              {baseComponent}
+            </TouchableOpacity>
+          )}
+        </UserContext.Consumer>
       )
     )
   }
 }
 
-function MemberList({ memberList, isRemoving }) {
+function MemberList({ memberList, isRemoving, partyID }) {
   const list = memberList.map((member) => (
-    <Member key={member.id} name={member.name} isRemoving={isRemoving} />
+    <Member
+      key={member.id}
+      name={member.name}
+      isRemoving={isRemoving}
+      partyID={partyID}
+      id={member.id}
+    />
   ))
   return <ScrollView>{list}</ScrollView>
 }
 
-const AddMemberModal = ({ visible, setVisible }) => {
+const AddMemberModal = ({ visible, setVisible, onPress }) => {
+  const [searchValue, changeSearch] = useState('')
+
   return (
     <BlankModal visible={visible} setVisible={setVisible}>
+      <H3>Add Member</H3>
+      <FormInput
+        value={searchValue}
+        onChangeText={(value) => changeSearch(value)}
+      />
       <FormLabel>Friends</FormLabel>
+      <UserContext.Consumer>
+        {(context) => (
+          <FriendsList
+            searchValue={searchValue}
+            friendsList={context.user.friends}
+            button={true}
+            onPress={onPress}
+          />
+        )}
+      </UserContext.Consumer>
     </BlankModal>
   )
 }
@@ -76,7 +109,8 @@ class PartySettingsScreen extends React.Component {
       name: '',
       keyboardOpen: false,
       isRemoving: false,
-      modalVisible: false
+      modalVisible: false,
+      buttonText: 'Remove Members'
     }
     this.id = props.route.params.partyID
     this._isMounted = false
@@ -152,6 +186,18 @@ class PartySettingsScreen extends React.Component {
         <AddMemberModal
           visible={this.state.modalVisible}
           setVisible={(modalVisible) => this.setState({ modalVisible })}
+          onPress={async (member) => {
+            const memberIDs = this.state.members.map((member) => member.id)
+            if (!memberIDs.includes(member._id)) {
+              await API.addMemberToParty(this.id, member._id)
+              const members = this.state.members
+              const newMember = await API.getUser(member._id)
+              members.push({ id: newMember._id, name: newMember.username })
+              this.setState({ members: members })
+            } else {
+              console.log('member already added!')
+            }
+          }}
         />
         <View style={{ marginTop: 24, width: '80%' }}>
           <FormLabel style={{ textAlign: 'center' }}>Change Name</FormLabel>
@@ -192,6 +238,7 @@ class PartySettingsScreen extends React.Component {
           <MemberList
             memberList={this.state.members}
             isRemoving={this.state.isRemoving}
+            partyID={this.id}
           />
         </ScrollView>
         {!this.state.keyboardOpen && (
@@ -204,10 +251,16 @@ class PartySettingsScreen extends React.Component {
         {!this.state.keyboardOpen && (
           <OutlinedButton
             style={{ width: '50%', marginBottom: 24 }}
-            text="Remove Members"
+            text={this.state.buttonText}
             onPress={() => {
               const newIsRemoving = !this.state.isRemoving
-              this.setState({ isRemoving: newIsRemoving })
+              let newText
+
+              if (this.state.buttonText === 'Remove Members')
+                newText = 'Stop Removing'
+              else newText = 'Remove Members'
+
+              this.setState({ isRemoving: newIsRemoving, buttonText: newText })
             }}
           />
         )}

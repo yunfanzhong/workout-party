@@ -124,10 +124,19 @@ const API = {
     })
   },
 
-  async addMemberToParty(wpID, memberID) {
-    await fetch(`${BASE_URL}/workoutParty/${memberID}`, {
+  async addMemberToParty(wpID, userID) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/users`, {
       method: 'POST',
-      body: JSON.stringify({ memberID }) // TEST THIS
+      body: JSON.stringify({ userID }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
+
+  async removeMemberFromParty(wpID, id) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/members`, {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
