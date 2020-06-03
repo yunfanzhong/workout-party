@@ -1,38 +1,132 @@
 import React from 'react'
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
-import ListItem from '../components/ListItem.jsx'
-import GroupIcon from '../../assets/images/group-24px.svg'
 
-function HeaderText(props) {
-  return (
-    <Text
-      style={{
-        color: props.color || 'white',
-        textAlign: 'center',
-        fontFamily: 'Roboto',
-        fontSize: props.fontSize,
-        fontWeight: 'bold',
-        paddingTop: 15,
-        paddingBottom: 15
-      }}
-    >
-      {props.text}
-    </Text>
-  )
+const parties = [
+  // MOCK DATA
+  {
+    id: 1,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Tues - May 12, 2020'
+  },
+  {
+    id: 2,
+    name: 'IOB',
+    time: '7 PM, Tues - May 12, 2020'
+  },
+  {
+    id: 3,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Wed - May 13, 2020'
+  },
+  {
+    id: 4,
+    name: 'IOB',
+    time: '7 PM, Wed - May 13, 2020'
+  },
+  {
+    id: 5,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Thurs - May 14, 2020'
+  },
+  {
+    id: 6,
+    name: 'IOB',
+    time: '7 PM, Thurs - May 14, 2020'
+  },
+  {
+    id: 7,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Fri - May 15, 2020'
+  },
+  {
+    id: 8,
+    name: 'IOB',
+    time: '7 PM, Thurs - May 14, 2020'
+  },
+  {
+    id: 9,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Fri - May 15, 2020'
+  },
+  {
+    id: 10,
+    name: 'IOB',
+    time: '7 PM, Fri - May 15, 2020'
+  },
+  {
+    id: 93,
+    name: '108 1/7 Revolution',
+    time: '9 AM, Fri - May 15, 2020'
+  },
+  {
+    id: 103,
+    name: 'IOB',
+    time: '7 PM, Fri - May 15, 2020'
+  }
+]
+
+class HomeScreen {
+  render() {
+    return (
+      <View style={styles.container}>
+        <QuoteText>
+          Unfortunately, sitting at your computer 24/7 won't make you any
+          slimmer.
+        </QuoteText>
+        <Text
+          style={{
+            fontSize: 20,
+            marginTop: 24,
+            marginBottom: 12,
+            fontWeight: 'bold'
+          }}
+        >
+          Upcoming Workouts 🏋️‍♀️
+        </Text>
+        <View
+          style={{
+            height: '100%',
+            borderRadius: 8,
+            flexShrink: 1
+          }}
+        >
+          <ScrollView>
+            {parties.map(({ id, name, time }) => (
+              <UpcomingListItem name={name} time={time} key={id} />
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    )
+  }
 }
 
-function QOTDText(props) {
+function QuoteText({ children }) {
   return (
     <View
       style={{
-        flex: 1,
-        margin: 15
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#ff2559',
+        borderRadius: 8,
+        backgroundColor: '#ffe9ee',
+        elevation: 8,
+        shadowColor: 'rgba(0, 0, 0, 0.1)',
+        shadowOpacity: 0.8,
+        shadowRadius: 10,
+        shadowOffset: { height: 24 }
       }}
     >
       <Text
         style={{
-          fontFamily: 'Roboto',
           fontSize: 14,
           fontWeight: '100',
           fontStyle: 'italic'
@@ -44,34 +138,39 @@ function QOTDText(props) {
       <Text
         style={{
           fontFamily: 'Roboto',
-          fontSize: 24
+          fontSize: 20
         }}
       >
-        {props.text}
+        {children}
       </Text>
     </View>
   )
 }
 
-function UpcomingListItem(props) {
+function UpcomingListItem({ name, time }) {
   const navigation = useNavigation()
 
   return (
-    <ListItem
+    <TouchableOpacity
       onPress={() => {
-        navigation.navigate('Event', { partyName: props.partyName })
+        navigation.navigate('Event', { partyName: name })
       }}
     >
       <View
         style={{
-          flex: 1,
           flexDirection: 'row',
-          marginLeft: '10%',
-          alignItems: 'center'
+          alignItems: 'center',
+          padding: 12,
+          width: '100%',
+          backgroundColor: '#fff',
+          borderWidth: 1,
+          borderColor: '#ededed',
+          borderRadius: 8,
+          marginBottom: 8
         }}
       >
-        <GroupIcon width={40} height={40} marginRight={10} fill="black" />
-        <View style={{ flex: 1, flexDirection: 'column' }}>
+        <Icon name="fitness-center" size={32} color="#ff2559" />
+        <View style={{ flexDirection: 'column', marginLeft: 12 }}>
           <Text
             style={{
               fontFamily: 'Roboto',
@@ -79,107 +178,22 @@ function UpcomingListItem(props) {
               textAlign: 'left'
             }}
           >
-            {props.partyName}
+            {name}
           </Text>
-          <Text>{props.eventTime}</Text>
+          <Text style={{ color: 'gray' }}>{time}</Text>
         </View>
       </View>
-    </ListItem>
-  )
-}
-
-function UpcomingList(props) {
-  const upcomingList = props.upcomingList
-  const list = upcomingList.map((event) => (
-    <UpcomingListItem
-      key={event.id}
-      partyName={event.partyName}
-      eventTime={event.time}
-    />
-  ))
-  return <ScrollView>{list}</ScrollView>
-}
-
-function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.quoteContainer}>
-        <View style={styles.quote}>
-          <QOTDText text="Unfortunately, sitting at your computer 24/7 won't make you any slimmer." />
-        </View>
-      </View>
-      <View style={styles.container}>
-        <HeaderText fontSize={32} color="black" text="Upcoming" />
-        <UpcomingList
-          upcomingList={[
-            // MOCK DATA
-            {
-              id: 1,
-              partyName: '108 1/7 Revolution',
-              time: '9 AM, Tues - May 12, 2020'
-            },
-            {
-              id: 2,
-              partyName: 'IOB',
-              time: '7 PM, Tues - May 12, 2020'
-            },
-            {
-              id: 3,
-              partyName: '108 1/7 Revolution',
-              time: '9 AM, Wed - May 13, 2020'
-            },
-            {
-              id: 4,
-              partyName: 'IOB',
-              time: '7 PM, Wed - May 13, 2020'
-            },
-            {
-              id: 5,
-              partyName: '108 1/7 Revolution',
-              time: '9 AM, Thurs - May 14, 2020'
-            },
-            {
-              id: 6,
-              partyName: 'IOB',
-              time: '7 PM, Thurs - May 14, 2020'
-            },
-            {
-              id: 7,
-              partyName: '108 1/7 Revolution',
-              time: '9 AM, Fri - May 15, 2020'
-            },
-            {
-              id: 8,
-              partyName: 'IOB',
-              time: '7 PM, Fri - May 15, 2020'
-            }
-          ]}
-        />
-      </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    height: 75
-  },
-  header: {
-    flex: 1,
-    backgroundColor: '#ff2559',
-    justifyContent: 'center'
-  },
-  quoteContainer: {
-    height: 150
-  },
-  quote: {
-    flex: 1,
-    backgroundColor: '#f6e8ea',
-    justifyContent: 'center'
-  },
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f7f7f7',
+    borderBottomWidth: 10,
+    padding: 24,
+    flexDirection: 'column'
   }
 })
 

@@ -63,7 +63,7 @@ function AuthenticatedApp() {
           name="Home"
           component={HomeScreen}
           options={({ navigation, route }) => ({
-            headerTitle: 'Workout Party',
+            headerTitle: 'Welcome Back!',
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => navigation.navigate('Account')}
