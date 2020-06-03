@@ -13,7 +13,7 @@ import RedButton from '../components/RedButton'
 import API from '../utils/API'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import FormInput from '../components/FormInput'
-import { H3 } from '../components/Header'
+import FormLabel from '../components/FormLabel'
 
 function Member({ name }) {
   return (
@@ -41,7 +41,7 @@ class PartySettingsScreen extends React.Component {
     this.state = {
       members: [],
       refreshing: true,
-      name: props.route.params.partyName,
+      name: '',
       keyboardOpen: false
     }
     this.id = props.route.params.partyID
@@ -63,19 +63,19 @@ class PartySettingsScreen extends React.Component {
 
       try {
         API.getWorkoutParty(this.id).then((result) => {
+          this.setState({ name: result.name })
           const memberIDs = result.members
           Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
             (users) => {
               const members = users.map((user) => {
                 return { id: user._id, name: user.username }
               })
-              this.setState({ members: members })
+              this.setState({ members: members, refreshing: false })
             }
           )
         })
 
         this._isMounted = true
-        this.setState({ refreshing: false })
       } catch (error) {
         console.log(error)
         this._isMounted = true
@@ -116,17 +116,23 @@ class PartySettingsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={{ marginTop: 24, width: '80%' }}>
-          <H3>Change Name</H3>
+          <FormLabel style={{ textAlign: 'center' }}>Change Name</FormLabel>
           <FormInput
             value={this.state.name}
             onChangeText={(value) => this.setState({ name: value })}
           />
           <View style={{ alignItems: 'center' }}>
-            <OutlinedButton icon="check" text="Confirm" />
+            <OutlinedButton
+              icon="check"
+              text="Confirm"
+              onPress={() => {
+                API.updateWorkoutParty(this.id, { name: this.state.name })
+              }}
+            />
           </View>
         </View>
         <View style={{ marginTop: 24 }}>
-          <H3>Manage Members</H3>
+          <FormLabel style={{ textAlign: 'center' }}>Manage Members</FormLabel>
         </View>
         <ScrollView
           style={{

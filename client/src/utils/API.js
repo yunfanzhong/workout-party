@@ -132,12 +132,11 @@ const API = {
   },
 
   async updateWorkoutParty(wpID, newInfo) {
-    const res = await fetch(`${BASE_URL}/users/${wpID}`, {
-      method: 'POST',
-      body: JSON.stringify(newInfo)
+    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+      method: 'PATCH',
+      body: JSON.stringify(newInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-    const newWP = res.json()
-    return newWP
   },
 
   // WORKOUTS
