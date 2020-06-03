@@ -20,7 +20,10 @@ function PartyListItem(props) {
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Party Info', { partyName: props.name })
+        navigation.navigate('Party Info', {
+          partyName: props.name,
+          partyID: props.id
+        })
       }}
     >
       <View
@@ -137,6 +140,7 @@ class PartyListScreen extends React.Component {
                     <PartyListItem
                       key={party._id}
                       name={party.name}
+                      id={party._id}
                       numMembers={party.members.length}
                     />
                   )
