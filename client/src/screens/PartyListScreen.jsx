@@ -11,6 +11,7 @@ import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
 import GroupIcon from '../../assets/images/group-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
+import UserContext from '../context/UserContext'
 import API from '../utils/API'
 
 function PartyListItem(props) {
@@ -19,7 +20,10 @@ function PartyListItem(props) {
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Party Info', { partyName: props.name })
+        navigation.navigate('Party Info', {
+          partyName: props.name,
+          partyID: props.id
+        })
       }}
     >
       <View
@@ -75,6 +79,7 @@ class PartyListScreen extends React.Component {
       refreshing: true
     }
     this._isMounted = false
+    this.navigation = props.navigation
   }
 
   async componentDidMount() {
@@ -97,14 +102,29 @@ class PartyListScreen extends React.Component {
     this._isMounted = false
   }
 
-  _onRefresh = () => {
+  componentDidUpdate() {
+    if (this._isMounted) {
+      const { route } = this.props
+      if (route.params && route.params.forceUpdate) {
+        this.navigation.setParams({ forceUpdate: false })
+        this._onRefresh()
+      }
+    }
+  }
+
+  _onRefresh = async () => {
     this.setState({ refreshing: true })
-    API.getWorkoutParty().then((result) => {
+    try {
+      const result = await API.getWorkoutParty()
       this.setState({
-        workoutParties: result,
-        refreshing: false
+        workoutParties: result
       })
-    })
+      this._isMounted = true
+      this.setState({ refreshing: false })
+    } catch (error) {
+      console.log(error)
+      this._isMounted = true
+    }
   }
 
   render() {
@@ -113,14 +133,6 @@ class PartyListScreen extends React.Component {
       else if (a.name > b.name) return 1
       return 0
     })
-
-    const partyList = sortedArr.map((party) => (
-      <PartyListItem
-        key={party._id}
-        name={party.name}
-        numMembers={party.members.length}
-      />
-    ))
 
     return (
       <View style={styles.container}>
@@ -136,7 +148,21 @@ class PartyListScreen extends React.Component {
             />
           }
         >
-          {partyList}
+          <UserContext.Consumer>
+            {(context) =>
+              sortedArr.map(
+                (party) =>
+                  party.members.includes(context.user._id) && (
+                    <PartyListItem
+                      key={party._id}
+                      name={party.name}
+                      id={party._id}
+                      numMembers={party.members.length}
+                    />
+                  )
+              )
+            }
+          </UserContext.Consumer>
         </ScrollView>
         <CreatePartyButton />
       </View>
