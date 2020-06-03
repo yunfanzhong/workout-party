@@ -3,21 +3,41 @@ import {
   View,
   StyleSheet,
   Text,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from 'react-native'
 import React from 'react'
 import OutlinedButton from '../components/OutlinedButton'
 import RedButton from '../components/RedButton'
-import UserContext from '../context/UserContext'
-import ListItem from '../components/ListItem'
 import API from '../utils/API'
+import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
-function MemberListItem(props) {
+function Member({ name }) {
   return (
-    <ListItem onPress={() => {}}>
-      <Text>{props.name}</Text>
-    </ListItem>
+    <TouchableOpacity onPress={() => {}}>
+      <View style={styles.friend}>
+        <View style={{ flexDirection: 'row' }}>
+          <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+          <Text style={styles.friendText}>{name}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   )
+}
+
+function MemberList({ memberList }) {
+  const arr = []
+
+  // for (const member of memberList) {
+  //   if (member.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
+  //     arr.push(friend)
+  //   }
+  // }
+
+  const list = memberList.map((member) => (
+    <Member key={member.id} name={member.name} />
+  ))
+  return <ScrollView>{list}</ScrollView>
 }
 
 class PartySettingsScreen extends React.Component {
@@ -31,13 +51,21 @@ class PartySettingsScreen extends React.Component {
     this._isMounted = false
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     if (!this._isMounted) {
       try {
-        const result = await API.getWorkoutParty(this.id)
-        this.setState({
-          members: result.members
+        API.getWorkoutParty(this.id).then((result) => {
+          const memberIDs = result.members
+          Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
+            (users) => {
+              const members = users.map((user) => {
+                return { id: user._id, name: user.username }
+              })
+              this.setState({ members: members })
+            }
+          )
         })
+
         this._isMounted = true
         this.setState({ refreshing: false })
       } catch (error) {
@@ -53,19 +81,32 @@ class PartySettingsScreen extends React.Component {
 
   _onRefresh = () => {
     this.setState({ refreshing: true })
-    API.getWorkoutParty(this.state.id).then((result) => {
-      this.setState({
-        members: result.members,
-        refreshing: false
+    try {
+      API.getWorkoutParty(this.id).then((result) => {
+        const memberIDs = result.members
+        Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
+          (users) => {
+            const members = users.map((user) => {
+              return { id: user._id, name: user.username }
+            })
+            this.setState({ members: members })
+          }
+        )
       })
-    })
+
+      this._isMounted = true
+      this.setState({ refreshing: false })
+    } catch (error) {
+      console.log(error)
+      this._isMounted = true
+    }
   }
 
   render() {
     return (
       <View style={styles.container}>
         <ScrollView
-          style={{ marginTop: 24, marginBottom: 8 }}
+          style={{ marginVertical: 24, height: '80%', width: '80%' }}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -73,14 +114,16 @@ class PartySettingsScreen extends React.Component {
             />
           }
         >
-          <Text>{this.state.members}</Text>
+          <MemberList memberList={this.state.members} />
         </ScrollView>
-        <View style={{ alignItems: 'center', marginVertical: 4 }}>
-          <RedButton text="Add Member" />
-        </View>
-        <View style={{ alignItems: 'center', marginVertical: 4 }}>
-          <OutlinedButton text="Leave Party" />
-        </View>
+        <RedButton
+          style={{ width: '50%', marginBottom: 12 }}
+          text="Add Member"
+        />
+        <OutlinedButton
+          style={{ width: '50%', marginBottom: 24 }}
+          text="Remove Members"
+        />
       </View>
     )
   }
@@ -91,6 +134,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center'
+  },
+  friendText: {
+    fontSize: 18,
+    textAlignVertical: 'center'
+  },
+  friend: {
+    flexDirection: 'row',
+    marginHorizontal: '5%',
+    marginBottom: '1%'
   }
 })
 

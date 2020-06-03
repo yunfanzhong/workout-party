@@ -101,14 +101,19 @@ class PartyListScreen extends React.Component {
     this._isMounted = false
   }
 
-  _onRefresh = () => {
+  _onRefresh = async () => {
     this.setState({ refreshing: true })
-    API.getWorkoutParty().then((result) => {
+    try {
+      const result = await API.getWorkoutParty()
       this.setState({
-        workoutParties: result,
-        refreshing: false
+        workoutParties: result
       })
-    })
+      this._isMounted = true
+      this.setState({ refreshing: false })
+    } catch (error) {
+      console.log(error)
+      this._isMounted = true
+    }
   }
 
   render() {
