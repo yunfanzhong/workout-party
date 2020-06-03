@@ -73,22 +73,22 @@ class AddFriendModal extends React.Component {
     this.setState({ friendName: text })
   }
 
-  // addNewFriend = async ({ userID, friendName }) => {
-  //   try {
-  //     await API.addFriendToUser({
-  //       userID,
-  //       friendName
-  //     })
-  //   } catch (err) {
-  //     console.log('Error')
-  //   }
-  // }
+  addNewFriend = async (userID, friendName, context) => {
+    try {
+      const friend = await API.addFriend({
+        // maybe addFriendToUser
+        friendName
+      })
+      this.updateFriendList(friendName, context)
+    } catch (err) {
+      console.log('Error')
+    }
+  }
 
-  addNewFriend = (userID, friendName, context) => {
+  updateFriendList = (friendName, context) => {
     context.update({
       friends: context.user.friends.concat({
-        _id: '5ec5d64145eb3268f723893f2',
-        username: 'franklintzheng'
+        username: friendName
       })
     })
   }
