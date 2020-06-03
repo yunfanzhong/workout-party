@@ -77,7 +77,8 @@ class PartyInfoScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		API.getWorkoutParty('5ed4342dcb7fcd3438005670').then((data) => {
+		const { route } = this.props
+		API.getWorkoutParty(route.params.partyID).then((data) => {
 			this.setState({
 				loading: false,
 				members: data.members,
