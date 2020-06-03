@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff2559',
     paddingVertical: 10,
     paddingHorizontal: 18,
+    marginHorizontal: 2,
     shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowOpacity: 0.8,
     shadowRadius: 10,

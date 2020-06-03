@@ -2,20 +2,16 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   StyleSheet,
-  Button
+  ScrollView,
+  RefreshControl
 } from 'react-native'
-import {
-  FlingGestureHandler,
-  Directions,
-  State
-} from 'react-native-gesture-handler'
 import React from 'react'
-import RedButton from '../components/RedButton.jsx'
-import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
+import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
+import GroupIcon from '../../assets/images/group-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
+import API from '../utils/API'
 
 function PartyListItem(props) {
   const navigation = useNavigation()
@@ -23,38 +19,129 @@ function PartyListItem(props) {
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Party Info', { partyName: props.text })
+        navigation.navigate('Party Info', { partyName: props.name })
       }}
     >
-      <Text>{props.text}</Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          marginLeft: '10%',
+          alignItems: 'center'
+        }}
+      >
+        <GroupIcon width={40} height={40} marginRight={10} fill="black" />
+        <View style={{ flex: 1, flexDirection: 'column' }}>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontSize: 18,
+              textAlign: 'left'
+            }}
+          >
+            {props.name}
+          </Text>
+          <Text>{props.numMembers} people</Text>
+        </View>
+      </View>
     </ListItem>
   )
 }
 
-function PartyListScreen({ navigation }) {
+function CreatePartyButton() {
+  const navigation = useNavigation()
+
   return (
-    <FlingGestureHandler
-      direction={Directions.RIGHT}
-      onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          navigation.navigate('Home')
-        }
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('Create Party')
+      }}
+      style={{
+        position: 'absolute',
+        right: '6%',
+        bottom: '4%'
       }}
     >
-      <View style={styles.container}>
-        <PartyListItem text="108 1/7 Revolution" />
-        <PartyListItem text="IOB" />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Create Party')
-          }}
-          style={{ width: 50, height: 50 }}
-        >
-          <AddCircleIcon width={40} height={40} fill="black" />
-        </TouchableOpacity>
-      </View>
-    </FlingGestureHandler>
+      <AddCircleIcon width={80} height={80} fill="#ff2559" />
+    </TouchableOpacity>
   )
+}
+
+class PartyListScreen extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      workoutParties: [],
+      refreshing: true
+    }
+    this._isMounted = false
+  }
+
+  async componentDidMount() {
+    if (!this._isMounted) {
+      try {
+        const result = await API.getWorkoutParty()
+        this.setState({
+          workoutParties: result
+        })
+        this._isMounted = true
+        this.setState({ refreshing: false })
+      } catch (error) {
+        console.log(error)
+        this._isMounted = true
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+
+  _onRefresh = () => {
+    this.setState({ refreshing: true })
+    API.getWorkoutParty().then((result) => {
+      this.setState({
+        workoutParties: result,
+        refreshing: false
+      })
+    })
+  }
+
+  render() {
+    const sortedArr = this.state.workoutParties.sort((a, b) => {
+      if (a.name < b.name) return -1
+      else if (a.name > b.name) return 1
+      return 0
+    })
+
+    const partyList = sortedArr.map((party) => (
+      <PartyListItem
+        key={party._id}
+        name={party.name}
+        numMembers={party.members.length}
+      />
+    ))
+
+    return (
+      <View style={styles.container}>
+        <ScrollView
+          style={{
+            marginTop: 18,
+            marginBottom: 18
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
+          {partyList}
+        </ScrollView>
+        <CreatePartyButton />
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({

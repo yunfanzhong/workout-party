@@ -23,11 +23,11 @@ function Event({ navigation, route }) {
   const [data, setData] = React.useState(null)
   const [currentImageSource, setCurrentImageSource] = React.useState(null)
 
-  React.useEffect(() => {
-    API.getWorkout(route.params.id).then((data) => {
+  React.useEffect(async () => {
+    await API.getWorkout(route.params.id).then((data) => {
       setData(data)
       setLoading(false)
-      setCurrentImageSource(imagesSources[data.exercises[0].exerciseID])
+      setCurrentImageSource(imageSources[data.exercises[0].exerciseID])
     })
   }, [])
 
