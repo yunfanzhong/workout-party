@@ -1,5 +1,12 @@
 import React from 'react'
-import { View, StyleSheet, Text, Picker, TouchableOpacity } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  Picker,
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -38,7 +45,8 @@ class CreateEventScreen extends React.Component {
       name: '',
       exercises: []
     },
-    error: null
+    error: null,
+    loading: false
   }
 
   handleToggleTimePicker = () => {
@@ -84,8 +92,39 @@ class CreateEventScreen extends React.Component {
       this.setState({ error: null }, async () => {
         const minute = moment(time).minute()
         const hour = moment(time).hour()
-        await API.createWorkoutEvent({ name, minute, hour, days, exercises })
-        this.props.navigation.goBack()
+        // I should be more consistent but I'm tired and don't want to deal
+        // with the potential consequences of legitimately refactoring this:
+        const sanitizedExercises = exercises.map(({ id, reps }) => ({
+          reps,
+          exerciseID: id
+        }))
+        try {
+          if (!this.props.route.params?.workoutPartyID) {
+            this.setState({
+              error:
+                '[DEBUG]: Please pass a workout party ID through navigation parameters to this screen!'
+            })
+          } else {
+            const createdWorkout = await API.createWorkout({
+              name,
+              minute,
+              hour,
+              days,
+              exercises: sanitizedExercises
+            })
+            // Second part is untested
+            await API.addWorkoutToParty(
+              this.props.route.params.workoutPartyID,
+              createdWorkout._id
+            )
+            this.props.navigation.goBack()
+          }
+        } catch (err) {
+          this.setState({
+            loading: false,
+            error: 'Sorry, we had an error sending the request :('
+          })
+        }
       })
     }
   }
@@ -126,9 +165,22 @@ class CreateEventScreen extends React.Component {
   }
 
   render() {
-    const { timePickerVisible, exerciseModalVisible, form } = this.state
+    const {
+      timePickerVisible,
+      exerciseModalVisible,
+      form,
+      loading
+    } = this.state
 
     const timeString = form.time ? moment(form.time).format('h:mm a') : 'N/A'
+
+    if (loading) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator size="large" color="#ff2559" />
+        </View>
+      )
+    }
 
     return (
       <>
@@ -333,6 +385,12 @@ const styles = StyleSheet.create({
   },
   timeFieldText: {
     fontSize: 16
+  },
+  spinner: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 
