@@ -88,11 +88,11 @@ const API = {
     return createdUser
   },
 
-  // Stub
-  async createWorkoutEvent(data) {
-    console.log('[DEBUG] Creating workout event (not really) with data:')
-    console.log(data)
-    await sleep(2000)
+  // WORKOUT PARTIES
+  async getWorkoutParty(id) {
+    const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
+    const wp = res.json()
+    return wp
   },
 
   // WORKOUT PARTIES
@@ -113,14 +113,15 @@ const API = {
       body: JSON.stringify(wpInfo),
       headers: { 'Content-Type': 'application/json' }
     })
-    const wp = res.json()
+    const wp = await res.json()
     return wp
   },
 
   async addWorkoutToParty(wpID, workoutID) {
     await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
       method: 'POST',
-      body: JSON.stringify({ workoutID })
+      body: JSON.stringify({ workoutID }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
@@ -158,9 +159,10 @@ const API = {
   async createWorkout(workoutInfo) {
     const res = await fetch(`${BASE_URL}/workouts`, {
       method: 'POST',
-      body: JSON.stringify(workoutInfo)
+      body: JSON.stringify(workoutInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-    const workout = res.json()
+    const workout = await res.json()
     return workout
   },
 
@@ -173,4 +175,5 @@ const API = {
     return newWorkout
   }
 }
+
 export default API
