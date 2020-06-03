@@ -107,11 +107,12 @@ function AuthenticatedApp() {
         <Stack.Screen
           name="Event"
           component={EventScreen}
-          options={{
+          options={({ route }) => ({
+            title: route.params.partyName,
             headerBackImage: () => (
               <Icon name="navigate-before" size={32} color="white" />
             )
-          }}
+          })}
         />
         <Stack.Screen
           name="Party Info"
