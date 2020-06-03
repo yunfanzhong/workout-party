@@ -45,7 +45,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   buttonText: {
-    fontSize: 16
+    fontSize: 16,
+    textAlign: 'center'
   }
 })
 

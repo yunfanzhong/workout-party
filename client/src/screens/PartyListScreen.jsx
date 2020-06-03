@@ -11,6 +11,7 @@ import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
 import GroupIcon from '../../assets/images/group-24px.svg'
 import ListItem from '../components/ListItem.jsx'
 import { useNavigation } from '@react-navigation/native'
+import UserContext from '../context/UserContext'
 import API from '../utils/API'
 
 function PartyListItem(props) {
@@ -114,14 +115,6 @@ class PartyListScreen extends React.Component {
       return 0
     })
 
-    const partyList = sortedArr.map((party) => (
-      <PartyListItem
-        key={party._id}
-        name={party.name}
-        numMembers={party.members.length}
-      />
-    ))
-
     return (
       <View style={styles.container}>
         <ScrollView
@@ -136,7 +129,20 @@ class PartyListScreen extends React.Component {
             />
           }
         >
-          {partyList}
+          <UserContext.Consumer>
+            {(context) =>
+              sortedArr.map(
+                (party) =>
+                  party.members.includes(context.user._id) && (
+                    <PartyListItem
+                      key={party._id}
+                      name={party.name}
+                      numMembers={party.members.length}
+                    />
+                  )
+              )
+            }
+          </UserContext.Consumer>
         </ScrollView>
         <CreatePartyButton />
       </View>
