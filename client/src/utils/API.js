@@ -88,70 +88,85 @@ const API = {
     return createdUser
   },
 
-  // Stub
-  async createWorkoutEvent(data) {
-    console.log('[DEBUG] Creating workout event (not really) with data:')
-    console.log(data)
-    await sleep(2000)
+  // WORKOUT PARTIES
+  async getWorkoutParty(id) {
+    const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
+    const wp = res.json()
+    return wp
   },
 
-// WORKOUT PARTIES
-async getWorkoutParty(id) {
-  const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
-  const wp = res.json()
-  return wp
-},
-
-async createWorkoutParty(wpInfo) {
-  const res = await fetch(`${BASE_URL}/workoutParty`, {
-      method: 'POST',
-      body: JSON.stringify(wpInfo)
-    })
-  const wp = res.json()
-  return wp
-},
-
-async addWorkoutToParty(wpID, workoutID) {
-  await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
-      method: 'POST',
-      body: JSON.stringify({ workoutID })
-    })
-},
-
-async addMemberToParty(wpID, memberID) {
-  await fetch(`${BASE_URL}/workoutParty/${memberID}`, {
-      method: 'POST',
-      body: JSON.stringify({ memberID }) // TEST THIS
-    })
-},
-
-async updateWorkoutParty(wpID, newInfo) {
-    const res = await fetch(`${BASE_URL}/users/${wpID}`, {
-      method: 'POST',
-      body: JSON.stringify(newInfo)
-    })
-    const newWP = res.json()
-    return newWP
+  // WORKOUT PARTIES
+  async getWorkoutParty(id = '') {
+    const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
+    const wp = res.json()
+    if (wp.error === undefined) {
+      return wp
+    } else {
+      console.log(wp.error)
+      return {}
+    }
   },
 
+  async createWorkoutParty(wpInfo) {
+    const res = await fetch(`${BASE_URL}/workoutParty`, {
+      method: 'POST',
+      body: JSON.stringify(wpInfo),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    const wp = await res.json()
+    return wp
+  },
+
+  async addWorkoutToParty(wpID, workoutID) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+      method: 'POST',
+      body: JSON.stringify({ workoutID }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
+
+  async addMemberToParty(wpID, userID) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/users`, {
+      method: 'POST',
+      body: JSON.stringify({ userID }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
+
+  async removeMemberFromParty(wpID, id) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/members`, {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
+
+  async updateWorkoutParty(wpID, newInfo) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+      method: 'PATCH',
+      body: JSON.stringify(newInfo),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
 
   // WORKOUTS
-async getWorkout(id) {
-  const res = await fetch(`${BASE_URL}/workouts/${id}`)
-  const workout = res.json()
-  return workout
-},
+  async getWorkout(id) {
+    const res = await fetch(`${BASE_URL}/workouts/${id}`)
+    const workout = res.json()
+    return workout
+  },
 
-async createWorkout(workoutInfo) {
-  const res = await fetch(`${BASE_URL}/workouts`, {
+  async createWorkout(workoutInfo) {
+    const res = await fetch(`${BASE_URL}/workouts`, {
       method: 'POST',
-      body: JSON.stringify(workoutInfo)
+      body: JSON.stringify(workoutInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-  const workout = res.json()
-  return workout
-},
+    const workout = await res.json()
+    return workout
+  },
 
-async updateWorkout(workoutID, newInfo) {
+  async updateWorkout(workoutID, newInfo) {
     const res = await fetch(`${BASE_URL}/users/${workoutID}`, {
       method: 'POST',
       body: JSON.stringify(newInfo)
@@ -159,6 +174,6 @@ async updateWorkout(workoutID, newInfo) {
     const newWorkout = res.json()
     return newWorkout
   }
-
 }
+
 export default API

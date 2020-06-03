@@ -64,7 +64,7 @@ userRouter.post('/:userID/friends', async (req, res) => {
     await user.save()
     friend.friends.push(user.id)
     await friend.save()
-    res.end()
+    res.json({ id: friend.id })
   } catch (err) {
     res.status(400).json({ error: `Error adding friend: ${err}` })
   }

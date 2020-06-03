@@ -42,10 +42,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 10,
     shadowOffset: { width: 1, height: 12 },
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'center'
   },
   buttonText: {
-    fontSize: 16
+    fontSize: 16,
+    textAlign: 'center'
   }
 })
 

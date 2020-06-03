@@ -58,8 +58,12 @@ function AddWorkoutButton(props) {
 function PartySettingsButton(props) {
 	const navigation = useNavigation()
 	return(
-		<TouchableOpacity
-        onPress={() => navigation.navigate('Party Settings')}
+		 <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Party Settings', {
+            partyID: route.params.partyID
+          })
+        }
         style={{ width: 50, marginTop: 10, marginLeft: 5 }}
       >
         <MoreHorizIcon width={40} height={40} fill="black"/>

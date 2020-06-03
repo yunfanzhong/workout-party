@@ -6,7 +6,7 @@ import {
   TextInput,
   ScrollView
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import FriendsList from '../components/FriendsList.jsx'
 import UserContext from '../context/UserContext'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
@@ -15,6 +15,8 @@ import RedButton from '../components/RedButton'
 import BlankModal from '../components/BlankModal'
 import FormInput from '../components/FormInput'
 import { H3 } from '../components/Header'
+import API from '../utils/API'
+import ErrorText from '../components/ErrorText'
 
 function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')
@@ -70,7 +72,7 @@ function PartyMember(props) {
             right={0}
             width={20}
             height={20}
-            fill="black"
+            fill="red"
           />
         </View>
         <Text numberOfLines={1}>{props.member.username}</Text>
@@ -106,22 +108,52 @@ const EmptyGroupModal = ({ visible, setVisible }) => {
   )
 }
 
-const ConfirmGroupModal = ({ visible, setVisible }) => {
+const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
+  const [name, setName] = useState('')
+  const [errorVisible, setErrorVisible] = useState(false)
+
   return (
     <BlankModal visible={visible} setVisible={setVisible}>
-      <H3>Give your party a name!</H3>
+      <H3>Set Party Name</H3>
       <Text>Party Name</Text>
-      <FormInput />
+      <FormInput
+        onChangeText={(text) => {
+          setName(text)
+          setErrorVisible(false)
+        }}
+      />
+      {errorVisible && <ErrorText>Please enter a name!</ErrorText>}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'flex-end',
           width: '100%',
-          marginBottom: '2%'
+          marginVertical: 4
         }}
       >
         <RedButton text="Cancel" onPress={() => setVisible(false)} />
-        <RedButton text="Enter" onPress={() => setVisible(false)} />
+        <UserContext.Consumer>
+          {(context) => (
+            <RedButton
+              text="Enter"
+              onPress={async () => {
+                if (name.length === 0) {
+                  setErrorVisible(true)
+                } else {
+                  await API.createWorkoutParty({
+                    name: name,
+                    members: members
+                      .map((member) => member._id)
+                      .concat(context.user._id),
+                    workouts: []
+                  })
+                  setVisible(false)
+                  navigation.navigate('My Parties', { forceUpdate: true })
+                }
+              }}
+            />
+          )}
+        </UserContext.Consumer>
       </View>
     </BlankModal>
   )
@@ -145,9 +177,12 @@ class CreatePartyScreen extends React.Component {
     memberList.push(member)
     this.setState({ memberList: memberList })
 
-    let friendsList = this.state.friendsList
-    let idx = friendsList.findIndex((friend) => friend._id === member._id)
-    friendsList.splice(idx, 1)
+    const idx = this.state.friendsList.findIndex(
+      (friend) => friend._id === member._id
+    )
+    const friendsList = this.state.friendsList
+      .slice(0, idx)
+      .concat(this.state.friendsList.slice(idx + 1))
     this.setState({ friendsList: friendsList })
   }
 
@@ -156,9 +191,12 @@ class CreatePartyScreen extends React.Component {
     friendsList.push(friend)
     this.setState({ friendsList: friendsList })
 
-    let memberList = this.state.memberList
-    let idx = memberList.findIndex((member) => member._id === friend._id)
-    memberList.splice(idx, 1)
+    const idx = this.state.memberList.findIndex(
+      (member) => member._id === friend._id
+    )
+    const memberList = this.state.memberList
+      .slice(0, idx)
+      .concat(this.state.memberList.slice(idx + 1))
     this.setState({ memberList: memberList })
   }
 
@@ -180,6 +218,8 @@ class CreatePartyScreen extends React.Component {
           setVisible={(confirmModalVisible) =>
             this.setState({ confirmModalVisible })
           }
+          navigation={this.navigation}
+          members={this.state.memberList.slice()}
         />
 
         <PartyNameInput onChangeText={(text) => this.filterFriendsList(text)} />
