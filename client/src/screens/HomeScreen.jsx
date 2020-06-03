@@ -1,12 +1,6 @@
 import React from 'react'
-import {
-  FlingGestureHandler,
-  Directions,
-  State
-} from 'react-native-gesture-handler'
-import { StyleSheet, Text, View, ScrollView, Button } from 'react-native'
-import UserContext from '../context/UserContext'
-import { useNavigation, NavigationContainer } from '@react-navigation/native'
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import ListItem from '../components/ListItem.jsx'
 import GroupIcon from '../../assets/images/group-24px.svg'
 
@@ -106,7 +100,7 @@ function UpcomingList(props) {
   return <ScrollView>{list}</ScrollView>
 }
 
-function HomeScreen({ navigation }) {
+function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.quoteContainer}>
@@ -114,63 +108,54 @@ function HomeScreen({ navigation }) {
           <QOTDText text="Unfortunately, sitting at your computer 24/7 won't make you any slimmer." />
         </View>
       </View>
-      <FlingGestureHandler
-        direction={Directions.LEFT}
-        onHandlerStateChange={({ nativeEvent }) => {
-          if (nativeEvent.state === State.ACTIVE) {
-            navigation.navigate('My Parties')
-          }
-        }}
-      >
-        <View style={styles.container}>
-          <HeaderText fontSize={32} color="black" text="Upcoming" />
-          <UpcomingList
-            upcomingList={[
-              // MOCK DATA
-              {
-                id: 1,
-                partyName: '108 1/7 Revolution',
-                time: '9 AM, Tues - May 12, 2020'
-              },
-              {
-                id: 2,
-                partyName: 'IOB',
-                time: '7 PM, Tues - May 12, 2020'
-              },
-              {
-                id: 3,
-                partyName: '108 1/7 Revolution',
-                time: '9 AM, Wed - May 13, 2020'
-              },
-              {
-                id: 4,
-                partyName: 'IOB',
-                time: '7 PM, Wed - May 13, 2020'
-              },
-              {
-                id: 5,
-                partyName: '108 1/7 Revolution',
-                time: '9 AM, Thurs - May 14, 2020'
-              },
-              {
-                id: 6,
-                partyName: 'IOB',
-                time: '7 PM, Thurs - May 14, 2020'
-              },
-              {
-                id: 7,
-                partyName: '108 1/7 Revolution',
-                time: '9 AM, Fri - May 15, 2020'
-              },
-              {
-                id: 8,
-                partyName: 'IOB',
-                time: '7 PM, Fri - May 15, 2020'
-              }
-            ]}
-          />
-        </View>
-      </FlingGestureHandler>
+      <View style={styles.container}>
+        <HeaderText fontSize={32} color="black" text="Upcoming" />
+        <UpcomingList
+          upcomingList={[
+            // MOCK DATA
+            {
+              id: 1,
+              partyName: '108 1/7 Revolution',
+              time: '9 AM, Tues - May 12, 2020'
+            },
+            {
+              id: 2,
+              partyName: 'IOB',
+              time: '7 PM, Tues - May 12, 2020'
+            },
+            {
+              id: 3,
+              partyName: '108 1/7 Revolution',
+              time: '9 AM, Wed - May 13, 2020'
+            },
+            {
+              id: 4,
+              partyName: 'IOB',
+              time: '7 PM, Wed - May 13, 2020'
+            },
+            {
+              id: 5,
+              partyName: '108 1/7 Revolution',
+              time: '9 AM, Thurs - May 14, 2020'
+            },
+            {
+              id: 6,
+              partyName: 'IOB',
+              time: '7 PM, Thurs - May 14, 2020'
+            },
+            {
+              id: 7,
+              partyName: '108 1/7 Revolution',
+              time: '9 AM, Fri - May 15, 2020'
+            },
+            {
+              id: 8,
+              partyName: 'IOB',
+              time: '7 PM, Fri - May 15, 2020'
+            }
+          ]}
+        />
+      </View>
     </View>
   )
 }
