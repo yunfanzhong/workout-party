@@ -75,7 +75,7 @@ const AddFriendModal = ({ visible, setVisible }) => {
           flexDirection: 'row',
           justifyContent: 'flex-end',
           width: '100%',
-          marginBottom: '2%'
+          marginBottom: 4
         }}
       >
         <RedButton text="Cancel" onPress={() => setVisible(false)} />

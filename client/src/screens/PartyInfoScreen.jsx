@@ -25,7 +25,11 @@ function PartyInfoScreen({ navigation, route }) {
         {route.params.partyName}
       </Text>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Party Settings')}
+        onPress={() =>
+          navigation.navigate('Party Settings', {
+            partyName: route.params.partyName
+          })
+        }
         style={{ width: 50 }}
       >
         <MoreHorizIcon width={40} height={40} fill="black" />
