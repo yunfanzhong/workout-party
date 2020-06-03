@@ -15,22 +15,26 @@ import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import FormInput from '../components/FormInput'
 import FormLabel from '../components/FormLabel'
 
-function Member({ name }) {
-  return (
-    <TouchableOpacity onPress={() => {}}>
-      <View style={styles.friend}>
-        <View style={{ flexDirection: 'row' }}>
-          <AccountIcon width={40} height={40} fill="black" marginRight={10} />
-          <Text style={styles.friendText}>{name}</Text>
-        </View>
+function Member({ name, isRemoving }) {
+  const baseComponent = (
+    <View style={styles.friend}>
+      <View style={{ flexDirection: 'row' }}>
+        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Text style={styles.friendText}>{name}</Text>
       </View>
-    </TouchableOpacity>
+    </View>
   )
+
+  if (!isRemoving) {
+    return baseComponent
+  } else {
+    return <TouchableOpacity>{baseComponent}</TouchableOpacity>
+  }
 }
 
-function MemberList({ memberList }) {
+function MemberList({ memberList, isRemoving }) {
   const list = memberList.map((member) => (
-    <Member key={member.id} name={member.name} />
+    <Member key={member.id} name={member.name} isRemoving={isRemoving} />
   ))
   return <ScrollView>{list}</ScrollView>
 }
@@ -42,7 +46,8 @@ class PartySettingsScreen extends React.Component {
       members: [],
       refreshing: true,
       name: '',
-      keyboardOpen: false
+      keyboardOpen: false,
+      isRemoving: false
     }
     this.id = props.route.params.partyID
     this._isMounted = false
@@ -151,7 +156,10 @@ class PartySettingsScreen extends React.Component {
             />
           }
         >
-          <MemberList memberList={this.state.members} />
+          <MemberList
+            memberList={this.state.members}
+            isRemoving={this.state.isRemoving}
+          />
         </ScrollView>
         {!this.state.keyboardOpen && (
           <RedButton
@@ -163,6 +171,10 @@ class PartySettingsScreen extends React.Component {
           <OutlinedButton
             style={{ width: '50%', marginBottom: 24 }}
             text="Remove Members"
+            onPress={() => {
+              const newIsRemoving = !this.state.isRemoving
+              this.setState({ isRemoving: newIsRemoving })
+            }}
           />
         )}
       </View>
