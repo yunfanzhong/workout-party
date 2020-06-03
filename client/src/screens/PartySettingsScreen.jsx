@@ -4,13 +4,16 @@ import {
   StyleSheet,
   Text,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  Keyboard
 } from 'react-native'
 import React from 'react'
 import OutlinedButton from '../components/OutlinedButton'
 import RedButton from '../components/RedButton'
 import API from '../utils/API'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
+import FormInput from '../components/FormInput'
+import { H3 } from '../components/Header'
 
 function Member({ name }) {
   return (
@@ -26,14 +29,6 @@ function Member({ name }) {
 }
 
 function MemberList({ memberList }) {
-  const arr = []
-
-  // for (const member of memberList) {
-  //   if (member.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
-  //     arr.push(friend)
-  //   }
-  // }
-
   const list = memberList.map((member) => (
     <Member key={member.id} name={member.name} />
   ))
@@ -45,14 +40,27 @@ class PartySettingsScreen extends React.Component {
     super(props)
     this.state = {
       members: [],
-      refreshing: true
+      refreshing: true,
+      name: props.route.params.partyName,
+      keyboardOpen: false
     }
     this.id = props.route.params.partyID
     this._isMounted = false
+    this.keyboardDidShowListener = null
+    this.keyboardDidHideListener = null
   }
 
   componentDidMount() {
     if (!this._isMounted) {
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        () => this.setState({ keyboardOpen: true })
+      )
+      this.keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        () => this.setState({ keyboardOpen: false })
+      )
+
       try {
         API.getWorkoutParty(this.id).then((result) => {
           const memberIDs = result.members
@@ -77,6 +85,8 @@ class PartySettingsScreen extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false
+    this.keyboardDidShowListener.remove()
+    this.keyboardDidHideListener.remove()
   }
 
   _onRefresh = () => {
@@ -105,8 +115,29 @@ class PartySettingsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={{ marginTop: 24, width: '80%' }}>
+          <H3>Change Name</H3>
+          <FormInput
+            value={this.state.name}
+            onChangeText={(value) => this.setState({ name: value })}
+          />
+          <View style={{ alignItems: 'center' }}>
+            <OutlinedButton icon="check" text="Confirm" />
+          </View>
+        </View>
+        <View style={{ marginTop: 24 }}>
+          <H3>Manage Members</H3>
+        </View>
         <ScrollView
-          style={{ marginVertical: 24, height: '80%', width: '80%' }}
+          style={{
+            marginBottom: 24,
+            height: '80%',
+            width: '80%',
+            borderWidth: 1,
+            borderColor: '#ededed',
+            borderRadius: 8,
+            paddingVertical: 8
+          }}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -116,14 +147,18 @@ class PartySettingsScreen extends React.Component {
         >
           <MemberList memberList={this.state.members} />
         </ScrollView>
-        <RedButton
-          style={{ width: '50%', marginBottom: 12 }}
-          text="Add Member"
-        />
-        <OutlinedButton
-          style={{ width: '50%', marginBottom: 24 }}
-          text="Remove Members"
-        />
+        {!this.state.keyboardOpen && (
+          <RedButton
+            style={{ width: '50%', marginBottom: 12 }}
+            text="Add Member"
+          />
+        )}
+        {!this.state.keyboardOpen && (
+          <OutlinedButton
+            style={{ width: '50%', marginBottom: 24 }}
+            text="Remove Members"
+          />
+        )}
       </View>
     )
   }

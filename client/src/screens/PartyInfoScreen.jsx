@@ -27,7 +27,8 @@ function PartyInfoScreen({ navigation, route }) {
       <TouchableOpacity
         onPress={() =>
           navigation.navigate('Party Settings', {
-            partyID: route.params.partyID
+            partyID: route.params.partyID,
+            partyName: route.params.partyName
           })
         }
         style={{ width: 50 }}
