@@ -88,11 +88,11 @@ const API = {
     return createdUser
   },
 
-  // Stub
-  async createWorkoutEvent(data) {
-    console.log('[DEBUG] Creating workout event (not really) with data:')
-    console.log(data)
-    await sleep(2000)
+  // WORKOUT PARTIES
+  async getWorkoutParty(id) {
+    const res = await fetch(`${BASE_URL}/workoutParty/${id}`)
+    const wp = res.json()
+    return wp
   },
 
   // WORKOUT PARTIES
@@ -113,31 +113,40 @@ const API = {
       body: JSON.stringify(wpInfo),
       headers: { 'Content-Type': 'application/json' }
     })
-    const wp = res.json()
+    const wp = await res.json()
     return wp
   },
 
   async addWorkoutToParty(wpID, workoutID) {
     await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
       method: 'POST',
-      body: JSON.stringify({ workoutID })
+      body: JSON.stringify({ workoutID }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
-  async addMemberToParty(wpID, memberID) {
-    await fetch(`${BASE_URL}/workoutParty/${memberID}`, {
+  async addMemberToParty(wpID, userID) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/users`, {
       method: 'POST',
-      body: JSON.stringify({ memberID }) // TEST THIS
+      body: JSON.stringify({ userID }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+  },
+
+  async removeMemberFromParty(wpID, id) {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/members`, {
+      method: 'DELETE',
+      body: JSON.stringify({ id }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
   async updateWorkoutParty(wpID, newInfo) {
-    const res = await fetch(`${BASE_URL}/users/${wpID}`, {
-      method: 'POST',
-      body: JSON.stringify(newInfo)
+    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+      method: 'PATCH',
+      body: JSON.stringify(newInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-    const newWP = res.json()
-    return newWP
   },
 
   // WORKOUTS
@@ -150,9 +159,10 @@ const API = {
   async createWorkout(workoutInfo) {
     const res = await fetch(`${BASE_URL}/workouts`, {
       method: 'POST',
-      body: JSON.stringify(workoutInfo)
+      body: JSON.stringify(workoutInfo),
+      headers: { 'Content-Type': 'application/json' }
     })
-    const workout = res.json()
+    const workout = await res.json()
     return workout
   },
 
@@ -165,4 +175,5 @@ const API = {
     return newWorkout
   }
 }
+
 export default API

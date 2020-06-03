@@ -64,25 +64,74 @@ const SettingsMenu = () => {
   )
 }
 
-const AddFriendModal = ({ visible, setVisible }) => {
-  return (
-    <BlankModal visible={visible} setVisible={setVisible}>
-      <H3>Add a Friend!</H3>
-      <Text>Username</Text>
-      <FormInput />
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          width: '100%',
-          marginBottom: 4
-        }}
-      >
-        <RedButton text="Cancel" onPress={() => setVisible(false)} />
-        <RedButton text="Enter" onPress={() => setVisible(false)} />
-      </View>
-    </BlankModal>
-  )
+class AddFriendModal extends React.Component {
+  state = {
+    friendName: ''
+  }
+
+  handleAddFriend = (text) => {
+    this.setState({ friendName: text })
+  }
+
+  addNewFriend = async (userID, friendName, context) => {
+    try {
+      const friend = await API.addFriend({
+        // maybe addFriendToUser
+        friendName
+      })
+      this.updateFriendList(friendName, context)
+    } catch (err) {
+      console.log('Error')
+    }
+  }
+
+  updateFriendList = (friendName, context) => {
+    context.update({
+      friends: context.user.friends.concat({
+        username: friendName
+      })
+    })
+  }
+
+  render() {
+    const { visible, setVisible } = this.props
+    return (
+      <UserContext.Consumer>
+        {(context) => (
+          <BlankModal visible={visible} setVisible={setVisible}>
+            <H3>Add a Friend!</H3>
+            <Text>Username</Text>
+            <FormInput
+              placeholder="i.e. ilikesocks123"
+              value={this.state.friendName}
+              autoCapitalize="none"
+              onChangeText={() => this.handleAddFriend(this.value)}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                width: '100%'
+              }}
+            >
+              <RedButton text="Cancel" onPress={() => setVisible(false)} />
+              <RedButton
+                text="Enter"
+                onPress={() => {
+                  setVisible(false),
+                    this.addNewFriend(
+                      context.user._id,
+                      this.state.friendName,
+                      context
+                    )
+                }}
+              />
+            </View>
+          </BlankModal>
+        )}
+      </UserContext.Consumer>
+    )
+  }
 }
 
 class AccountScreen extends React.Component {
@@ -90,7 +139,8 @@ class AccountScreen extends React.Component {
     friendButtonColor: 'grey',
     settingButtonColor: 'white',
     showFriendMenu: true,
-    modalVisible: false
+    modalVisible: false,
+    faceBookID: null
   }
 
   render() {
@@ -120,7 +170,7 @@ class AccountScreen extends React.Component {
     }
 
     const getUserRank = (number) => {
-      if (number > 40) return ranks[7]
+      if (number >= 40) return ranks[7]
       return ranks[Math.floor(number / 5)]
     }
 

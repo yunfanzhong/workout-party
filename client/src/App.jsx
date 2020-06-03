@@ -1,6 +1,7 @@
 // React + Expo
 import React from 'react'
 import { registerRootComponent } from 'expo'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 // Gesture Handler
 import 'react-native-gesture-handler'
@@ -21,15 +22,9 @@ import CreatePartyScreenWrapper from './screens/CreatePartyScreen.jsx'
 import EventScreen from './screens/EventScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
 import LogInScreen from './screens/LogInScreen.jsx'
-import NotificationScreen from './screens/NotificationScreen.jsx'
 import PartyInfoScreen from './screens/PartyInfoScreen.jsx'
 import PartyListScreen from './screens/PartyListScreen.jsx'
 import PartySettingsScreen from './screens/PartySettingsScreen.jsx'
-
-// Image assets
-import AccountIcon from '../assets/images/account_circle-24px.svg'
-import ChevronLeft from '../assets/images/chevron_left-24px.svg'
-import NotificationIcon from '../assets/images/notifications-24px.svg'
 
 const Stack = createStackNavigator()
 
@@ -73,22 +68,20 @@ function AuthenticatedApp() {
               <TouchableOpacity
                 onPress={() => navigation.navigate('Account')}
                 style={{
-                  width: 50,
-                  marginLeft: 30
+                  marginLeft: 16
                 }}
               >
-                <AccountIcon width={40} height={40} fill="white" />
+                <Icon name="account-circle" size={32} color="white" />
               </TouchableOpacity>
             ),
             headerRight: () => (
               <TouchableOpacity
-                onPress={() => navigation.navigate('Notifications')}
+                onPress={() => navigation.navigate('My Parties')}
                 style={{
-                  width: 50,
-                  marginRight: 15
+                  marginRight: 16
                 }}
               >
-                <NotificationIcon width={40} height={40} fill="white" />
+                <Icon name="fitness-center" size={32} color="white" />
               </TouchableOpacity>
             )
           })}
@@ -98,16 +91,7 @@ function AuthenticatedApp() {
           component={AccountScreen}
           options={{
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
-            )
-          }}
-        />
-        <Stack.Screen
-          name="Notifications"
-          component={NotificationScreen}
-          options={{
-            headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           }}
         />
@@ -116,7 +100,7 @@ function AuthenticatedApp() {
           component={PartyListScreen}
           options={{
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           }}
         />
@@ -126,7 +110,7 @@ function AuthenticatedApp() {
           options={({ route }) => ({
             title: route.params.partyName,
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           })}
         />
@@ -135,7 +119,7 @@ function AuthenticatedApp() {
           component={PartyInfoScreen}
           options={{
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           }}
         />
@@ -144,7 +128,7 @@ function AuthenticatedApp() {
           component={PartySettingsScreen}
           options={{
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           }}
         />
@@ -153,7 +137,7 @@ function AuthenticatedApp() {
           component={CreatePartyScreenWrapper}
           options={{
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           }}
         />
@@ -162,7 +146,7 @@ function AuthenticatedApp() {
           component={CreateEventScreen}
           options={({ navigation, route }) => ({
             headerBackImage: () => (
-              <ChevronLeft width={40} height={40} fill="white" />
+              <Icon name="navigate-before" size={32} color="white" />
             )
           })}
         />

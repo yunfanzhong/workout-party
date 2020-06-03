@@ -102,10 +102,10 @@ class UserSignupModal extends React.Component {
       username.length === 0 ||
       username.length > 20
     ) {
-      this.setState({ error: 'Invalid display name.' })
+      this.setState({ error: 'Invalid username.' })
       return
     } else if (displayName.length === 0 || displayName.length > 40) {
-      this.setState({ error: 'Invalid username.' })
+      this.setState({ error: 'Invalid display name.' })
       return
     }
 
