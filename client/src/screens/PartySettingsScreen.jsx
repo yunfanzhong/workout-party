@@ -6,29 +6,11 @@ import {
   StyleSheet,
   Button
 } from 'react-native'
-import {
-  FlingGestureHandler,
-  Directions,
-  State
-} from 'react-native-gesture-handler'
 import React from 'react'
+import GroupIcon from '../../assets/images/group-24px.svg'
 
 function PartySettingsScreen({ navigation }) {
-  return (
-    <View style={styles.container}>
-      <Text
-        style={{
-          marginTop: 300,
-          alignContent: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          fontSize: 40
-        }}
-      >
-        Party Settings
-      </Text>
-    </View>
-  )
+  return <View style={styles.container}></View>
 }
 
 const styles = StyleSheet.create({

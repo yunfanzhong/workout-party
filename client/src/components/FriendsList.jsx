@@ -9,26 +9,49 @@ import {
 
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 
-const UserFriend = (props) => {
-  return (
+const UserFriend = ({ onPress, friend, button }) => {
+  const baseComponent = (
     <View style={styles.friend}>
-      <TouchableOpacity onPress={() => props.onPress(props.name)}>
-        <View style={{ flexDirection: 'row' }}>
-          <AccountIcon width={30} height={30} fill="black" marginRight={10} />
-          <Text style={styles.friendText}>{props.name}</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row' }}>
+        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Text style={styles.friendText}>{friend.username}</Text>
+      </View>
     </View>
   )
+
+  if (button) {
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          onPress({
+            _id: friend._id,
+            username: friend.username
+          })
+        }
+      >
+        {baseComponent}
+      </TouchableOpacity>
+    )
+  } else {
+    return baseComponent
+  }
 }
 
-const FriendsList = (props) => {
-  const friendsList = props.friendsList
-  const list = friendsList.map((friendUser) => (
+const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
+  const arr = []
+
+  for (const friend of friendsList) {
+    if (friend.username.toLowerCase().startsWith(searchValue.toLowerCase())) {
+      arr.push(friend)
+    }
+  }
+
+  const list = arr.map((friend) => (
     <UserFriend
-      name={friendUser.username}
-      key={friendUser._id}
-      onPress={props.onPress}
+      friend={friend}
+      key={friend._id}
+      button={button}
+      onPress={onPress}
     />
   ))
   return <ScrollView>{list}</ScrollView>
@@ -37,13 +60,12 @@ const FriendsList = (props) => {
 const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
-    textAlignVertical: 'center',
-    marginBottom: 2
+    textAlignVertical: 'center'
   },
   friend: {
     flexDirection: 'row',
     marginHorizontal: '5%',
-    marginTop: 2
+    marginBottom: '1%'
   }
 })
 

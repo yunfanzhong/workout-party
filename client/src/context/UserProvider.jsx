@@ -40,6 +40,20 @@ class UserProvider extends React.Component {
         __v: 2
       }
     })
+    // const { id: facebookID } = await logInWithFacebook()
+    // try {
+    //   const { user, doesNotExist } = await API.getUserByFacebookID(facebookID)
+    //   console.log('[DEBUG] Retrieved user:')
+    //   console.log(user)
+    //   if (doesNotExist) {
+    //     this.setState({ facebookID, modalVisible: true })
+    //   } else {
+    //     this.setState({ user })
+    //   }
+    // } catch (err) {
+    //   console.log('[DEBUG] Error logging in:')
+    //   console.log(err)
+    // }
   }
 
   // Update the locally stored user object.

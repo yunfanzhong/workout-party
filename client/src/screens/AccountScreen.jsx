@@ -195,8 +195,12 @@ class AccountScreen extends React.Component {
               <View style={styles.profileInfo}>
                 <Text style={styles.nameText}>{context.user.displayName}</Text>
                 <Text style={styles.userName}>{context.user.username}</Text>
-                <Text style={styles.rank}>Rank: Failure</Text>
-                <Text style={styles.partiesAttended}>Attended 0 Parties</Text>
+                <Text style={styles.rank}>
+                  Rank: {getUserRank(context.user.workoutHistory.length)}
+                </Text>
+                <Text style={styles.partiesAttended}>
+                  Attended {context.user.workoutHistory.length} Parties
+                </Text>
               </View>
             </View>
             <View style={styles.buttonPair}>
