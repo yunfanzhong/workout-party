@@ -79,6 +79,7 @@ class PartyListScreen extends React.Component {
       refreshing: true
     }
     this._isMounted = false
+    this.navigation = props.navigation
   }
 
   async componentDidMount() {
@@ -99,6 +100,16 @@ class PartyListScreen extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false
+  }
+
+  componentDidUpdate() {
+    if (this._isMounted) {
+      const { route } = this.props
+      if (route.params && route.params.forceUpdate) {
+        this.navigation.setParams({ forceUpdate: false })
+        this._onRefresh()
+      }
+    }
   }
 
   _onRefresh = async () => {

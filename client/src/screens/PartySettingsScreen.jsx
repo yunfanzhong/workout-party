@@ -46,7 +46,7 @@ function Member({ name, isRemoving, partyID, id }) {
                 try {
                   await API.removeMemberFromParty(partyID, id)
                   if (context.user._id === id) {
-                    navigation.navigate('My Parties')
+                    navigation.navigate('My Parties', { forceUpdate: true })
                   }
                 } catch (error) {
                   console.log(error)
@@ -245,7 +245,14 @@ class PartySettingsScreen extends React.Component {
           <RedButton
             style={{ width: '50%', marginBottom: 12 }}
             text="Add Member"
-            onPress={() => this.setState({ modalVisible: true })}
+            onPress={() => {
+              this._onRefresh()
+              this.setState({
+                isRemoving: false,
+                buttonText: 'Remove Members',
+                modalVisible: true
+              })
+            }}
           />
         )}
         {!this.state.keyboardOpen && (
@@ -258,7 +265,10 @@ class PartySettingsScreen extends React.Component {
 
               if (this.state.buttonText === 'Remove Members')
                 newText = 'Stop Removing'
-              else newText = 'Remove Members'
+              else {
+                this._onRefresh()
+                newText = 'Remove Members'
+              }
 
               this.setState({ isRemoving: newIsRemoving, buttonText: newText })
             }}

@@ -148,7 +148,7 @@ const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
                     workouts: []
                   })
                   setVisible(false)
-                  navigation.goBack()
+                  navigation.navigate('My Parties', { forceUpdate: true })
                 }
               }}
             />
