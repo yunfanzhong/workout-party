@@ -7,15 +7,20 @@ import {
   TouchableOpacity,
   Keyboard
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import OutlinedButton from '../components/OutlinedButton'
 import RedButton from '../components/RedButton'
 import API from '../utils/API'
 import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import FormInput from '../components/FormInput'
 import FormLabel from '../components/FormLabel'
+import BlankModal from '../components/BlankModal'
+import { H3 } from '../components/Header'
+import FriendsList from '../components/FriendsList'
 
 function Member({ name, isRemoving }) {
+  const [visible, setVisible] = useState(true)
+
   const baseComponent = (
     <View style={styles.friend}>
       <View style={{ flexDirection: 'row' }}>
@@ -26,9 +31,24 @@ function Member({ name, isRemoving }) {
   )
 
   if (!isRemoving) {
-    return baseComponent
+    return visible && baseComponent
   } else {
-    return <TouchableOpacity>{baseComponent}</TouchableOpacity>
+    return (
+      visible && (
+        <TouchableOpacity
+          onPress={() => {
+            setVisible(false)
+            try {
+              console.log('removed')
+            } catch (error) {
+              console.log(error)
+            }
+          }}
+        >
+          {baseComponent}
+        </TouchableOpacity>
+      )
+    )
   }
 }
 
@@ -39,6 +59,14 @@ function MemberList({ memberList, isRemoving }) {
   return <ScrollView>{list}</ScrollView>
 }
 
+const AddMemberModal = ({ visible, setVisible }) => {
+  return (
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <FormLabel>Friends</FormLabel>
+    </BlankModal>
+  )
+}
+
 class PartySettingsScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -47,7 +75,8 @@ class PartySettingsScreen extends React.Component {
       refreshing: true,
       name: '',
       keyboardOpen: false,
-      isRemoving: false
+      isRemoving: false,
+      modalVisible: false
     }
     this.id = props.route.params.partyID
     this._isMounted = false
@@ -120,6 +149,10 @@ class PartySettingsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <AddMemberModal
+          visible={this.state.modalVisible}
+          setVisible={(modalVisible) => this.setState({ modalVisible })}
+        />
         <View style={{ marginTop: 24, width: '80%' }}>
           <FormLabel style={{ textAlign: 'center' }}>Change Name</FormLabel>
           <FormInput
@@ -165,6 +198,7 @@ class PartySettingsScreen extends React.Component {
           <RedButton
             style={{ width: '50%', marginBottom: 12 }}
             text="Add Member"
+            onPress={() => this.setState({ modalVisible: true })}
           />
         )}
         {!this.state.keyboardOpen && (
