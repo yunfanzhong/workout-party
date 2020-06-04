@@ -1,25 +1,38 @@
 import React from 'react'
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Alert,
+  ActivityIndicator
+} from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 import moment from 'moment'
 import API from '../utils/API'
 import UserContext from '../context/UserContext'
 import Bubble from '../components/Bubble'
-import FullPageSpinner from '../components/FullPageSpinner'
 
 function getTimeOfNextOccurrence(day, hour, minute) {
   const time = moment().startOf('isoWeek').day(day).hour(hour).minute(minute)
-  if (time < moment()) {
+  const next = time.clone()
+  if (next.add(1, 'hour') < moment()) {
     return time.add(1, 'week')
   }
   return time
 }
 
-function HomeScreen() {
+function HomeScreen({ navigation }) {
   return (
     <UserContext.Consumer>
-      {(context) => <HomeScreenContent userID={context.user._id} />}
+      {(context) => (
+        <HomeScreenContent
+          workoutHistory={context.user.workoutHistory}
+          userID={context.user._id}
+          navigation={navigation}
+        />
+      )}
     </UserContext.Consumer>
   )
 }
@@ -30,30 +43,53 @@ class HomeScreenContent extends React.Component {
   }
 
   componentDidMount() {
-    API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
-      const workouts = upcomingWorkouts.flatMap((workout) =>
-        workout.days.map((day) => ({
-          name: workout.name,
-          id: workout._id,
-          time: getTimeOfNextOccurrence(day, workout.hour, workout.minute)
-        }))
-      )
-      workouts.sort((a, b) => a.time.diff(b.time))
-      this.setState({
-        upcomingWorkouts: workouts.map(({ name, id, time }) => ({
-          name,
-          id,
-          time: time.format('ddd, MMM D, YY - h:mm A'),
-          key: id + time.format()
-        }))
+    const refresh = () => {
+      this.setState({ upcomingWorkouts: null })
+      API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
+        const workouts = upcomingWorkouts.flatMap((workout) =>
+          workout.days.map((day) => {
+            const time = getTimeOfNextOccurrence(
+              day,
+              workout.hour,
+              workout.minute
+            )
+            let completed = false
+            for (const prevWorkout of this.props.workoutHistory) {
+              if (
+                prevWorkout.id === workout._id &&
+                Math.abs(moment(prevWorkout.time).diff(time)) /
+                  (60 * 60 * 1000) <
+                  1
+              ) {
+                completed = true
+              }
+            }
+            return {
+              time,
+              completed,
+              name: workout.name,
+              id: workout._id
+            }
+          })
+        )
+        workouts.sort((a, b) => a.time.diff(b.time))
+        this.setState({
+          upcomingWorkouts: workouts.map(({ name, completed, id, time }) => ({
+            name,
+            id,
+            completed,
+            time: time.format('ddd, MMM D, YY - h:mm A'),
+            key: id + time.format(),
+            timeObject: time
+          }))
+        })
       })
-    })
+    }
+    this.props.navigation.addListener('focus', refresh)
+    refresh()
   }
 
   render() {
-    if (!this.state.upcomingWorkouts) {
-      return <FullPageSpinner />
-    }
     return (
       <View style={styles.container}>
         <QuoteText>
@@ -70,19 +106,44 @@ class HomeScreenContent extends React.Component {
         >
           Upcoming Workouts 🏋️‍♀️
         </Text>
-        <View
-          style={{
-            height: '100%',
-            borderRadius: 8,
-            flexShrink: 1
-          }}
-        >
-          <ScrollView>
-            {this.state.upcomingWorkouts.map(({ id, key, name, time }) => (
-              <UpcomingListItem id={id} name={name} time={time} key={key} />
-            ))}
-          </ScrollView>
-        </View>
+        {this.state.upcomingWorkouts ? (
+          this.state.upcomingWorkouts.length ? (
+            <View
+              style={{
+                height: '100%',
+                borderRadius: 8,
+                flexShrink: 1
+              }}
+            >
+              <ScrollView>
+                {this.state.upcomingWorkouts.map(
+                  ({ id, key, name, time, timeObject, completed }) => (
+                    <UpcomingListItem
+                      completed={completed}
+                      id={id}
+                      name={name}
+                      time={time}
+                      key={key}
+                      timeObject={timeObject}
+                    />
+                  )
+                )}
+              </ScrollView>
+            </View>
+          ) : (
+            <View
+              style={{ alignItems: 'center', width: '100%', marginBottom: 8 }}
+            >
+              <Text style={{ fontSize: 16, color: '#ababab' }}>
+                You have no upcoming workouts.
+              </Text>
+            </View>
+          )
+        ) : (
+          <View style={{ alignItems: 'center', width: '100%', marginTop: 32 }}>
+            <ActivityIndicator size="large" color={'#ff2559'} />
+          </View>
+        )}
       </View>
     )
   }
@@ -119,24 +180,43 @@ function QuoteText({ children }) {
   )
 }
 
-function UpcomingListItem({ name, id, time }) {
+function UpcomingListItem({ completed, name, id, time, timeObject }) {
   const navigation = useNavigation()
 
   return (
     <Bubble
-      style={{ flexDirection: 'row', alignItems: 'center' }}
-      onPress={() => {
-        navigation.navigate('Event', {
-          id,
-          partyName: name
-        })
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...(completed ? { backgroundColor: '#eafaf1' } : undefined)
       }}
+      onPress={
+        !completed
+          ? () => {
+              if (Math.abs(moment().diff(timeObject)) / (1000 * 60 * 60) <= 1) {
+                navigation.navigate('Event', {
+                  id,
+                  partyName: name,
+                  time: timeObject.toISOString()
+                })
+              } else {
+                Alert.alert(
+                  'Come back later!',
+                  `This event isn't happening right now. Please come back within an hour of when this event is happening!`
+                )
+              }
+            }
+          : undefined
+      }
     >
-      <Icon name="event" size={32} color="#565a5e" />
+      <Icon
+        name={completed ? 'done' : 'event'}
+        size={32}
+        color={completed ? 'green' : '#565a5e'}
+      />
       <View style={{ flexDirection: 'column', marginLeft: 12 }}>
         <Text
           style={{
-            fontFamily: 'Roboto',
             fontSize: 18,
             textAlign: 'left'
           }}

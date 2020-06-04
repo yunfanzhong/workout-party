@@ -15,7 +15,11 @@ const FriendMenu = (props) => {
     <View style={props.style}>
       <H3>My Friends</H3>
       <View style={{ flexGrow: 1, paddingHorizontal: 24 }}>
-        <FriendsList friendsList={props.friendsList} onPress={() => {}} />
+        <FriendsList
+          friendsList={props.friendsList}
+          onPress={() => {}}
+          showBlankText
+        />
       </View>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <OutlinedButton

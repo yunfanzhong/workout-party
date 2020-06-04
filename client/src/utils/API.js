@@ -22,7 +22,7 @@ async function fetch(...args) {
   const res = await window.fetch(...args)
   console.log(`[DEBUG] Performed fetch with response code ${res.status}`)
   if (!res.ok) {
-    throw new Error()
+    throw { status: res.status }
   }
   return res
 }
@@ -41,14 +41,16 @@ const API = {
   // doesNotExist field lets the login process know that we need to create a
   // new user. (sorry for the bad design)
   async getUserByFacebookID(facebookID) {
-    const res = await fetch(`${BASE_URL}/facebook/${facebookID}`)
-    if (res.status === 404) {
-      return { doesNotExist: true, user: null }
-    } else if (!res.ok) {
+    try {
+      const res = await fetch(`${BASE_URL}/facebook/${facebookID}`)
+      const user = await res.json()
+      return { user, doesNotExist: false }
+    } catch (err) {
+      if (err.status === 404) {
+        return { doesNotExist: true, user: null }
+      }
       throw new Error()
     }
-    const user = await res.json()
-    return { user, doesNotExist: false }
   },
 
   // Untested - comment this out when you test it
@@ -70,10 +72,11 @@ const API = {
   },
 
   // Untested - comment this out when you test it
-  async logWorkoutToUser(userID, workoutID) {
-    await fetch(`${BASE_URL}/users/${userID}`, {
+  async logWorkoutToUser(userID, workoutID, time) {
+    await fetch(`${BASE_URL}/users/${userID}/history`, {
       method: 'POST',
-      body: JSON.stringify({ workoutID })
+      body: JSON.stringify({ workoutID, time }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 

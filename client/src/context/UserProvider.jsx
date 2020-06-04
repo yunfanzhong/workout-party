@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Alert, Text } from 'react-native'
 
 import logInWithFacebook from '../utils/logInWithFacebook.js'
 import UserContext from './UserContext.jsx'

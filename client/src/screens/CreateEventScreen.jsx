@@ -21,17 +21,7 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import OutlinedButton from '../components/OutlinedButton'
 import API from '../utils/API'
-
-// TEMPORARY!!
-const EXERCISES = {
-  '1': 'Push ups',
-  '2': 'Squats',
-  '3': 'Lunges',
-  '4': 'Leg raises',
-  '5': 'Calf raises',
-  '6': 'Burpees',
-  '7': 'Mountain climbers'
-}
+import EXERCISES from '../utils/exercises.json'
 
 const BASE_TIME = 3600000 * 8 // The first 12 AM of all time
 
@@ -343,7 +333,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'flex-start',
-    padding: 24,
+    padding: 18,
     backgroundColor: '#f7f7f7'
   },
   modalButtonContainer: {

@@ -1,8 +1,8 @@
 import React from 'react'
 import { TextInput, StyleSheet } from 'react-native'
 
-function FormInput(props) {
-  return <TextInput style={styles.input} {...props} />
+function FormInput({ style, ...props }) {
+  return <TextInput style={{ ...styles.input, ...style }} {...props} />
 }
 
 const styles = StyleSheet.create({

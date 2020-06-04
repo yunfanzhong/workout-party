@@ -103,7 +103,7 @@ class PartyInfoScreen extends React.Component {
               wIDs.map(async (id) => await API.getWorkout(id))
             ).then((workouts) => {
               const ws = workouts.map((w) => {
-                return w.name
+                return { name: w.name, id: w._id }
               })
               this.setState({ workouts: ws, loading: false })
             })
@@ -155,8 +155,8 @@ class PartyInfoScreen extends React.Component {
             <AddWorkoutButton partyID={this.props.route.params.partyID} />
           </View>
           <ScrollView>
-            {this.state.workouts.map((w) => (
-              <EventListItem name={w} />
+            {this.state.workouts.map((e) => (
+              <EventListItem name={e.name} key={e.id} />
             ))}
           </ScrollView>
         </View>

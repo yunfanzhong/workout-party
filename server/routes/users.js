@@ -95,10 +95,10 @@ userRouter.post('/:userID/friends', async (req, res) => {
 // TODO: test
 userRouter.post('/:userID/history', async (req, res) => {
   const { userID } = req.params
-  const { workoutID } = req.body
+  const { workoutID, time } = req.body
   try {
     const user = await User.findById(userID.trim())
-    user.workouts.push(workoutID)
+    user.workoutHistory.push({ time, id: workoutID })
     await user.save()
     res.end()
   } catch (err) {

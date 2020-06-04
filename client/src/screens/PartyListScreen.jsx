@@ -142,26 +142,43 @@ class PartyListScreen extends React.Component {
 
     return (
       <>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={{ padding: 24 }}
-        >
-          <UserContext.Consumer>
-            {(context) =>
-              sortedArr.map(
-                (party) =>
-                  party.members.includes(context.user._id) && (
-                    <PartyListItem
-                      key={party._id}
-                      name={party.name}
-                      id={party._id}
-                      numMembers={party.members.length}
-                    />
-                  )
-              )
-            }
-          </UserContext.Consumer>
-        </ScrollView>
+        <UserContext.Consumer>
+          {(context) => {
+            const filteredArray = sortedArr.filter((party) =>
+              party.members.includes(context.user._id)
+            )
+
+            return filteredArray.length ? (
+              <ScrollView
+                style={styles.container}
+                contentContainerStyle={{ padding: 24 }}
+              >
+                {filteredArray.map((party) => (
+                  <PartyListItem
+                    key={party._id}
+                    name={party.name}
+                    id={party._id}
+                    numMembers={party.members.length}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  height: '100%',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginBottom: 8
+                }}
+              >
+                <Text style={{ fontSize: 18, color: '#ababab' }}>
+                  No parties to show
+                </Text>
+              </View>
+            )
+          }}
+        </UserContext.Consumer>
         <CreatePartyButton />
       </>
     )

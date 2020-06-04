@@ -8,10 +8,10 @@ import {
   Keyboard
 } from 'react-native'
 import React, { useState } from 'react'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import OutlinedButton from '../components/OutlinedButton'
 import RedButton from '../components/RedButton'
 import API from '../utils/API'
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
 import FormInput from '../components/FormInput'
 import FormLabel from '../components/FormLabel'
 import BlankModal from '../components/BlankModal'
@@ -19,64 +19,96 @@ import { H3 } from '../components/Header'
 import FriendsList from '../components/FriendsList'
 import UserContext from '../context/UserContext'
 import { useNavigation, CommonActions } from '@react-navigation/native'
+import Bubble from '../components/Bubble'
 
-function Member({ name, isRemoving, partyID, id, memberList, routeKey }) {
+function Member({
+  name,
+  isRemoving,
+  partyID,
+  id,
+  memberList,
+  routeKey,
+  onPress
+}) {
   const [visible, setVisible] = useState(true)
   const navigation = useNavigation()
   let members = memberList
 
-  const baseComponent = (
-    <View style={styles.friend}>
-      <View style={{ flexDirection: 'row' }}>
-        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
-        <Text style={styles.friendText}>{name}</Text>
+  return (
+    <Bubble>
+      <View
+        style={{
+          flexDirection: 'row',
+          width: '100%',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <View style={{ flexDirection: 'row' }}>
+          <Icon
+            name="face"
+            size={32}
+            color="#565a5e"
+            style={{ marginRight: 12 }}
+          />
+          <Text style={styles.friendText}>{name}</Text>
+        </View>
+        <TouchableOpacity onPress={onPress}>
+          <Icon name="remove" size={24} color="red" />
+        </TouchableOpacity>
       </View>
-    </View>
+    </Bubble>
   )
 
-  if (!isRemoving) {
-    return visible && baseComponent
-  } else {
-    return (
-      visible && (
-        <UserContext.Consumer>
-          {(context) => (
-            <TouchableOpacity
-              onPress={async () => {
-                setVisible(false)
-                try {
-                  await API.removeMemberFromParty(partyID, id)
-                  if (context.user._id === id) {
-                    navigation.navigate('My Parties', { forceUpdate: true })
-                  }
-                  let i = 0
+  // if (!isRemoving) {
+  //   return visible && baseComponent
+  // } else {
+  //   return (
+  //     visible && (
+  //       <UserContext.Consumer>
+  //         {(context) => (
+  //           <TouchableOpacity
+  //             onPress={async () => {
+  //               setVisible(false)
+  //               try {
+  //                 await API.removeMemberFromParty(partyID, id)
+  //                 if (context.user._id === id) {
+  //                   navigation.navigate('My Parties', { forceUpdate: true })
+  //                 }
+  //                 let i = 0
 
-                  for (; i < members.length; i++)
-                    if (members[i].id === id) break
-                  if (i > -1) members.splice(i, 1)
+  //                 for (; i < members.length; i++)
+  //                   if (members[i].id === id) break
+  //                 if (i > -1) members.splice(i, 1)
 
-                  navigation.dispatch({
-                    ...CommonActions.setParams({
-                      members: members,
-                      forceUpdate: true
-                    }),
-                    source: routeKey
-                  })
-                } catch (error) {
-                  console.log(error)
-                }
-              }}
-            >
-              {baseComponent}
-            </TouchableOpacity>
-          )}
-        </UserContext.Consumer>
-      )
-    )
-  }
+  //                 // navigation.dispatch({
+  //                 //   ...CommonActions.setParams({
+  //                 //     members: members,
+  //                 //     forceUpdate: true
+  //                 //   }),
+  //                 //   source: routeKey
+  //                 // })
+  //               } catch (error) {
+  //                 console.log(error)
+  //               }
+  //             }}
+  //           >
+  //             {baseComponent}
+  //           </TouchableOpacity>
+  //         )}
+  //       </UserContext.Consumer>
+  //     )
+  //   )
+  // }
 }
 
-function MemberList({ memberList, isRemoving, partyID, routeKey }) {
+function MemberList({
+  memberList,
+  isRemoving,
+  partyID,
+  routeKey,
+  handleRemove
+}) {
   const list = memberList.map((member) => (
     <Member
       key={member.id}
@@ -86,9 +118,10 @@ function MemberList({ memberList, isRemoving, partyID, routeKey }) {
       id={member.id}
       memberList={memberList}
       routeKey={routeKey}
+      onPress={() => handleRemove(member.id)}
     />
   ))
-  return <ScrollView>{list}</ScrollView>
+  return list
 }
 
 const AddMemberModal = ({ visible, setVisible, onPress }) => {
@@ -116,21 +149,20 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
   )
 }
 
-function ConfirmPartyName({ id, name, routeKey }) {
-  const navigation = useNavigation()
-
+function ConfirmPartyName({ id, name, routeKey, onPress }) {
   return (
     <OutlinedButton
       icon="check"
-      text="Confirm"
+      text="Save"
       onPress={() => {
-        API.updateWorkoutParty(id, { name: name })
-        navigation.dispatch({
-          ...CommonActions.setParams({
-            partyName: name
-          }),
-          source: routeKey
-        })
+        API.updateWorkoutParty(id, { name })
+        // navigation.dispatch({
+        //   ...CommonActions.setParams({
+        //     partyName: name
+        //   }),
+        //   source: routeKey
+        // })
+        onPress()
         Keyboard.dismiss()
       }}
     />
@@ -147,7 +179,8 @@ class PartySettingsScreen extends React.Component {
       keyboardOpen: false,
       isRemoving: false,
       modalVisible: false,
-      buttonText: 'Remove Members'
+      buttonText: 'Remove Members',
+      saved: true
     }
     this.id = props.route.params.partyID
     this.prevRouteKey = props.route.params.routeKey
@@ -219,6 +252,7 @@ class PartySettingsScreen extends React.Component {
   }
 
   render() {
+    console.log(this.state.members)
     return (
       <View style={styles.container}>
         <AddMemberModal
@@ -231,93 +265,75 @@ class PartySettingsScreen extends React.Component {
               const members = this.state.members
               const newMember = await API.getUser(member._id)
               members.push({ id: newMember._id, name: newMember.username })
-              this.setState({ members: members })
-              this.navigation.dispatch({
-                ...CommonActions.setParams({
-                  members: members,
-                  forceUpdate: true
-                }),
-                source: this.prevRouteKey
-              })
+              this.setState({ members: members, modalVisible: false })
+              // this.navigation.dispatch({
+              //   ...CommonActions.setParams({
+              //     members: members,
+              //     forceUpdate: true
+              //   }),
+              //   source: this.prevRouteKey
+              // })
             } else {
               console.log('member already added!')
             }
           }}
         />
-        <View style={{ marginTop: 24, width: '80%' }}>
-          <FormLabel style={{ textAlign: 'center' }}>Change Name</FormLabel>
-          <FormInput
-            value={this.state.name}
-            onChangeText={(value) => this.setState({ name: value })}
-          />
-          <View style={{ alignItems: 'center' }}>
-            <ConfirmPartyName
-              id={this.id}
-              name={this.state.name}
-              routeKey={this.prevRouteKey}
+        <View>
+          <FormLabel>Change Name{!this.state.saved && ' (unsaved)'}</FormLabel>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <FormInput
+              style={{ width: '70%' }}
+              value={this.state.name}
+              onChangeText={(value) =>
+                this.setState({ name: value, saved: false })
+              }
             />
+            <View style={{ alignItems: 'center' }}>
+              <ConfirmPartyName
+                id={this.id}
+                name={this.state.name}
+                routeKey={this.prevRouteKey}
+                onPress={() => this.setState({ saved: true })}
+              />
+            </View>
           </View>
         </View>
-        <View style={{ marginTop: 24 }}>
-          <FormLabel style={{ textAlign: 'center' }}>Manage Members</FormLabel>
-        </View>
-        <ScrollView
-          style={{
-            marginBottom: 24,
-            height: '80%',
-            width: '80%',
-            borderWidth: 1,
-            borderColor: '#ededed',
-            borderRadius: 8,
-            paddingVertical: 8
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
+        <FormLabel>Manage Members</FormLabel>
+        <UserContext.Consumer>
+          {(context) => (
+            <MemberList
+              memberList={this.state.members.filter(
+                (m) => m.id !== context.user._id
+              )}
+              isRemoving={this.state.isRemoving}
+              partyID={this.id}
+              routeKey={this.prevRouteKey}
+              handleRemove={async (id) => {
+                await API.removeMemberFromParty(this.id, id)
+                this.setState({
+                  members: this.state.members.filter((m) => m.id !== id)
+                })
+              }}
             />
-          }
-        >
-          <MemberList
-            memberList={this.state.members}
-            isRemoving={this.state.isRemoving}
-            partyID={this.id}
-            routeKey={this.prevRouteKey}
-          />
-        </ScrollView>
-        {!this.state.keyboardOpen && (
-          <RedButton
-            style={{ width: '50%', marginBottom: 12 }}
-            text="Add Member"
-            onPress={() => {
-              this._onRefresh()
-              this.setState({
-                isRemoving: false,
-                buttonText: 'Remove Members',
-                modalVisible: true
-              })
-            }}
-          />
-        )}
-        {!this.state.keyboardOpen && (
-          <OutlinedButton
-            style={{ width: '50%', marginBottom: 24 }}
-            text={this.state.buttonText}
-            onPress={() => {
-              const newIsRemoving = !this.state.isRemoving
-              let newText
-
-              if (this.state.buttonText === 'Remove Members')
-                newText = 'Stop Removing'
-              else {
+          )}
+        </UserContext.Consumer>
+        <View style={{ alignItems: 'center', marginTop: 16 }}>
+          {!this.state.keyboardOpen && (
+            <OutlinedButton
+              text="Add Member"
+              onPress={() => {
                 this._onRefresh()
-                newText = 'Remove Members'
-              }
-
-              this.setState({ isRemoving: newIsRemoving, buttonText: newText })
-            }}
-          />
-        )}
+                this.setState({
+                  isRemoving: false,
+                  buttonText: 'Remove Members',
+                  modalVisible: true
+                })
+              }}
+            />
+          )}
+        </View>
       </View>
     )
   }
@@ -326,8 +342,8 @@ class PartySettingsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center'
+    backgroundColor: '#f7f7f7',
+    padding: 24
   },
   friendText: {
     fontSize: 18,
@@ -335,8 +351,7 @@ const styles = StyleSheet.create({
   },
   friend: {
     flexDirection: 'row',
-    marginHorizontal: '5%',
-    marginBottom: '1%'
+    alignItems: 'center'
   }
 })
 

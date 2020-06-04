@@ -4,7 +4,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  Linking
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
@@ -36,7 +37,13 @@ const UserFriend = ({ onPress, friend, button }) => {
   }
 }
 
-const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
+const FriendsList = ({
+  searchValue = '',
+  friendsList,
+  button,
+  onPress,
+  showBlankText = false
+}) => {
   const arr = []
 
   for (const friend of friendsList) {
@@ -53,7 +60,24 @@ const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
       onPress={onPress}
     />
   ))
-  return <ScrollView>{list}</ScrollView>
+  return list.length || !showBlankText ? (
+    <ScrollView>{list}</ScrollView>
+  ) : (
+    <View style={{ alignItems: 'center', width: '100%', marginBottom: 8 }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: '#ff2559',
+          textDecorationLine: 'underline'
+        }}
+        onPress={() =>
+          Linking.openURL('https://www.youtube.com/watch?v=djU4Lq_5EaM')
+        }
+      >
+        No friends to show :(
+      </Text>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
