@@ -1,6 +1,5 @@
 import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
-import { TouchableHighlight } from 'react-native-gesture-handler'
 
 import AddFriend from '../../assets/images/person_add-24px.svg'
 import UserContext from '../context/UserContext'
@@ -9,26 +8,23 @@ import RedButton from '../components/RedButton.jsx'
 import FriendsList from '../components/FriendsList.jsx'
 import FormInput from '../components/FormInput.jsx'
 import BlankModal from '../components/BlankModal.jsx'
+import OutlinedButton from '../components/OutlinedButton'
 
 const FriendMenu = (props) => {
   return (
-    <View style={{ height: 290 }}>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          height: 50,
-          width: '80%',
-          alignSelf: 'center',
-          justifyContent: 'center'
-        }}
-        onPress={props.onPress}
-      >
-        <AddFriend height={30} width={30} marginTop={15} fill="black" />
-        <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
-          Add Friend
-        </Text>
-      </TouchableOpacity>
-      <FriendsList friendsList={props.friendsList} onPress={() => {}} />
+    <View style={props.style}>
+      <H3>My Friends</H3>
+      <View style={{ flex: 3, paddingHorizontal: 24 }}>
+        <FriendsList friendsList={props.friendsList} onPress={() => {}} />
+      </View>
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        <OutlinedButton
+          text="Add Friend"
+          icon="add"
+          onPress={props.onPress}
+          elevation={2}
+        />
+      </View>
     </View>
   )
 }
@@ -153,6 +149,7 @@ class AccountScreen extends React.Component {
               </View>
             </View>
             <FriendMenu
+              style={styles.friendMenu}
               friendsList={context.user.friends}
               onPress={() => displayAddFriend()}
             />
@@ -191,6 +188,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center'
+  },
+  friendMenu: {
+    flexDirection: 'column',
+    flex: 1,
+    marginHorizontal: 12,
+    marginBottom: 12,
+    backgroundColor: '#fff',
+    paddingVertical: 16,
+    borderRadius: 8,
+    borderColor: '#ededed',
+    borderWidth: 1
   },
   userName: { fontSize: 20, textAlign: 'center' },
   rank: {
