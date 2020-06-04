@@ -170,7 +170,6 @@ function QuoteText({ children }) {
 
       <Text
         style={{
-          fontFamily: 'Roboto',
           fontSize: 20
         }}
       >

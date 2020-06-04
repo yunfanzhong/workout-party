@@ -36,7 +36,6 @@ function PartyListItem(props) {
         <View style={{ flex: 1, flexDirection: 'column', marginLeft: 12 }}>
           <Text
             style={{
-              fontFamily: 'Roboto',
               fontSize: 18,
               textAlign: 'left'
             }}
