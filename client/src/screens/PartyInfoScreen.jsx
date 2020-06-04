@@ -46,13 +46,14 @@ function AddWorkoutButton(props) {
   )
 }
 
-function PartySettingsButton({ partyID }) {
+function PartySettingsButton({ partyID, partyName }) {
   const navigation = useNavigation()
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate('Party Settings', {
-          partyID: partyID
+          partyID: partyID,
+          partyName: partyName
         })
       }
       style={{ width: 50, marginTop: 10, marginLeft: 5 }}
@@ -70,37 +71,45 @@ class PartyInfoScreen extends React.Component {
       members: [],
       workouts: []
     }
-    this.params = this.props.route.params
     this._isMounted = false
   }
 
   componentDidMount() {
     if (!this._isMounted) {
       try {
-        API.getWorkoutParty(this.params.partyID).then(async (data) => {
-          const mIDs = data.members
-          const wIDs = data.workouts
-          await Promise.all(mIDs.map(async (id) => await API.getUser(id))).then(
-            (users) => {
+        API.getWorkoutParty(this.props.route.params.partyID).then(
+          async (data) => {
+            const mIDs = data.members
+            const wIDs = data.workouts
+            await Promise.all(
+              mIDs.map(async (id) => await API.getUser(id))
+            ).then((users) => {
               const members = users.map((user) => {
                 return user.username
               })
               this.setState({ members: members })
-            }
-          )
-          await Promise.all(
-            wIDs.map(async (id) => await API.getWorkout(id))
-          ).then((workouts) => {
-            const ws = workouts.map((w) => {
-              return w.name
             })
-            this.setState({ workouts: ws, loading: false })
-          })
-        })
+            await Promise.all(
+              wIDs.map(async (id) => await API.getWorkout(id))
+            ).then((workouts) => {
+              const ws = workouts.map((w) => {
+                return w.name
+              })
+              this.setState({ workouts: ws, loading: false })
+            })
+          }
+        )
         this._isMounted = true
       } catch (error) {
         console.log(error)
       }
+    }
+  }
+
+  componentDidUpdate() {
+    const { route } = this.props
+    if (route.params) {
+      console.log(route.params.partyName)
     }
   }
 
@@ -117,7 +126,7 @@ class PartyInfoScreen extends React.Component {
 
     return (
       <ScrollView style={styles.container}>
-        <H3>{this.params.partyName}</H3>
+        <H3>{this.props.route.params.partyName}</H3>
         <Text
           style={{
             marginTop: 10,
@@ -159,7 +168,10 @@ class PartyInfoScreen extends React.Component {
             Upcoming Events:
           </Text>
           <AddWorkoutButton />
-          <PartySettingsButton partyID={this.params.partyID} />
+          <PartySettingsButton
+            partyID={this.props.route.params.partyID}
+            partyName={this.props.route.params.partyName}
+          />
         </View>
         <ScrollView
           style={{

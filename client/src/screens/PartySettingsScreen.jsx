@@ -18,7 +18,7 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import FriendsList from '../components/FriendsList'
 import UserContext from '../context/UserContext'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, StackActions } from '@react-navigation/native'
 
 function Member({ name, isRemoving, partyID, id }) {
   const [visible, setVisible] = useState(true)
@@ -100,19 +100,39 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
   )
 }
 
+function ConfirmPartyName({ id, name }) {
+  const navigation = useNavigation()
+
+  return (
+    <OutlinedButton
+      icon="check"
+      text="Confirm"
+      onPress={() => {
+        API.updateWorkoutParty(id, { name: name })
+        navigation.dispatch(
+          StackActions.replace('Party Info', {
+            partyName: name,
+            partyID: id
+          })
+        )
+      }}
+    />
+  )
+}
+
 class PartySettingsScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       members: [],
       refreshing: true,
-      name: '',
+      name: props.route.params.partyName,
       keyboardOpen: false,
       isRemoving: false,
       modalVisible: false,
       buttonText: 'Remove Members'
     }
-    console.log(props)
+    console.log(props.route.params.partyName)
     this.id = props.route.params.partyID
     this._isMounted = false
     this.keyboardDidShowListener = null
@@ -132,7 +152,6 @@ class PartySettingsScreen extends React.Component {
 
       try {
         API.getWorkoutParty(this.id).then((result) => {
-          this.setState({ name: result.name })
           const memberIDs = result.members
           Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
             (users) => {
@@ -207,13 +226,7 @@ class PartySettingsScreen extends React.Component {
             onChangeText={(value) => this.setState({ name: value })}
           />
           <View style={{ alignItems: 'center' }}>
-            <OutlinedButton
-              icon="check"
-              text="Confirm"
-              onPress={() => {
-                API.updateWorkoutParty(this.id, { name: this.state.name })
-              }}
-            />
+            <ConfirmPartyName id={this.id} name={this.state.name} />
           </View>
         </View>
         <View style={{ marginTop: 24 }}>
