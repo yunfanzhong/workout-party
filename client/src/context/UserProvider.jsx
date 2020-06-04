@@ -32,7 +32,7 @@ class UserProvider extends React.Component {
             username: 'jk.jewik'
           }
         ],
-        _id: '5ecf06e4b30266fa29c22b0b',
+        _id: '5ecef59120368361f45eba00',
         username: 'ilikesocks',
         displayName: 'John Doe',
         facebookID: '2679680868944918',

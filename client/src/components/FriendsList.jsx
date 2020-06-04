@@ -64,8 +64,8 @@ const styles = StyleSheet.create({
   },
   friend: {
     flexDirection: 'row',
-    marginHorizontal: '5%',
-    marginBottom: '1%'
+    marginHorizontal: 8,
+    marginBottom: 4
   }
 })
 
