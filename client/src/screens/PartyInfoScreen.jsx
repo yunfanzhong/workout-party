@@ -4,7 +4,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Button
+  Button,
+  ScrollView
 } from 'react-native'
 import {
   FlingGestureHandler,
@@ -48,7 +49,9 @@ function AddWorkoutButton(props) {
 	const navigation = useNavigation()
 	return(
 		<TouchableOpacity
-        onPress={() => navigation.navigate('Create Event')}
+        onPress={() => navigation.navigate('Create Event', {
+            partyID: props.partyID
+          })}
         style={{ width: 50, height: 50, marginTop: 10, marginLeft: 15 }}
       >
         <AddCircleIcon width={40} height={40} fill="black" />
@@ -61,7 +64,7 @@ function PartySettingsButton(props) {
 		 <TouchableOpacity
         onPress={() =>
           navigation.navigate('Party Settings', {
-            partyID: route.params.partyID
+            partyID: props.partyID
           })
         }
         style={{ width: 50, marginTop: 10, marginLeft: 5 }}
@@ -82,15 +85,31 @@ class PartyInfoScreen extends React.Component {
 
 	componentDidMount() {
 		const { route } = this.props
-		API.getWorkoutParty(route.params.partyID).then((data) => {
-			this.setState({
-				loading: false,
-				members: data.members,
-				workouts: data.workouts
+		try {
+			API.getWorkoutParty(route.params.partyID).then(async (data) => {
+				const mIDs = data.members
+				const wIDs = data.workouts
+				await Promise.all(mIDs.map(async (id) => await API.getUser(id))).then(
+					(users) => {
+						const members = users.map((user) => {
+                			return user.username
+              			})
+						this.setState({ members: members })
+					})
+				await Promise.all(wIDs.map(async (id) => await API.getWorkout(id))).then(
+					(workouts) => {
+						const ws = workouts.map((w) => {
+                			return w.name
+              			})
+						this.setState({ workouts: ws, loading: false })
+					})
 			})
-		})
+		}
+		catch(error) {
+			console.log(error)
+		}
 	}
-
+	
 	render() {
 		const memberList = this.state.members.map((m) => (
 			<MemberListItem name={m} /> ))
@@ -99,7 +118,7 @@ class PartyInfoScreen extends React.Component {
 			<EventListItem name={w} /> ))
 
  	return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Header />
       <Text
         style={{
@@ -114,9 +133,9 @@ class PartyInfoScreen extends React.Component {
         Member List:
       </Text>
 
-      <View style = {{ justifyContent: 'flex-start', borderWidth: 2, borderColor: '#20232a', margin: 8, marginBottom: 0, padding: 5 }}>
+      <ScrollView style = {{ borderWidth: 2, borderColor: '#20232a', margin: 8, marginBottom: 0, padding: 5, width: '95%', height: 250}}>
      <Text> { memberList } </Text>
-     </View>
+     </ScrollView>
 
       <View style = {{ flexDirection: 'row', justifyContent: 'flex-start' }}>
       <Text
@@ -134,10 +153,10 @@ class PartyInfoScreen extends React.Component {
       <AddWorkoutButton />
       <PartySettingsButton />
       </View>
-      <View style = {{ justifyContent: 'flex-start', borderWidth: 2, borderColor: '#20232a', marginLeft: 8, marginRight: 8, padding: 5 }}>
+      <ScrollView style = {{ borderWidth: 2, borderColor: '#20232a', marginLeft: 8, marginRight: 8, padding: 5, width: '95%', height: 250 }}>
       <Text> { eventList } </Text>
-      </View>
-      </View>
+      </ScrollView>
+      </ScrollView>
   )
  }
 }
