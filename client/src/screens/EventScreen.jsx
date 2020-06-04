@@ -46,8 +46,6 @@ class Event extends React.Component {
   componentDidMount() {
     try {
       API.getWorkout(this.route.params.id).then((array) => {
-        console.log(array)
-        console.log(array.exercises[0].exerciseID)
         this.setState({
           data: array.exercises,
           loading: false,

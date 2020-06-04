@@ -75,13 +75,10 @@ class AddFriendModal extends React.Component {
 
   addNewFriend = async (userID, friendName, context) => {
     try {
-      const friend = await API.addFriend({
-        // maybe addFriendToUser
-        friendName
-      })
+      await API.addFriendToUser(friendName)
       this.updateFriendList(friendName, context)
     } catch (err) {
-      console.log('Error')
+      console.log(err)
     }
   }
 
