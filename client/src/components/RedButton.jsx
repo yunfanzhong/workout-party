@@ -1,15 +1,26 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 
-const RedButton = ({ onPress, text, style, center, elevation = 0 }) => {
+const RedButton = ({
+  onPress,
+  text,
+  style,
+  center,
+  textAlign = 'center',
+  elevation = 0
+}) => {
   const buttonStyles = {
     ...styles.button,
     ...{ alignSelf: center ? 'center' : undefined, elevation },
     ...style
   }
+  const textStyles = {
+    ...styles.buttonText,
+    ...{ textAlign: textAlign }
+  }
   return (
     <TouchableOpacity style={buttonStyles} onPress={onPress}>
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={textStyles}>{text}</Text>
     </TouchableOpacity>
   )
 }

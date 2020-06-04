@@ -95,8 +95,8 @@ class HomeScreenContent extends React.Component {
           }}
         >
           <ScrollView>
-            {this.state.upcomingWorkouts.map(({ key, name, time }) => (
-              <UpcomingListItem name={name} time={time} key={key} />
+            {this.state.upcomingWorkouts.map(({ id, key, name, time }) => (
+              <UpcomingListItem id={id} name={name} time={time} key={key} />
             ))}
           </ScrollView>
         </View>
@@ -143,13 +143,16 @@ function QuoteText({ children }) {
   )
 }
 
-function UpcomingListItem({ name, time }) {
+function UpcomingListItem({ name, id, time }) {
   const navigation = useNavigation()
 
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('Event', { partyName: name })
+        navigation.navigate('Event', {
+          partyName: name,
+          id: props.id
+        })
       }}
     >
       <View
