@@ -18,20 +18,8 @@ class UserProvider extends React.Component {
   }
 
   handleLogin = async () => {
-    let facebookID
     try {
-      facebookID = (await logInWithFacebook()).id
-    } catch (err) {
-      await new Promise((resolve) =>
-        Alert.alert(
-          'Oops!',
-          "You don't appear to be verified on our Facebook developer dashboard. You can still use the app, so press continue.",
-          [{ text: 'continue', onPress: () => resolve() }]
-        )
-      )
-      facebookID = Math.round((Math.random() * 10 ** 10).toString())
-    }
-    try {
+      const facebookID = (await logInWithFacebook()).id
       const { user, doesNotExist } = await API.getUserByFacebookID(facebookID)
       console.log('[DEBUG] Retrieved user:')
       console.log(user)
