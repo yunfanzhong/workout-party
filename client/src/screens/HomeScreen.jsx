@@ -4,77 +4,73 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
+import moment from 'moment'
+import API from '../utils/API'
+import UserContext from '../context/UserContext'
 
-const parties = [
-  // MOCK DATA
-  {
-    id: 1,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Tues - May 12, 2020'
-  },
-  {
-    id: 2,
-    name: 'IOB',
-    time: '7 PM, Tues - May 12, 2020'
-  },
-  {
-    id: 3,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Wed - May 13, 2020'
-  },
-  {
-    id: 4,
-    name: 'IOB',
-    time: '7 PM, Wed - May 13, 2020'
-  },
-  {
-    id: 5,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Thurs - May 14, 2020'
-  },
-  {
-    id: 6,
-    name: 'IOB',
-    time: '7 PM, Thurs - May 14, 2020'
-  },
-  {
-    id: 7,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Fri - May 15, 2020'
-  },
-  {
-    id: 8,
-    name: 'IOB',
-    time: '7 PM, Thurs - May 14, 2020'
-  },
-  {
-    id: 9,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Fri - May 15, 2020'
-  },
-  {
-    id: 10,
-    name: 'IOB',
-    time: '7 PM, Fri - May 15, 2020'
-  },
-  {
-    id: 93,
-    name: '108 1/7 Revolution',
-    time: '9 AM, Fri - May 15, 2020'
-  },
-  {
-    id: 103,
-    name: 'IOB',
-    time: '7 PM, Fri - May 15, 2020'
+function getTimeOfNextOccurrence(day, hour, minute) {
+  const time = moment().startOf('isoWeek').day(day).hour(hour).minute(minute)
+  if (time < moment()) {
+    return time.add(1, 'week')
   }
-]
+  return time
+}
 
-class HomeScreen {
+function HomeScreen() {
+  return (
+    <UserContext.Consumer>
+      {(context) => <HomeScreenContent userID={context.user._id} />}
+    </UserContext.Consumer>
+  )
+}
+
+class HomeScreenContent extends React.Component {
+  state = {
+    upcomingWorkouts: null
+  }
+
+  componentDidMount() {
+    API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
+      console.log(upcomingWorkouts)
+      const workouts = upcomingWorkouts.flatMap((workout) =>
+        workout.days.map((day) => ({
+          name: workout.name,
+          id: workout._id,
+          time: getTimeOfNextOccurrence(day, workout.hour, workout.minute)
+        }))
+      )
+      workouts.sort((a, b) => a.time.diff(b.time))
+      this.setState({
+        upcomingWorkouts: workouts.map(({ name, id, time }) => ({
+          name,
+          id,
+          time: time.format('ddd, MMM D, YY - h:mm A'),
+          key: id + time.format()
+        }))
+      })
+    })
+  }
+
   render() {
+    if (!this.state.upcomingWorkouts) {
+      return (
+        <View
+          style={{
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <ActivityIndicator size="large" color="#ff2559" />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <QuoteText>
@@ -99,8 +95,8 @@ class HomeScreen {
           }}
         >
           <ScrollView>
-            {parties.map(({ id, name, time }) => (
-              <UpcomingListItem name={name} time={time} key={id} />
+            {this.state.upcomingWorkouts.map(({ key, name, time }) => (
+              <UpcomingListItem name={name} time={time} key={key} />
             ))}
           </ScrollView>
         </View>
