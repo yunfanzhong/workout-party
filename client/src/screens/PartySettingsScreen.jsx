@@ -24,7 +24,6 @@ function Member({ name, isRemoving, partyID, id, memberList, routeKey }) {
   const [visible, setVisible] = useState(true)
   const navigation = useNavigation()
   let members = memberList
-  console.log(routeKey)
 
   const baseComponent = (
     <View style={styles.friend}>
@@ -117,7 +116,7 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
   )
 }
 
-function ConfirmPartyName({ id, name }) {
+function ConfirmPartyName({ id, name, routeKey }) {
   const navigation = useNavigation()
 
   return (
@@ -128,11 +127,11 @@ function ConfirmPartyName({ id, name }) {
         API.updateWorkoutParty(id, { name: name })
         navigation.dispatch({
           ...CommonActions.setParams({
-            partyName: name,
-            partyID: id
+            partyName: name
           }),
-          source: 'Party Info'
+          source: routeKey
         })
+        Keyboard.dismiss()
       }}
     />
   )
@@ -152,6 +151,7 @@ class PartySettingsScreen extends React.Component {
     }
     this.id = props.route.params.partyID
     this.prevRouteKey = props.route.params.routeKey
+    this.navigation = props.navigation
     this._isMounted = false
     this.keyboardDidShowListener = null
     this.keyboardDidHideListener = null
@@ -232,6 +232,13 @@ class PartySettingsScreen extends React.Component {
               const newMember = await API.getUser(member._id)
               members.push({ id: newMember._id, name: newMember.username })
               this.setState({ members: members })
+              this.navigation.dispatch({
+                ...CommonActions.setParams({
+                  members: members,
+                  forceUpdate: true
+                }),
+                source: this.prevRouteKey
+              })
             } else {
               console.log('member already added!')
             }
@@ -244,7 +251,11 @@ class PartySettingsScreen extends React.Component {
             onChangeText={(value) => this.setState({ name: value })}
           />
           <View style={{ alignItems: 'center' }}>
-            <ConfirmPartyName id={this.id} name={this.state.name} />
+            <ConfirmPartyName
+              id={this.id}
+              name={this.state.name}
+              routeKey={this.prevRouteKey}
+            />
           </View>
         </View>
         <View style={{ marginTop: 24 }}>
