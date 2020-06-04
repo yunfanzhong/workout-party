@@ -2,6 +2,7 @@ const express = require('express')
 
 const User = require('../models/user')
 const WorkoutParty = require('../models/workoutParty')
+const Workout = require('../models/workout')
 
 const userRouter = express.Router()
 
@@ -30,6 +31,27 @@ userRouter.get('/:userID', async (req, res) => {
       'username _id'
     )
     res.json({ ...user.toObject(), friends })
+  } catch (err) {
+    res.status(404).json({ error: 'Error finding user.' })
+  }
+})
+
+userRouter.get('/:userID/upcoming', async (req, res) => {
+  const { userID } = req.params
+  try {
+    const user = await User.findById(userID.trim()).select('workoutParties')
+    if (user === null) {
+      throw new Error()
+    }
+    const upcomingWorkouts = []
+    for (const partyID of user.workoutParties) {
+      const party = await WorkoutParty.findById(partyID).select('workouts')
+      const workouts = await Workout.find({ _id: { $in: party.workouts } })
+      workouts.forEach((workout) => {
+        upcomingWorkouts.push(workout.toObject())
+      })
+    }
+    res.json(upcomingWorkouts)
   } catch (err) {
     res.status(404).json({ error: 'Error finding user.' })
   }

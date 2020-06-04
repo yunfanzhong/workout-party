@@ -48,6 +48,13 @@ const API = {
     return { user, doesNotExist: false }
   },
 
+  // Untested - comment this out when you test it
+  async getUpcomingWorkouts(id) {
+    const res = await fetch(`${BASE_URL}/users/${id}/upcoming`)
+    const upcomingWorkouts = res.json()
+    return upcomingWorkouts
+  },
+
   // userInfo: { username, displayName, facebookID }
   async createUser(userInfo) {
     const res = await fetch(`${BASE_URL}/users`, {
