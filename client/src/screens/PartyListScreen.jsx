@@ -107,20 +107,11 @@ class PartyListScreen extends React.Component {
         this._isMounted = true
       }
     }
+    this.props.navigation.addListener('focus', this._onRefresh)
   }
 
   componentWillUnmount() {
     this._isMounted = false
-  }
-
-  componentDidUpdate() {
-    if (this._isMounted) {
-      const { route } = this.props
-      if (route.params && route.params.forceUpdate) {
-        this.navigation.setParams({ forceUpdate: false })
-        this._onRefresh()
-      }
-    }
   }
 
   _onRefresh = async () => {

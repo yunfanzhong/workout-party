@@ -21,6 +21,9 @@ async function fetch(...args) {
   console.log(...args)
   const res = await window.fetch(...args)
   console.log(`[DEBUG] Performed fetch with response code ${res.status}`)
+  if (!res.ok) {
+    throw new Error()
+  }
   return res
 }
 
@@ -127,7 +130,7 @@ const API = {
   },
 
   async addWorkoutToParty(wpID, workoutID) {
-    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/workouts`, {
       method: 'POST',
       body: JSON.stringify({ workoutID }),
       headers: { 'Content-Type': 'application/json' }

@@ -99,7 +99,7 @@ class CreateEventScreen extends React.Component {
           exerciseID: id
         }))
         try {
-          if (!this.props.route.params?.workoutPartyID) {
+          if (!this.props.route.params?.partyID) {
             this.setState({
               error:
                 '[DEBUG]: Please pass a workout party ID through navigation parameters to this screen!'
@@ -114,7 +114,7 @@ class CreateEventScreen extends React.Component {
             })
             // Second part is untested
             await API.addWorkoutToParty(
-              this.props.route.params.workoutPartyID,
+              this.props.route.params.partyID,
               createdWorkout._id
             )
             this.props.navigation.goBack()
