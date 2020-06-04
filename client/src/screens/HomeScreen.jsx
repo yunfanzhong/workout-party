@@ -30,30 +30,45 @@ function HomeScreen() {
 }
 
 class HomeScreenContent extends React.Component {
-  state = {
-    upcomingWorkouts: null
+  constructor(props) {
+    super(props)
+    this.state = {
+      upcomingWorkouts: null
+    }
+    this._isMounted = false
   }
 
   componentDidMount() {
-    API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
-      console.log(upcomingWorkouts)
-      const workouts = upcomingWorkouts.flatMap((workout) =>
-        workout.days.map((day) => ({
-          name: workout.name,
-          id: workout._id,
-          time: getTimeOfNextOccurrence(day, workout.hour, workout.minute)
-        }))
-      )
-      workouts.sort((a, b) => a.time.diff(b.time))
-      this.setState({
-        upcomingWorkouts: workouts.map(({ name, id, time }) => ({
-          name,
-          id,
-          time: time.format('ddd, MMM D, YY - h:mm A'),
-          key: id + time.format()
-        }))
-      })
-    })
+    if (!this._isMounted) {
+      try {
+        API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
+          console.log(upcomingWorkouts)
+          const workouts = upcomingWorkouts.flatMap((workout) =>
+            workout.days.map((day) => ({
+              name: workout.name,
+              id: workout._id,
+              time: getTimeOfNextOccurrence(day, workout.hour, workout.minute)
+            }))
+          )
+          workouts.sort((a, b) => a.time.diff(b.time))
+          this.setState({
+            upcomingWorkouts: workouts.map(({ name, id, time }) => ({
+              name,
+              id,
+              time: time.format('ddd, MMM D, YY - h:mm A'),
+              key: id + time.format()
+            }))
+          })
+        })
+        this._isMounted = true
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   render() {
