@@ -5,10 +5,14 @@ Project for CS 97.
 Team: Ethan Shahbazian, Frank Zheng, Jason Jewik, Yunfan Zhong
 
 ## Backend server setup
-
-There is a file in the Google Drive called `Server .env`. Copy and paste its
-contents into `server/.env`. Then run:
-
+Paste the following into `server/.env`.
+```
+MONGO_URI=mongodb+srv://frank:Wk0KYnSePbKrCBzN@the-milky-way-xgvel.mongodb.net/workout-party?retryWrites=true&w=majority
+PORT=3000
+FACEBOOK_APP_ID=703716050458717
+FACEBOOK_APP_SECRET=20e2f790d8bb774693971cc16430c130
+```
+Then run:
 ```
 cd server
 npm i
@@ -16,8 +20,15 @@ npm start
 ```
 
 ## Frontend setup
+Paste the following into `client/env.json`.
 
-There is a file in the Google Drive called `Client env.json`. Copy and paste its contents into `client/envjson`. Then run:
+```
+{
+  "facebookAppID": "703716050458717"
+}
+```
+
+Then run:
 
 ```
 npm i -g expo-cli
@@ -25,4 +36,9 @@ npm i
 npm start
 ```
 
-The Expo server should start at `localhost:19002`. If you have an Android device, you should be able to download the Expo app and scan the QR code. Otherwise, try following the instructions [here](https://docs.expo.io/workflow/android-studio-emulator/) to run an Android emulator on your computer.
+The Expo server should start at `localhost:19002`.
+
+## Android setup
+If you have an Android device, you should be able to download the Expo app and scan the QR code [here](https://expo.io/@franktzheng/workout-party) to start the app.
+
+Otherwise, follow the instructions [here](https://docs.expo.io/workflow/android-studio-emulator/) to run an Android emulator on your computer.
