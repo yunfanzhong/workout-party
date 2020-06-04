@@ -112,7 +112,6 @@ class PartySettingsScreen extends React.Component {
       modalVisible: false,
       buttonText: 'Remove Members'
     }
-    this.id = props.route.params.partyID
     this._isMounted = false
     this.keyboardDidShowListener = null
     this.keyboardDidHideListener = null
@@ -130,8 +129,7 @@ class PartySettingsScreen extends React.Component {
       )
 
       try {
-        API.getWorkoutParty(this.id).then((result) => {
-          this.setState({ name: result.name })
+        API.getWorkoutParty(this.props.route.params.partyID).then((result) => {
           const memberIDs = result.members
           Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
             (users) => {
@@ -160,7 +158,7 @@ class PartySettingsScreen extends React.Component {
   _onRefresh = () => {
     this.setState({ refreshing: true })
     try {
-      API.getWorkoutParty(this.id).then((result) => {
+      API.getWorkoutParty(this.props.route.params.partyID).then((result) => {
         const memberIDs = result.members
         Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
           (users) => {

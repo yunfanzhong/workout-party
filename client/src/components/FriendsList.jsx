@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native'
-
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 const UserFriend = ({ onPress, friend, button }) => {
   const baseComponent = (
     <View style={styles.friend}>
       <View style={{ flexDirection: 'row' }}>
-        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Icon name="person" size={32} color="#565a5e" />
         <Text style={styles.friendText}>{friend.username}</Text>
       </View>
     </View>
@@ -60,7 +59,8 @@ const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
 const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
-    textAlignVertical: 'center'
+    textAlignVertical: 'center',
+    marginLeft: 12
   },
   friend: {
     flexDirection: 'row',

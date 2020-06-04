@@ -30,8 +30,9 @@ const styles = StyleSheet.create({
   },
   h3: {
     marginBottom: 16,
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'center',
-    width: '100%'
+    width: '100%',
+    fontWeight: 'bold'
   }
 })

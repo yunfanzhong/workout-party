@@ -3,22 +3,21 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
-  RefreshControl
+  ScrollView
 } from 'react-native'
 import React from 'react'
-import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
-import GroupIcon from '../../assets/images/group-24px.svg'
-import ListItem from '../components/ListItem.jsx'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 import UserContext from '../context/UserContext'
 import API from '../utils/API'
+import FullPageSpinner from '../components/FullPageSpinner'
+import Bubble from '../components/Bubble'
 
 function PartyListItem(props) {
   const navigation = useNavigation()
 
   return (
-    <ListItem
+    <Bubble
       onPress={() => {
         navigation.navigate('Party Info', {
           partyName: props.name,
@@ -30,12 +29,11 @@ function PartyListItem(props) {
         style={{
           flex: 1,
           flexDirection: 'row',
-          marginLeft: '10%',
           alignItems: 'center'
         }}
       >
-        <GroupIcon width={40} height={40} marginRight={10} fill="black" />
-        <View style={{ flex: 1, flexDirection: 'column' }}>
+        <Icon name="group" size={32} color="#565a5e" />
+        <View style={{ flex: 1, flexDirection: 'column', marginLeft: 12 }}>
           <Text
             style={{
               fontFamily: 'Roboto',
@@ -45,10 +43,10 @@ function PartyListItem(props) {
           >
             {props.name}
           </Text>
-          <Text>{props.numMembers} people</Text>
+          <Text style={{ color: 'gray' }}>{props.numMembers} people</Text>
         </View>
       </View>
-    </ListItem>
+    </Bubble>
   )
 }
 
@@ -62,11 +60,24 @@ function CreatePartyButton() {
       }}
       style={{
         position: 'absolute',
-        right: '6%',
-        bottom: '4%'
+        right: 24,
+        bottom: 24
       }}
     >
-      <AddCircleIcon width={80} height={80} fill="#ff2559" />
+      <View
+        style={{
+          backgroundColor: 'white',
+          borderWidth: 1,
+          borderColor: '#ededed',
+          borderRadius: 32,
+          shadowColor: 'rgba(0, 0, 0, 0.1)',
+          shadowOpacity: 0.8,
+          elevation: 6,
+          padding: 8
+        }}
+      >
+        <Icon name="add" size={48} color="#ff2559" />
+      </View>
     </TouchableOpacity>
   )
 }
@@ -134,19 +145,15 @@ class PartyListScreen extends React.Component {
       return 0
     })
 
+    if (this.state.refreshing) {
+      return <FullPageSpinner />
+    }
+
     return (
-      <View style={styles.container}>
+      <>
         <ScrollView
-          style={{
-            marginTop: 18,
-            marginBottom: 18
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
-          }
+          style={styles.container}
+          contentContainerStyle={{ padding: 24 }}
         >
           <UserContext.Consumer>
             {(context) =>
@@ -165,7 +172,7 @@ class PartyListScreen extends React.Component {
           </UserContext.Consumer>
         </ScrollView>
         <CreatePartyButton />
-      </View>
+      </>
     )
   }
 }
@@ -173,7 +180,7 @@ class PartyListScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f7f7f7'
   }
 })
 

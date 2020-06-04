@@ -76,11 +76,13 @@ const API = {
 
   // Untested - comment this out when you test it
   async addFriendToUser(userID, friendUsername) {
-    await fetch(`${BASE_URL}/users/${userID}`, {
+    const res = await fetch(`${BASE_URL}/users/${userID}/friends`, {
       method: 'POST',
       body: JSON.stringify({ username: friendUsername }),
       headers: { 'Content-Type': 'application/json' }
     })
+    const { id } = await res.json()
+    return id
   },
 
   // Untested - comment this out when you test it
@@ -88,7 +90,7 @@ const API = {
   async updateUser(userID, updates) {
     const res = await fetch(`${BASE_URL}/users/${userID}`, {
       method: 'POST',
-      body: JSON.stringify(userInfo),
+      body: JSON.stringify(updates),
       headers: { 'Content-Type': 'application/json' }
     })
     const createdUser = res.json()

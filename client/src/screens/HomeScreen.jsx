@@ -4,7 +4,6 @@ import {
   Text,
   View,
   ScrollView,
-  TouchableOpacity,
   ActivityIndicator
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -12,6 +11,8 @@ import { useNavigation } from '@react-navigation/native'
 import moment from 'moment'
 import API from '../utils/API'
 import UserContext from '../context/UserContext'
+import Bubble from '../components/Bubble'
+import FullPageSpinner from '../components/FullPageSpinner'
 
 function getTimeOfNextOccurrence(day, hour, minute) {
   const time = moment().startOf('isoWeek').day(day).hour(hour).minute(minute)
@@ -36,7 +37,6 @@ class HomeScreenContent extends React.Component {
 
   componentDidMount() {
     API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
-      console.log(upcomingWorkouts)
       const workouts = upcomingWorkouts.flatMap((workout) =>
         workout.days.map((day) => ({
           name: workout.name,
@@ -58,18 +58,7 @@ class HomeScreenContent extends React.Component {
 
   render() {
     if (!this.state.upcomingWorkouts) {
-      return (
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <ActivityIndicator size="large" color="#ff2559" />
-        </View>
-      )
+      return <FullPageSpinner />
     }
     return (
       <View style={styles.container}>
@@ -107,18 +96,11 @@ class HomeScreenContent extends React.Component {
 
 function QuoteText({ children }) {
   return (
-    <View
+    <Bubble
       style={{
-        padding: 12,
-        borderWidth: 1,
-        borderColor: '#ff2559',
-        borderRadius: 8,
         backgroundColor: '#ffe9ee',
-        elevation: 8,
-        shadowColor: 'rgba(0, 0, 0, 0.1)',
-        shadowOpacity: 0.8,
-        shadowRadius: 10,
-        shadowOffset: { height: 24 }
+        borderColor: '#ff2559',
+        elevation: 8
       }}
     >
       <Text
@@ -139,7 +121,7 @@ function QuoteText({ children }) {
       >
         {children}
       </Text>
-    </View>
+    </Bubble>
   )
 }
 
@@ -147,42 +129,29 @@ function UpcomingListItem({ name, id, time }) {
   const navigation = useNavigation()
 
   return (
-    <TouchableOpacity
+    <Bubble
+      style={{ flexDirection: 'row', alignItems: 'center' }}
       onPress={() => {
         navigation.navigate('Event', {
-          partyName: name,
-          id: props.id
+          id,
+          partyName: name
         })
       }}
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 12,
-          width: '100%',
-          backgroundColor: '#fff',
-          borderWidth: 1,
-          borderColor: '#ededed',
-          borderRadius: 8,
-          marginBottom: 8
-        }}
-      >
-        <Icon name="fitness-center" size={32} color="#ff2559" />
-        <View style={{ flexDirection: 'column', marginLeft: 12 }}>
-          <Text
-            style={{
-              fontFamily: 'Roboto',
-              fontSize: 18,
-              textAlign: 'left'
-            }}
-          >
-            {name}
-          </Text>
-          <Text style={{ color: 'gray' }}>{time}</Text>
-        </View>
+      <Icon name="event" size={32} color="#565a5e" />
+      <View style={{ flexDirection: 'column', marginLeft: 12 }}>
+        <Text
+          style={{
+            fontFamily: 'Roboto',
+            fontSize: 18,
+            textAlign: 'left'
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ color: 'gray' }}>{time}</Text>
       </View>
-    </TouchableOpacity>
+    </Bubble>
   )
 }
 
@@ -191,7 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f7f7f7',
     borderBottomWidth: 10,
-    padding: 24,
+    padding: 18,
     flexDirection: 'column'
   }
 })
