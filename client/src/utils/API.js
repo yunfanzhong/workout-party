@@ -150,8 +150,11 @@ const API = {
   },
 
   // WORKOUTS
-  async getWorkout(id) {
-    const res = await fetch(`${BASE_URL}/workouts/${id}`)
+  async getWorkout(_id) {
+    const res = await fetch(`${BASE_URL}/workouts/${_id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
     const workout = res.json()
     return workout
   },

@@ -59,7 +59,10 @@ function UpcomingListItem(props) {
   return (
     <ListItem
       onPress={() => {
-        navigation.navigate('Event', { partyName: props.partyName })
+        navigation.navigate('Event', {
+          partyName: props.partyName,
+          id: props.id
+        })
       }}
     >
       <View
@@ -93,6 +96,7 @@ function UpcomingList(props) {
   const list = upcomingList.map((event) => (
     <UpcomingListItem
       key={event.id}
+      id={event.id}
       partyName={event.partyName}
       eventTime={event.time}
     />
@@ -114,7 +118,7 @@ function HomeScreen() {
           upcomingList={[
             // MOCK DATA
             {
-              id: 1,
+              id: '5ed7d5dbd530adb231a50056',
               partyName: '108 1/7 Revolution',
               time: '9 AM, Tues - May 12, 2020'
             },

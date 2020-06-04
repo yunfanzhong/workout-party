@@ -4,7 +4,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Button
+  Button,
+  ActivityIndicator
 } from 'react-native'
 import {
   FlingGestureHandler,
@@ -17,30 +18,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import exercises from '../utils/exercises.json'
 import API from '../utils/API'
 
-function Event({ navigation, route }) {
-  const [currentExerciseNumber, setCurrentExerciseNumber] = React.useState(0)
-  const [loading, setLoading] = React.useState(true)
-  const [data, setData] = React.useState(null)
-  const [currentImageSource, setCurrentImageSource] = React.useState(null)
-
-  React.useEffect(async () => {
-    await API.getWorkout(route.params.id).then((data) => {
-      setData(data)
-      setLoading(false)
-      setCurrentImageSource(imageSources[data.exercises[0].exerciseID])
-    })
-  }, [])
-
-  const exerciseArrayValues = []
-  const exercisesArray = []
-  if (!loading) {
-    for (let i = 0; i < data.length; i++) {
-      exerciseArrayValues[i] = data.exercises[i].exerciseID
-      exercisesArray[i] = exercises[exerciseArrayValues[i]]
-    }
-  }
-
-  const imageSources = {
+class Event extends React.Component {
+  imageSources = {
     '1': require('../../assets/images/exercise1.png'),
     '2': require('../../assets/images/exercise2.png'),
     '3': require('../../assets/images/exercise3.png'),
@@ -50,79 +29,127 @@ function Event({ navigation, route }) {
     '7': require('../../assets/images/exercise7.png')
   }
 
-  const incrementExercise = () => {
-    if (currentExerciseNumber !== exercisesArray.length - 1) {
-      setCurrentExerciseNumber(currentExerciseNumber + 1)
-      setCurrentImageSource(
-        imageSources[exerciseArrayValues[currentExerciseNumber + 1]]
-      )
+  constructor(props) {
+    super(props)
+    this.state = {
+      currentExerciseNumber: 0,
+      loading: true,
+      data: [],
+      currentImageSource: null
+    }
+    this.props = props
+    this.route = props.route
+    console.log(props)
+    this.navigation = props.navigation
+  }
+
+  componentDidMount() {
+    try {
+      API.getWorkout(this.route.params.id).then((array) => {
+        this.setState({
+          data: array.exercises,
+          loading: false,
+          currentImageSource: this.imageSources[array.exercises[0].exerciseID]
+        })
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  incrementExercise() {
+    if (this.state.currentExerciseNumber !== this.state.data.length - 1) {
+      this.setState({
+        currentExerciseNumber: this.state.currentExerciseNumber + 1,
+        currentImageSource: this.imageSources[
+          this.state.data[this.state.currentExerciseNumber + 1].exerciseID
+        ]
+      })
     } else {
-      navigation.navigate('Home')
+      this.navigation.navigate('Home')
     }
   }
 
-  const decrementExercise = () => {
-    if (currentExerciseNumber !== 0) {
-      setCurrentExerciseNumber(currentExerciseNumber - 1)
-      setCurrentImageSource(
-        imageSources[exerciseArrayValues[currentExerciseNumber - 1]]
+  decrementExercise() {
+    if (this.state.currentExerciseNumber !== 0) {
+      this.setState({
+        currentExerciseNumber: this.state.currentExerciseNumber - 1,
+        currentImageSource: this.imageSources[
+          this.state.data[this.state.currentExerciseNumber - 1].exerciseID
+        ]
+      })
+    }
+  }
+
+  render() {
+    const {
+      loading,
+      data,
+      currentImageSource,
+      currentExerciseNumber
+    } = this.state
+
+    if (loading) {
+      return (
+        <ActivityIndicator
+          style={{ justifyContent: 'center', marginTop: '80%' }}
+          size="large"
+          color="#ff2559"
+        />
       )
     }
-  }
-
-  return loading ? (
-    <Text>Hello</Text>
-  ) : (
-    <View style={styles.container}>
-      <View style={styles.image}>
-        <Image
-          source={currentImageSource}
-          style={{ width: 300, height: 320 }}
-        />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: '80%',
-          marginTop: 80,
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <View>
-          <TouchableOpacity onPress={() => decrementExercise()}>
-            {currentExerciseNumber !== 0 ? (
-              <Icon name="skip-previous" size={60} color="black" />
-            ) : (
-              <Icon name="skip-previous" size={60} color="grey" />
-            )}
-          </TouchableOpacity>
+    return (
+      <View style={styles.container}>
+        <View style={styles.image}>
+          <Image
+            source={currentImageSource}
+            style={{ width: 300, height: 320 }}
+          />
         </View>
-        <View style={styles.exercises}>
-          <Text style={styles.exerciseNameText}>
-            {exercisesArray[currentExerciseNumber]}
-          </Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '80%',
+            marginTop: 80,
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <View>
+            <TouchableOpacity onPress={() => this.decrementExercise()}>
+              {currentExerciseNumber !== 0 ? (
+                <Icon name="skip-previous" size={60} color="black" />
+              ) : (
+                <Icon name="skip-previous" size={60} color="grey" />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.exercises}>
+            <Text style={styles.exerciseNameText}>
+              {exercises[data[currentExerciseNumber].exerciseID]}
+            </Text>
+            <Text style={styles.exerciseRepText}>
+              Reps: {data[currentExerciseNumber].reps}
+            </Text>
+          </View>
+          <View>
+            <TouchableOpacity onPress={() => this.incrementExercise()}>
+              {currentExerciseNumber !== data.length - 1 ? (
+                <Icon name="skip-next" size={60} color="black" />
+              ) : (
+                <Icon name="done" size={60} color="green" />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ marginTop: 40 }}>
           <Text style={styles.exerciseRepText}>
-            Reps: {data.exercises[currentExerciseNumber].reps}
+            Exercise: {currentExerciseNumber + 1} of {data.length}
           </Text>
         </View>
-        <View>
-          <TouchableOpacity onPress={() => incrementExercise()}>
-            {currentExerciseNumber !== exercisesArray.length - 1 ? (
-              <Icon name="skip-next" size={60} color="black" />
-            ) : (
-              <Icon name="done" size={60} color="green" />
-            )}
-          </TouchableOpacity>
-        </View>
       </View>
-      <View style={{ marginTop: 40 }}>
-        <Text style={styles.exerciseRepText}>
-          Exercise: {currentExerciseNumber + 1} of {exercisesArray.length}
-        </Text>
-      </View>
-    </View>
-  )
+    )
+  }
 }
 
 const styles = StyleSheet.create({
