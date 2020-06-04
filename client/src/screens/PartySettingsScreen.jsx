@@ -112,6 +112,7 @@ class PartySettingsScreen extends React.Component {
       modalVisible: false,
       buttonText: 'Remove Members'
     }
+    console.log(props)
     this.id = props.route.params.partyID
     this._isMounted = false
     this.keyboardDidShowListener = null
