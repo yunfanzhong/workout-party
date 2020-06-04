@@ -39,6 +39,6 @@ npm start
 The Expo server should start at `localhost:19002`.
 
 ## Android setup
-If you have an Android device, you should be able to download the Expo app and scan the QR code [here](https://expo.io/@franktzheng/workout-party) to start the app.
+If you have an Android device, download the Expo app from the Play Store and scan the QR code [here](https://expo.io/@franktzheng/workout-party) to start the Workout Party app.
 
 Otherwise, follow the instructions [here](https://docs.expo.io/workflow/android-studio-emulator/) to run an Android emulator on your computer.
