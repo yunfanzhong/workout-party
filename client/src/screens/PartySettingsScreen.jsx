@@ -18,11 +18,12 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import FriendsList from '../components/FriendsList'
 import UserContext from '../context/UserContext'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, CommonActions } from '@react-navigation/native'
 
-function Member({ name, isRemoving, partyID, id }) {
+function Member({ name, isRemoving, partyID, id, memberList, routeKey }) {
   const [visible, setVisible] = useState(true)
   const navigation = useNavigation()
+  let members = memberList
 
   const baseComponent = (
     <View style={styles.friend}>
@@ -48,6 +49,19 @@ function Member({ name, isRemoving, partyID, id }) {
                   if (context.user._id === id) {
                     navigation.navigate('My Parties', { forceUpdate: true })
                   }
+                  let i = 0
+
+                  for (; i < members.length; i++)
+                    if (members[i].id === id) break
+                  if (i > -1) members.splice(i, 1)
+
+                  navigation.dispatch({
+                    ...CommonActions.setParams({
+                      members: members,
+                      forceUpdate: true
+                    }),
+                    source: routeKey
+                  })
                 } catch (error) {
                   console.log(error)
                 }
@@ -62,7 +76,7 @@ function Member({ name, isRemoving, partyID, id }) {
   }
 }
 
-function MemberList({ memberList, isRemoving, partyID }) {
+function MemberList({ memberList, isRemoving, partyID, routeKey }) {
   const list = memberList.map((member) => (
     <Member
       key={member.id}
@@ -70,6 +84,8 @@ function MemberList({ memberList, isRemoving, partyID }) {
       isRemoving={isRemoving}
       partyID={partyID}
       id={member.id}
+      memberList={memberList}
+      routeKey={routeKey}
     />
   ))
   return <ScrollView>{list}</ScrollView>
@@ -100,18 +116,42 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
   )
 }
 
+function ConfirmPartyName({ id, name, routeKey }) {
+  const navigation = useNavigation()
+
+  return (
+    <OutlinedButton
+      icon="check"
+      text="Confirm"
+      onPress={() => {
+        API.updateWorkoutParty(id, { name: name })
+        navigation.dispatch({
+          ...CommonActions.setParams({
+            partyName: name
+          }),
+          source: routeKey
+        })
+        Keyboard.dismiss()
+      }}
+    />
+  )
+}
+
 class PartySettingsScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      members: [],
-      refreshing: true,
-      name: '',
+      members: this.props.route.params.members,
+      refreshing: false,
+      name: props.route.params.partyName,
       keyboardOpen: false,
       isRemoving: false,
       modalVisible: false,
       buttonText: 'Remove Members'
     }
+    this.id = props.route.params.partyID
+    this.prevRouteKey = props.route.params.routeKey
+    this.navigation = props.navigation
     this._isMounted = false
     this.keyboardDidShowListener = null
     this.keyboardDidHideListener = null
@@ -129,7 +169,7 @@ class PartySettingsScreen extends React.Component {
       )
 
       try {
-        API.getWorkoutParty(this.props.route.params.partyID).then((result) => {
+        API.getWorkoutParty(this.id).then((result) => {
           const memberIDs = result.members
           Promise.all(memberIDs.map(async (id) => await API.getUser(id))).then(
             (users) => {
@@ -192,6 +232,13 @@ class PartySettingsScreen extends React.Component {
               const newMember = await API.getUser(member._id)
               members.push({ id: newMember._id, name: newMember.username })
               this.setState({ members: members })
+              this.navigation.dispatch({
+                ...CommonActions.setParams({
+                  members: members,
+                  forceUpdate: true
+                }),
+                source: this.prevRouteKey
+              })
             } else {
               console.log('member already added!')
             }
@@ -204,12 +251,10 @@ class PartySettingsScreen extends React.Component {
             onChangeText={(value) => this.setState({ name: value })}
           />
           <View style={{ alignItems: 'center' }}>
-            <OutlinedButton
-              icon="check"
-              text="Confirm"
-              onPress={() => {
-                API.updateWorkoutParty(this.id, { name: this.state.name })
-              }}
+            <ConfirmPartyName
+              id={this.id}
+              name={this.state.name}
+              routeKey={this.prevRouteKey}
             />
           </View>
         </View>
@@ -237,6 +282,7 @@ class PartySettingsScreen extends React.Component {
             memberList={this.state.members}
             isRemoving={this.state.isRemoving}
             partyID={this.id}
+            routeKey={this.prevRouteKey}
           />
         </ScrollView>
         {!this.state.keyboardOpen && (

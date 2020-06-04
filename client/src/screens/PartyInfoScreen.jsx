@@ -5,12 +5,12 @@ import {
   StyleSheet,
   ScrollView
 } from 'react-native'
-import MoreHorizIcon from '../../assets/images/more_horiz-24px.svg'
+import MoreVertIcon from '../../assets/images/more_vert-24px.svg'
 import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
 import { useNavigation } from '@react-navigation/native'
-import { useRoute } from '@react-navigation/native'
 import React from 'react'
 import API from '../utils/API'
+import { H3 } from '../components/Header'
 
 function MemberListItem(props) {
   return (
@@ -63,18 +63,21 @@ function AddWorkoutButton(props) {
   )
 }
 
-function PartySettingsButton({ partyID }) {
+function PartySettingsButton({ partyID, partyName, members, routeKey }) {
   const navigation = useNavigation()
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate('Party Settings', {
-          partyID
+          partyID: partyID,
+          partyName: partyName,
+          members: members,
+          routeKey: routeKey
         })
       }
       style={{ width: 50, marginTop: 10, marginLeft: 5 }}
     >
-      <MoreHorizIcon width={40} height={40} fill="black" />
+      <MoreVertIcon width={40} height={40} fill="black" />
     </TouchableOpacity>
   )
 }
@@ -87,46 +90,66 @@ class PartyInfoScreen extends React.Component {
       members: [],
       workouts: []
     }
+    this._isMounted = false
+    this.navigation = props.navigation
   }
 
   componentDidMount() {
-    const { route } = this.props
-    try {
-      API.getWorkoutParty(route.params.partyID).then(async (data) => {
-        const mIDs = data.members
-        const wIDs = data.workouts
-        await Promise.all(mIDs.map(async (id) => await API.getUser(id))).then(
-          (users) => {
-            const members = users.map((user) => {
-              return user.username
+    if (!this._isMounted) {
+      try {
+        API.getWorkoutParty(this.props.route.params.partyID).then(
+          async (data) => {
+            const mIDs = data.members
+            const wIDs = data.workouts
+            await Promise.all(
+              mIDs.map(async (id) => await API.getUser(id))
+            ).then((users) => {
+              const members = users.map((user) => {
+                return { id: user._id, name: user.username }
+              })
+              this.setState({ members: members })
             })
-            this.setState({ members: members })
+            await Promise.all(
+              wIDs.map(async (id) => await API.getWorkout(id))
+            ).then((workouts) => {
+              const ws = workouts.map((w) => {
+                return w.name
+              })
+              this.setState({ workouts: ws, loading: false })
+            })
           }
         )
-        await Promise.all(
-          wIDs.map(async (id) => await API.getWorkout(id))
-        ).then((workouts) => {
-          const ws = workouts.map((w) => {
-            return w.name
-          })
-          this.setState({ workouts: ws, loading: false })
-        })
-      })
-    } catch (error) {
-      console.log(error)
+        this._isMounted = true
+      } catch (error) {
+        console.log(error)
+      }
     }
+  }
+
+  componentDidUpdate() {
+    if (this._isMounted) {
+      const { route } = this.props
+      if (route.params && route.params.forceUpdate) {
+        this.setState({ members: this.props.route.params.members })
+        this.navigation.setParams({ forceUpdate: false })
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   render() {
     const memberList = this.state.members.map((m) => (
-      <MemberListItem name={m} />
+      <MemberListItem key={m.id} name={m.name} />
     ))
 
     const eventList = this.state.workouts.map((w) => <EventListItem name={w} />)
 
     return (
       <ScrollView style={styles.container}>
-        <Header />
+        <H3>{this.props.route.params.partyName}</H3>
         <Text
           style={{
             marginTop: 10,
@@ -168,7 +191,12 @@ class PartyInfoScreen extends React.Component {
             Upcoming Events:
           </Text>
           <AddWorkoutButton />
-          <PartySettingsButton partyID={this.props.route.params.partyID} />
+          <PartySettingsButton
+            partyID={this.props.route.params.partyID}
+            partyName={this.props.route.params.partyName}
+            members={this.state.members}
+            routeKey={this.props.route.key}
+          />
         </View>
         <ScrollView
           style={{
