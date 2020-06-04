@@ -46,14 +46,16 @@ function AddWorkoutButton(props) {
   )
 }
 
-function PartySettingsButton({ partyID, partyName }) {
+function PartySettingsButton({ partyID, partyName, members, routeKey }) {
   const navigation = useNavigation()
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate('Party Settings', {
           partyID: partyID,
-          partyName: partyName
+          partyName: partyName,
+          members: members,
+          routeKey: routeKey
         })
       }
       style={{ width: 50, marginTop: 10, marginLeft: 5 }}
@@ -72,6 +74,7 @@ class PartyInfoScreen extends React.Component {
       workouts: []
     }
     this._isMounted = false
+    this.navigation = props.navigation
   }
 
   componentDidMount() {
@@ -85,7 +88,7 @@ class PartyInfoScreen extends React.Component {
               mIDs.map(async (id) => await API.getUser(id))
             ).then((users) => {
               const members = users.map((user) => {
-                return user.username
+                return { id: user._id, name: user.username }
               })
               this.setState({ members: members })
             })
@@ -107,9 +110,12 @@ class PartyInfoScreen extends React.Component {
   }
 
   componentDidUpdate() {
-    const { route } = this.props
-    if (route.params) {
-      console.log(route.params.partyName)
+    if (this._isMounted) {
+      const { route } = this.props
+      if (route.params && route.params.forceUpdate) {
+        this.setState({ members: this.props.route.params.members })
+        this.navigation.setParams({ forceUpdate: false })
+      }
     }
   }
 
@@ -119,7 +125,7 @@ class PartyInfoScreen extends React.Component {
 
   render() {
     const memberList = this.state.members.map((m) => (
-      <MemberListItem key={m} name={m} />
+      <MemberListItem key={m.id} name={m.name} />
     ))
 
     const eventList = this.state.workouts.map((w) => <EventListItem name={w} />)
@@ -171,6 +177,8 @@ class PartyInfoScreen extends React.Component {
           <PartySettingsButton
             partyID={this.props.route.params.partyID}
             partyName={this.props.route.params.partyName}
+            members={this.state.members}
+            routeKey={this.props.route.key}
           />
         </View>
         <ScrollView
