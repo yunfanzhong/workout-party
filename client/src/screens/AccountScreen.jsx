@@ -1,11 +1,4 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  TextInput
-} from 'react-native'
+import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { TouchableHighlight } from 'react-native-gesture-handler'
 
@@ -36,30 +29,6 @@ const FriendMenu = (props) => {
         </Text>
       </TouchableOpacity>
       <FriendsList friendsList={props.friendsList} onPress={() => {}} />
-    </View>
-  )
-}
-
-const SettingsMenu = () => {
-  return (
-    <View>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          height: 100,
-          width: '80%',
-          alignSelf: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Image
-          style={{ height: 50, width: 50, marginTop: 15, marginLeft: 40 }}
-          source={require('../../assets/images/spotify.png')}
-        />
-        <Text style={{ fontSize: 20, marginLeft: 15, marginTop: 15 }}>
-          Connect your Spotify account!
-        </Text>
-      </TouchableOpacity>
     </View>
   )
 }
@@ -133,9 +102,6 @@ class AddFriendModal extends React.Component {
 
 class AccountScreen extends React.Component {
   state = {
-    friendButtonColor: 'grey',
-    settingButtonColor: 'white',
-    showFriendMenu: true,
     modalVisible: false,
     faceBookID: null
   }
@@ -151,20 +117,6 @@ class AccountScreen extends React.Component {
       'Dwayne "The Rock" Johnson',
       'John Cena'
     ]
-
-    const changeButtonColors = () => {
-      this.state.friendButtonColor === 'white'
-        ? this.setState({
-            friendButtonColor: 'grey',
-            settingButtonColor: 'white',
-            showFriendMenu: true
-          })
-        : this.setState({
-            friendButtonColor: 'white',
-            settingButtonColor: 'grey',
-            showFriendMenu: false
-          })
-    }
 
     const getUserRank = (number) => {
       if (number >= 40) return ranks[7]
@@ -200,68 +152,10 @@ class AccountScreen extends React.Component {
                 </Text>
               </View>
             </View>
-            <View style={styles.buttonPair}>
-              <View style={styles.buttonContainer}>
-                <TouchableHighlight
-                  style={{
-                    backgroundColor: this.state.friendButtonColor,
-                    height: 50,
-                    marginLeft: '20%',
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    borderBottomWidth: 2,
-                    borderBottomColor: 'grey',
-                    justifyContent: 'center'
-                  }}
-                  underlayColor="grey"
-                  onPress={() => {
-                    changeButtonColors()
-                  }}
-                >
-                  <View>
-                    <Text style={styles.buttonText}>Friends List</Text>
-                  </View>
-                </TouchableHighlight>
-              </View>
-              <View style={styles.buttonContainer}>
-                <TouchableHighlight
-                  style={{
-                    backgroundColor: this.state.settingButtonColor,
-                    height: 50,
-                    marginRight: '20%',
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    borderBottomWidth: 2,
-                    borderBottomColor: 'grey',
-                    justifyContent: 'center'
-                  }}
-                  underlayColor="grey"
-                  onPress={() => {
-                    changeButtonColors()
-                  }}
-                >
-                  <View>
-                    <Text style={styles.buttonText}>Settings</Text>
-                  </View>
-                </TouchableHighlight>
-              </View>
-            </View>
-            <View
-              style={{
-                width: '80%',
-                marginLeft: '10%',
-                height: '51%'
-              }}
-            >
-              {this.state.showFriendMenu ? (
-                <FriendMenu
-                  friendsList={context.user.friends}
-                  onPress={() => displayAddFriend()}
-                />
-              ) : (
-                <SettingsMenu />
-              )}
-            </View>
+            <FriendMenu
+              friendsList={context.user.friends}
+              onPress={() => displayAddFriend()}
+            />
           </View>
         )}
       </UserContext.Consumer>
@@ -270,13 +164,28 @@ class AccountScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'white' },
+  container: {
+    flex: 1,
+    backgroundColor: '#f7f7f7',
+    flexDirection: 'column'
+  },
   profileImageAndInfo: {
     flexDirection: 'row',
-    marginLeft: 30,
-    marginTop: 30
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 12,
+    marginVertical: 12,
+    backgroundColor: '#fff',
+    paddingVertical: 16,
+    borderRadius: 8,
+    borderColor: '#ededed',
+    borderWidth: 1
   },
-  profileInfo: { flexDirection: 'column', marginLeft: 30, marginTop: 30 },
+  profileInfo: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginLeft: 12
+  },
   profileImage: { height: 170, width: 146 },
   nameText: {
     fontSize: 24,
@@ -296,15 +205,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     justifyContent: 'center',
     fontSize: 24
-  },
-  buttonPair: {
-    marginTop: 80,
-    height: 50,
-    flexDirection: 'row',
-    width: '100%'
-  },
-  buttonContainer: {
-    width: '50%'
   },
   friendText: {
     fontSize: 18,
