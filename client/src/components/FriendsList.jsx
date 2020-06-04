@@ -12,7 +12,7 @@ const UserFriend = ({ onPress, friend, button }) => {
   const baseComponent = (
     <View style={styles.friend}>
       <View style={{ flexDirection: 'row' }}>
-        <Icon name="person" size={32} color="#565a5e" />
+        <Icon name="face" size={32} color="#565a5e" />
         <Text style={styles.friendText}>{friend.username}</Text>
       </View>
     </View>

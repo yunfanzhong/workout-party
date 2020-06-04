@@ -1,4 +1,4 @@
-import { Text, View, Image, StyleSheet, ScrollView, Alert } from 'react-native'
+import { Text, View, Image, StyleSheet, Alert } from 'react-native'
 import React from 'react'
 
 import UserContext from '../context/UserContext'
@@ -9,7 +9,6 @@ import FormInput from '../components/FormInput.jsx'
 import BlankModal from '../components/BlankModal.jsx'
 import OutlinedButton from '../components/OutlinedButton'
 import API from '../utils/API'
-import FullPageSpinner from '../components/FullPageSpinner'
 
 const FriendMenu = (props) => {
   return (
