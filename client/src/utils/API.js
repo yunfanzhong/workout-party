@@ -3,10 +3,11 @@ const { manifest } = Constants
 
 // SEEMS TO ONLY WORK IF YOU SERVE THE APP OVER LAN
 // https://stackoverflow.com/a/49198103/8624603
-const BASE_URL =
-  typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
-    ? 'http://' + manifest.debuggerHost.split(`:`).shift().concat(':3000')
-    : `api.example.com`
+// const BASE_URL =
+//   typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
+//     ? 'http://' + manifest.debuggerHost.split(`:`).shift().concat(':3000')
+//     : `api.example.com`
+const BASE_URL = 'https://workout-party.herokuapp.com'
 
 // For testing purposes
 function sleep(ms = 1000) {
