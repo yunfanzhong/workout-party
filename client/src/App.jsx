@@ -1,7 +1,8 @@
 // React + Expo
-import React from 'react'
+import React, { useEffect } from 'react'
 import { registerRootComponent } from 'expo'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { loadAsync } from 'expo-font'
 
 // Gesture Handler
 import 'react-native-gesture-handler'
@@ -25,10 +26,25 @@ import LogInScreen from './screens/LogInScreen.jsx'
 import PartyInfoScreen from './screens/PartyInfoScreen.jsx'
 import PartyListScreen from './screens/PartyListScreen.jsx'
 import PartySettingsScreen from './screens/PartySettingsScreen.jsx'
+import FullPageSpinner from './components/FullPageSpinner'
 
 const Stack = createStackNavigator()
 
 function App() {
+  const [loading, setLoading] = React.useState(true)
+  React.useEffect(() => {
+    const fetchData = async () => {
+      await loadAsync({
+        'source-sans-pro-semibold': require('../assets/fonts/SourceSansPro-SemiBold.ttf'),
+        'source-sans-pro-regular': require('../assets/fonts/SourceSansPro-Regular.ttf')
+      })
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+  if (loading) {
+    return <FullPageSpinner />
+  }
   return (
     <UserProvider>
       <UserContext.Consumer>
