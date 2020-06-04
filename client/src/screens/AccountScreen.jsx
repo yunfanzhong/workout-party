@@ -1,7 +1,6 @@
-import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { Text, View, Image, StyleSheet } from 'react-native'
 import React from 'react'
 
-import AddFriend from '../../assets/images/person_add-24px.svg'
 import UserContext from '../context/UserContext'
 import { H3 } from '../components/Header.jsx'
 import RedButton from '../components/RedButton.jsx'
@@ -9,6 +8,7 @@ import FriendsList from '../components/FriendsList.jsx'
 import FormInput from '../components/FormInput.jsx'
 import BlankModal from '../components/BlankModal.jsx'
 import OutlinedButton from '../components/OutlinedButton'
+import API from '../utils/API'
 
 const FriendMenu = (props) => {
   return (
@@ -30,18 +30,22 @@ const FriendMenu = (props) => {
 }
 
 class AddFriendModal extends React.Component {
-  state = {
-    friendName: ''
+  constructor(props) {
+    super(props)
+    this.state = {
+      friendName: ''
+    }
   }
 
-  handleAddFriend = (text) => {
+  handleTextChange = (text) => {
     this.setState({ friendName: text })
   }
 
-  addNewFriend = async (userID, friendName, context) => {
+  addNewFriend = async (context) => {
     try {
-      await API.addFriendToUser(friendName)
-      this.updateFriendList(friendName, context)
+      console.log(this.state.friendName)
+      await API.addFriendToUser(context.user._id, this.state.friendName)
+      this.updateFriendList(this.state.friendName, context)
     } catch (err) {
       console.log(err)
     }
@@ -67,7 +71,7 @@ class AddFriendModal extends React.Component {
               placeholder="i.e. ilikesocks123"
               value={this.state.friendName}
               autoCapitalize="none"
-              onChangeText={() => this.handleAddFriend(this.value)}
+              onChangeText={(value) => this.handleTextChange(value)}
             />
             <View
               style={{
@@ -80,12 +84,7 @@ class AddFriendModal extends React.Component {
               <RedButton
                 text="Enter"
                 onPress={() => {
-                  setVisible(false),
-                    this.addNewFriend(
-                      context.user._id,
-                      this.state.friendName,
-                      context
-                    )
+                  setVisible(false), this.addNewFriend(context)
                 }}
               />
             </View>
