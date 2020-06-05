@@ -113,10 +113,8 @@ class PartyInfoScreen extends React.Component {
   }
 
   componentDidUpdate() {
-    const { route } = this.props
-    if (route.params && route.params.forceUpdate) {
-      this.setState({ members: this.props.route.params.members })
-      this.navigation.setParams({ forceUpdate: false })
+    if (this.state.loading) {
+      this.navigation.setOptions({ title: this.props.route.params.partyName })
     }
   }
 

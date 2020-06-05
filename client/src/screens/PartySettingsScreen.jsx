@@ -142,18 +142,20 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
 }
 
 function ConfirmPartyName({ id, name, routeKey, onPress }) {
+  const navigation = useNavigation()
+
   return (
     <OutlinedButton
       icon="check"
       text="Save"
       onPress={() => {
         API.updateWorkoutParty(id, { name })
-        // navigation.dispatch({
-        //   ...CommonActions.setParams({
-        //     partyName: name
-        //   }),
-        //   source: routeKey
-        // })
+        navigation.dispatch({
+          ...CommonActions.setParams({
+            partyName: name
+          }),
+          source: routeKey
+        })
         onPress()
         Keyboard.dismiss()
       }}
