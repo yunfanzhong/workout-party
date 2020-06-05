@@ -2,7 +2,6 @@ import React from 'react'
 import {
   View,
   StyleSheet,
-  Text,
   Picker,
   TouchableOpacity,
   ActivityIndicator
@@ -21,17 +20,8 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import OutlinedButton from '../components/OutlinedButton'
 import API from '../utils/API'
-
-// TEMPORARY!!
-const EXERCISES = {
-  '1': 'Push ups',
-  '2': 'Squats',
-  '3': 'Lunges',
-  '4': 'Leg raises',
-  '5': 'Calf raises',
-  '6': 'Burpees',
-  '7': 'Mountain climbers'
-}
+import EXERCISES from '../utils/exercises.json'
+import Text from '../components/Text'
 
 const BASE_TIME = 3600000 * 8 // The first 12 AM of all time
 
@@ -99,7 +89,7 @@ class CreateEventScreen extends React.Component {
           exerciseID: id
         }))
         try {
-          if (!this.props.route.params?.workoutPartyID) {
+          if (!this.props.route.params?.partyID) {
             this.setState({
               error:
                 '[DEBUG]: Please pass a workout party ID through navigation parameters to this screen!'
@@ -114,7 +104,7 @@ class CreateEventScreen extends React.Component {
             })
             // Second part is untested
             await API.addWorkoutToParty(
-              this.props.route.params.workoutPartyID,
+              this.props.route.params.partyID,
               createdWorkout._id
             )
             this.props.navigation.goBack()
@@ -343,7 +333,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'flex-start',
-    padding: 24,
+    padding: 18,
     backgroundColor: '#f7f7f7'
   },
   modalButtonContainer: {

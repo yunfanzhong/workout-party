@@ -1,0 +1,20 @@
+{
+  "name": "workout-party",
+  "version": "1.0.0",
+  "description": "Project for CS 97.",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "cd server && npm install",
+    "start": "cd server && npm start"
+  },
+    "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franktzheng/workout-party.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franktzheng/workout-party/issues"
+  },
+  "homepage": "https://github.com/franktzheng/workout-party#readme"
+}

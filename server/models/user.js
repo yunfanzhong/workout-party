@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     default: Date.now
   },
   workoutParties: [mongoose.ObjectId],
-  workoutHistory: [mongoose.ObjectId],
+  workoutHistory: [{ id: mongoose.ObjectId, time: String }],
   friends: [mongoose.ObjectId]
 })
 

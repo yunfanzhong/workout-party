@@ -1,8 +1,8 @@
 import React from 'react'
 import { TextInput, StyleSheet } from 'react-native'
 
-function FormInput(props) {
-  return <TextInput style={styles.input} {...props} />
+function FormInput({ style, ...props }) {
+  return <TextInput style={{ ...styles.input, ...style }} {...props} />
 }
 
 const styles = StyleSheet.create({
@@ -15,7 +15,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     borderRadius: 8,
-    width: '100%'
+    width: '100%',
+    fontFamily: 'source-sans-pro-regular'
   }
 })
 

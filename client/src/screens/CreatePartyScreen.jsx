@@ -1,45 +1,27 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView
-} from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import FriendsList from '../components/FriendsList.jsx'
 import UserContext from '../context/UserContext'
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
-import CancelIcon from '../../assets/images/cancel-24px.svg'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import RedButton from '../components/RedButton'
 import BlankModal from '../components/BlankModal'
 import FormInput from '../components/FormInput'
 import { H3 } from '../components/Header'
 import API from '../utils/API'
 import ErrorText from '../components/ErrorText'
+import Bubble from '../components/Bubble.jsx'
+import OutlinedButton from '../components/OutlinedButton'
+import Text from '../components/Text'
 
 function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')
 
   return (
-    <TextInput
-      style={{
-        height: 50,
-        borderRadius: 15,
-        marginTop: '10%',
-        marginLeft: '10%',
-        marginRight: '10%',
-        marginBottom: '5%',
-        backgroundColor: '#c4c4c4',
-        paddingLeft: 10,
-        paddingRight: 10
-      }}
+    <FormInput
       onChangeText={(text) => {
         onChangeText(text)
         props.onChangeText(text)
       }}
       value={value}
-      placeholderTextColor="#808080"
       placeholder="Find friends to add"
     />
   )
@@ -66,13 +48,15 @@ function PartyMember(props) {
         }}
       >
         <View>
-          <AccountIcon width={60} height={60} fill="black" />
-          <CancelIcon
-            position="absolute"
-            right={0}
-            width={20}
-            height={20}
-            fill="red"
+          <Icon name="face" size={60} color="black" />
+          <Icon
+            style={{
+              position: 'absolute',
+              right: 0
+            }}
+            name="cancel"
+            size={20}
+            color="red"
           />
         </View>
         <Text numberOfLines={1}>{props.member.username}</Text>
@@ -131,7 +115,11 @@ const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
           marginVertical: 4
         }}
       >
-        <RedButton text="Cancel" onPress={() => setVisible(false)} />
+        <OutlinedButton
+          style={{ marginRight: 12 }}
+          text="Cancel"
+          onPress={() => setVisible(false)}
+        />
         <UserContext.Consumer>
           {(context) => (
             <RedButton
@@ -148,7 +136,7 @@ const ConfirmGroupModal = ({ visible, setVisible, navigation, members }) => {
                     workouts: []
                   })
                   setVisible(false)
-                  navigation.navigate('My Parties', { forceUpdate: true })
+                  navigation.navigate('My Parties')
                 }
               }}
             />
@@ -172,25 +160,34 @@ class CreatePartyScreen extends React.Component {
     this.navigation = props.navigation
   }
 
+  componentDidMount() {
+    this.props.navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            if (this.state.memberList.length == 0) {
+              this.setState({ emptyModalVisible: true })
+            } else {
+              this.setState({ confirmModalVisible: true })
+            }
+          }}
+          style={{
+            marginRight: 16
+          }}
+        >
+          <Icon name="done" size={32} color="white" />
+        </TouchableOpacity>
+      )
+    })
+  }
+
   addMember(member) {
     const memberList = this.state.memberList
     memberList.push(member)
     this.setState({ memberList: memberList })
-
-    const idx = this.state.friendsList.findIndex(
-      (friend) => friend._id === member._id
-    )
-    const friendsList = this.state.friendsList
-      .slice(0, idx)
-      .concat(this.state.friendsList.slice(idx + 1))
-    this.setState({ friendsList: friendsList })
   }
 
   removeMember(friend) {
-    const friendsList = this.state.friendsList
-    friendsList.push(friend)
-    this.setState({ friendsList: friendsList })
-
     const idx = this.state.memberList.findIndex(
       (member) => member._id === friend._id
     )
@@ -225,7 +222,6 @@ class CreatePartyScreen extends React.Component {
         <PartyNameInput onChangeText={(text) => this.filterFriendsList(text)} />
         <View
           style={{
-            backgroundColor: '#fff',
             height: this.state.memberList.length > 0 ? 100 : 0
           }}
         >
@@ -234,37 +230,36 @@ class CreatePartyScreen extends React.Component {
             onPress={(friend) => this.removeMember(friend)}
           />
         </View>
-        <View
-          style={{
-            backgroundColor: '#fff',
-            alignItems: 'center',
-            marginBottom: '5%'
-          }}
-        >
-          <RedButton
-            text="Confirm group"
-            onPress={() => {
-              if (this.state.memberList.length == 0) {
-                this.setState({ emptyModalVisible: true })
-              } else {
-                this.setState({ confirmModalVisible: true })
+        <ScrollView>
+          {this.state.friendsList
+            .filter((friend) => {
+              if (
+                !friend.username
+                  .toLocaleLowerCase()
+                  .includes(this.state.searchValue.toLocaleLowerCase())
+              ) {
+                return false
               }
-            }}
-          />
-        </View>
-        <View
-          style={{
-            marginHorizontal: '5%',
-            backgroundColor: '#fff'
-          }}
-        >
-          <FriendsList
-            friendsList={this.state.friendsList}
-            onPress={(member) => this.addMember(member)}
-            searchValue={this.state.searchValue}
-            button={true}
-          />
-        </View>
+              for (const member of this.state.memberList) {
+                if (friend._id === member._id) {
+                  return false
+                }
+              }
+              return true
+            })
+            .map((member) => (
+              <Bubble
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => this.addMember(member)}
+                key={member._id}
+              >
+                <Icon name="face" size={32} color="#565a5e" />
+                <Text style={{ fontSize: 18, marginLeft: 12 }}>
+                  {member.username}
+                </Text>
+              </Bubble>
+            ))}
+        </ScrollView>
       </View>
     )
   }
@@ -286,7 +281,8 @@ function CreatePartyScreenWrapper(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f7f7f7',
+    padding: 18
   }
 })
 

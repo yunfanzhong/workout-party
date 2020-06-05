@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Text from '../components/Text'
 
 export const H1 = ({ children }) => {
   return <Text style={styles.h1}>{children}</Text>
@@ -9,8 +10,8 @@ export const H2 = ({ children }) => {
   return <Text style={styles.h2}>{children}</Text>
 }
 
-export const H3 = ({ children }) => {
-  return <Text style={styles.h3}>{children}</Text>
+export const H3 = ({ style, children }) => {
+  return <Text style={{ ...styles.h3, ...style }}>{children}</Text>
 }
 
 const styles = StyleSheet.create({
@@ -29,9 +30,10 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   h3: {
-    marginBottom: 16,
-    fontSize: 24,
+    marginBottom: 12,
+    fontSize: 20,
     textAlign: 'center',
-    width: '100%'
+    width: '100%',
+    fontWeight: 'bold'
   }
 })

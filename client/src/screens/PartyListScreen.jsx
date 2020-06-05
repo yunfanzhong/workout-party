@@ -1,24 +1,18 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  RefreshControl
-} from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import React from 'react'
-import AddCircleIcon from '../../assets/images/add_circle-24px.svg'
-import GroupIcon from '../../assets/images/group-24px.svg'
-import ListItem from '../components/ListItem.jsx'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 import UserContext from '../context/UserContext'
 import API from '../utils/API'
+import FullPageSpinner from '../components/FullPageSpinner'
+import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function PartyListItem(props) {
   const navigation = useNavigation()
 
   return (
-    <ListItem
+    <Bubble
       onPress={() => {
         navigation.navigate('Party Info', {
           partyName: props.name,
@@ -30,25 +24,23 @@ function PartyListItem(props) {
         style={{
           flex: 1,
           flexDirection: 'row',
-          marginLeft: '10%',
           alignItems: 'center'
         }}
       >
-        <GroupIcon width={40} height={40} marginRight={10} fill="black" />
-        <View style={{ flex: 1, flexDirection: 'column' }}>
+        <Icon name="group" size={32} color="#565a5e" />
+        <View style={{ flex: 1, flexDirection: 'column', marginLeft: 12 }}>
           <Text
             style={{
-              fontFamily: 'Roboto',
               fontSize: 18,
               textAlign: 'left'
             }}
           >
             {props.name}
           </Text>
-          <Text>{props.numMembers} people</Text>
+          <Text style={{ color: 'gray' }}>{props.numMembers} people</Text>
         </View>
       </View>
-    </ListItem>
+    </Bubble>
   )
 }
 
@@ -62,11 +54,24 @@ function CreatePartyButton() {
       }}
       style={{
         position: 'absolute',
-        right: '6%',
-        bottom: '4%'
+        right: 24,
+        bottom: 24
       }}
     >
-      <AddCircleIcon width={80} height={80} fill="#ff2559" />
+      <View
+        style={{
+          backgroundColor: 'white',
+          borderWidth: 1,
+          borderColor: '#ededed',
+          borderRadius: 32,
+          shadowColor: 'rgba(0, 0, 0, 0.1)',
+          shadowOpacity: 0.8,
+          elevation: 6,
+          padding: 8
+        }}
+      >
+        <Icon name="add" size={48} color="#ff2559" />
+      </View>
     </TouchableOpacity>
   )
 }
@@ -96,20 +101,11 @@ class PartyListScreen extends React.Component {
         this._isMounted = true
       }
     }
+    this.props.navigation.addListener('focus', this._onRefresh)
   }
 
   componentWillUnmount() {
     this._isMounted = false
-  }
-
-  componentDidUpdate() {
-    if (this._isMounted) {
-      const { route } = this.props
-      if (route.params && route.params.forceUpdate) {
-        this.navigation.setParams({ forceUpdate: false })
-        this._onRefresh()
-      }
-    }
   }
 
   _onRefresh = async () => {
@@ -134,38 +130,51 @@ class PartyListScreen extends React.Component {
       return 0
     })
 
+    if (this.state.refreshing) {
+      return <FullPageSpinner />
+    }
+
     return (
-      <View style={styles.container}>
-        <ScrollView
-          style={{
-            marginTop: 18,
-            marginBottom: 18
+      <>
+        <UserContext.Consumer>
+          {(context) => {
+            const filteredArray = sortedArr.filter((party) =>
+              party.members.includes(context.user._id)
+            )
+
+            return filteredArray.length ? (
+              <ScrollView
+                style={styles.container}
+                contentContainerStyle={{ padding: 24 }}
+              >
+                {filteredArray.map((party) => (
+                  <PartyListItem
+                    key={party._id}
+                    name={party.name}
+                    id={party._id}
+                    numMembers={party.members.length}
+                  />
+                ))}
+              </ScrollView>
+            ) : (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  height: '100%',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginBottom: 8
+                }}
+              >
+                <Text style={{ fontSize: 18, color: '#ababab' }}>
+                  No parties to show
+                </Text>
+              </View>
+            )
           }}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
-            />
-          }
-        >
-          <UserContext.Consumer>
-            {(context) =>
-              sortedArr.map(
-                (party) =>
-                  party.members.includes(context.user._id) && (
-                    <PartyListItem
-                      key={party._id}
-                      name={party.name}
-                      id={party._id}
-                      numMembers={party.members.length}
-                    />
-                  )
-              )
-            }
-          </UserContext.Consumer>
-        </ScrollView>
+        </UserContext.Consumer>
         <CreatePartyButton />
-      </View>
+      </>
     )
   }
 }
@@ -173,7 +182,7 @@ class PartyListScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f7f7f7'
   }
 })
 

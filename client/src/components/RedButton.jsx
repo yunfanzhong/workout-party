@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
+import Text from '../components/Text'
 
 const RedButton = ({
   onPress,

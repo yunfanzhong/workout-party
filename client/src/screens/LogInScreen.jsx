@@ -3,21 +3,27 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native'
+import Icon from 'react-native-vector-icons/EvilIcons'
 
 import UserContext from '../context/UserContext'
+import Text from '../components/Text'
 
 function LogInScreen() {
   return (
     <View style={styles.screen}>
-      <Image
-        style={styles.logo}
-        source={require('../../assets/images/bicep.png')}
-      />
-      <Text style={styles.homeText}>Workout{'\n'}Party</Text>
+      <View
+        style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
+      >
+        <Image
+          style={styles.logo}
+          source={require('../../assets/images/bicep.png')}
+        />
+        <Text style={styles.homeText}>Workout Party</Text>
+      </View>
       <LoginButton />
     </View>
   )
@@ -45,16 +51,18 @@ class LoginButton extends React.Component {
             style={styles.button}
             onPress={() => this.handlePress(context.login)}
           >
-            <Image
-              style={styles.fbLogo}
-              source={require('../../assets/images/f_logo_RGB-Hex-Blue_512.png')}
+            <Icon
+              name="sc-facebook"
+              size={48}
+              color="#1778F2"
+              style={{ marginLeft: 12 }}
             />
             {this.state.isLoading ? (
               <View style={styles.spinner}>
                 <ActivityIndicator size="large" color="#ff2559" />
               </View>
             ) : (
-              <Text style={styles.fbButtonText}>Get Started with Facebook</Text>
+              <Text style={styles.fbButtonText}>Get started with Facebook</Text>
             )}
           </TouchableOpacity>
         )}
@@ -67,9 +75,14 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#ff2559',
-    alignContent: 'center'
+    alignContent: 'center',
+    paddingVertical: 48
   },
-  logo: { alignContent: 'center', width: 400, height: 400 },
+  logo: {
+    alignContent: 'center',
+    width: Math.round(Dimensions.get('window').width * 0.45),
+    height: Math.round(Dimensions.get('window').width * 0.6)
+  },
   button: {
     backgroundColor: '#ffffff',
     alignItems: 'center',
@@ -78,16 +91,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 30,
     flexDirection: 'row',
-    borderRadius: 20
+    borderRadius: 8,
+    elevation: 4
   },
   homeText: {
-    fontSize: 64,
+    fontSize: 40,
     textAlign: 'center',
     color: 'white',
-    marginBottom: 10
+    marginTop: 32,
+    fontWeight: 'bold'
   },
   fbButtonText: {
-    fontSize: 19,
+    fontSize: 18,
     color: '#22181c',
     marginLeft: 12
   },

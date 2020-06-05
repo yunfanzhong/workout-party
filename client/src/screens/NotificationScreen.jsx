@@ -1,12 +1,6 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Button
-} from 'react-native'
+import { View } from 'react-native'
 import React from 'react'
+import Text from '../components/Text'
 
 function NotificationScreen({ navigation }) {
   return (

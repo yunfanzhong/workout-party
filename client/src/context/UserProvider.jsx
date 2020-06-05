@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Alert } from 'react-native'
 
 import logInWithFacebook from '../utils/logInWithFacebook.js'
 import UserContext from './UserContext.jsx'
@@ -8,6 +8,7 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import ErrorText from '../components/ErrorText'
 import RedButton from '../components/RedButton'
+import Text from '../components/Text'
 import FormInput from '../components/FormInput.jsx'
 
 class UserProvider extends React.Component {
@@ -18,29 +19,47 @@ class UserProvider extends React.Component {
   }
 
   handleLogin = async () => {
-    this.setState({
-      user: {
-        workoutParties: [],
-        workoutHistory: [],
-        friends: [
-          {
-            _id: '5ec5d64145eb3268f78093f2',
-            username: 'jordano'
-          },
-          {
-            _id: '5ec74ae1c79d324cecbb55b6',
-            username: 'jk.jewik'
-          }
-        ],
-        _id: '5ecef59120368361f45eba00',
-        username: 'ilikesocks',
-        displayName: 'John Doe',
-        facebookID: '2679680868944918',
-        lastLoggedIn: '2020-05-27T23:19:45.439Z',
-        __v: 2
+    try {
+      const facebookID = (await logInWithFacebook()).id
+      const { user, doesNotExist } = await API.getUserByFacebookID(facebookID)
+      console.log('[DEBUG] Retrieved user:')
+      console.log(user)
+      if (doesNotExist) {
+        this.setState({ facebookID, modalVisible: true })
+      } else {
+        this.setState({ user })
       }
-    })
+    } catch (err) {
+      Alert.alert('uwu', 'oopsies! we had a pwobwem wogging you in. 😔')
+      console.log('[DEBUG] Error logging in:')
+      console.log(err)
+    }
   }
+
+  // handleLogin = async () => {
+  //   this.setState({
+  //     user: {
+  //       workoutParties: [],
+  //       workoutHistory: [],
+  //       friends: [
+  //         {
+  //           _id: '5ec5d64145eb3268f78093f2',
+  //           username: 'jordano'
+  //         },
+  //         {
+  //           _id: '5ec74ae1c79d324cecbb55b6',
+  //           username: 'jk.jewik'
+  //         }
+  //       ],
+  //       _id: '5ecef59120368361f45eba00',
+  //       username: 'ilikesocks',
+  //       displayName: 'John Doe',
+  //       facebookID: '2679680868944918',
+  //       lastLoggedIn: '2020-05-27T23:19:45.439Z',
+  //       __v: 2
+  //     }
+  //   })
+  // }
 
   // Update the locally stored user object.
   // Usage: context.updateUser({ friends: [] })

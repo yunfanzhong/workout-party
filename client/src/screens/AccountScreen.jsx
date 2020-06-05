@@ -1,4 +1,4 @@
-import { Text, View, Image, StyleSheet } from 'react-native'
+import { View, Image, StyleSheet, Alert } from 'react-native'
 import React from 'react'
 
 import UserContext from '../context/UserContext'
@@ -9,20 +9,24 @@ import FormInput from '../components/FormInput.jsx'
 import BlankModal from '../components/BlankModal.jsx'
 import OutlinedButton from '../components/OutlinedButton'
 import API from '../utils/API'
+import Text from '../components/Text'
 
 const FriendMenu = (props) => {
   return (
     <View style={props.style}>
       <H3>My Friends</H3>
-      <View style={{ flex: 3, paddingHorizontal: 24 }}>
-        <FriendsList friendsList={props.friendsList} onPress={() => {}} />
+      <View style={{ flexGrow: 1, paddingHorizontal: 24 }}>
+        <FriendsList
+          friendsList={props.friendsList}
+          onPress={() => {}}
+          showBlankText
+        />
       </View>
-      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <OutlinedButton
           text="Add Friend"
-          icon="add"
+          icon="person-add"
           onPress={props.onPress}
-          elevation={2}
         />
       </View>
     </View>
@@ -33,7 +37,8 @@ class AddFriendModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      friendName: ''
+      friendName: '',
+      loading: false
     }
   }
 
@@ -43,19 +48,31 @@ class AddFriendModal extends React.Component {
 
   addNewFriend = async (context) => {
     try {
-      console.log(this.state.friendName)
-      await API.addFriendToUser(context.user._id, this.state.friendName)
-      this.updateFriendList(this.state.friendName, context)
+      this.setState({ loading: true })
+      const friendID = await API.addFriendToUser(
+        context.user._id,
+        this.state.friendName
+      )
+      if (!friendID) {
+        throw new Error()
+      }
+      this.updateFriendList(this.state.friendName, friendID, context)
     } catch (err) {
+      Alert.alert('owo', 'We had an error adding this friend :(')
       console.log(err)
+      this.setState({ loading: false })
     }
   }
 
-  updateFriendList = (friendName, context) => {
-    context.update({
-      friends: context.user.friends.concat({
-        username: friendName
+  updateFriendList = (friendName, friendID, context) => {
+    this.setState({ friendName: '' }, () => {
+      context.update({
+        friends: context.user.friends.concat({
+          username: friendName,
+          _id: friendID
+        })
       })
+      this.props.setVisible(false)
     })
   }
 
@@ -80,12 +97,14 @@ class AddFriendModal extends React.Component {
                 width: '100%'
               }}
             >
-              <RedButton text="Cancel" onPress={() => setVisible(false)} />
+              <OutlinedButton
+                text="Cancel"
+                style={{ marginRight: 12 }}
+                onPress={() => setVisible(false)}
+              />
               <RedButton
                 text="Enter"
-                onPress={() => {
-                  setVisible(false), this.addNewFriend(context)
-                }}
+                onPress={() => this.addNewFriend(context)}
               />
             </View>
           </BlankModal>
@@ -131,11 +150,12 @@ class AccountScreen extends React.Component {
               setVisible={(modalVisible) => this.setState({ modalVisible })}
             />
             <View style={styles.profileImageAndInfo}>
-              <Image
-                style={styles.profileImage}
-                source={require('../../assets/images/avatar.png')}
-                fill="black"
-              />
+              <View style={{ paddingRight: 12, paddingVertical: 12 }}>
+                <Image
+                  style={styles.profileImage}
+                  source={require('../../assets/images/avatar.png')}
+                />
+              </View>
               <View style={styles.profileInfo}>
                 <Text style={styles.nameText}>{context.user.displayName}</Text>
                 <Text style={styles.userName}>{context.user.username}</Text>
@@ -163,26 +183,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f7f7f7',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    padding: 18
   },
   profileImageAndInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 12,
-    marginVertical: 12,
     backgroundColor: '#fff',
     paddingVertical: 16,
     borderRadius: 8,
     borderColor: '#ededed',
-    borderWidth: 1
+    borderWidth: 1,
+    marginBottom: 18
   },
   profileInfo: {
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginLeft: 12
   },
-  profileImage: { height: 170, width: 146 },
+  profileImage: { height: 120, width: 108 },
   nameText: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -190,9 +210,7 @@ const styles = StyleSheet.create({
   },
   friendMenu: {
     flexDirection: 'column',
-    flex: 1,
-    marginHorizontal: 12,
-    marginBottom: 12,
+    flexGrow: 1,
     backgroundColor: '#fff',
     paddingVertical: 16,
     borderRadius: 8,

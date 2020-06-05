@@ -1,19 +1,19 @@
 import React from 'react'
 import {
-  Text,
   View,
   ScrollView,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  Linking
 } from 'react-native'
-
-import AccountIcon from '../../assets/images/account_circle-24px.svg'
+import Icon from 'react-native-vector-icons/MaterialIcons'
+import Text from '../components/Text'
 
 const UserFriend = ({ onPress, friend, button }) => {
   const baseComponent = (
     <View style={styles.friend}>
       <View style={{ flexDirection: 'row' }}>
-        <AccountIcon width={40} height={40} fill="black" marginRight={10} />
+        <Icon name="face" size={32} color="#565a5e" />
         <Text style={styles.friendText}>{friend.username}</Text>
       </View>
     </View>
@@ -37,7 +37,13 @@ const UserFriend = ({ onPress, friend, button }) => {
   }
 }
 
-const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
+const FriendsList = ({
+  searchValue = '',
+  friendsList,
+  button,
+  onPress,
+  showBlankText = false
+}) => {
   const arr = []
 
   for (const friend of friendsList) {
@@ -54,13 +60,31 @@ const FriendsList = ({ searchValue = '', friendsList, button, onPress }) => {
       onPress={onPress}
     />
   ))
-  return <ScrollView>{list}</ScrollView>
+  return list.length || !showBlankText ? (
+    <ScrollView>{list}</ScrollView>
+  ) : (
+    <View style={{ alignItems: 'center', width: '100%', marginBottom: 8 }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: '#ff2559',
+          textDecorationLine: 'underline'
+        }}
+        onPress={() =>
+          Linking.openURL('https://www.youtube.com/watch?v=djU4Lq_5EaM')
+        }
+      >
+        No friends to show :(
+      </Text>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   friendText: {
     fontSize: 18,
-    textAlignVertical: 'center'
+    textAlignVertical: 'center',
+    marginLeft: 12
   },
   friend: {
     flexDirection: 'row',

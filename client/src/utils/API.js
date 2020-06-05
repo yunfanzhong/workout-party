@@ -3,10 +3,11 @@ const { manifest } = Constants
 
 // SEEMS TO ONLY WORK IF YOU SERVE THE APP OVER LAN
 // https://stackoverflow.com/a/49198103/8624603
-const BASE_URL =
-  typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
-    ? 'http://' + manifest.debuggerHost.split(`:`).shift().concat(':3000')
-    : `api.example.com`
+// const BASE_URL =
+//   typeof manifest.packagerOpts === `object` && manifest.packagerOpts.dev
+//     ? 'http://' + manifest.debuggerHost.split(`:`).shift().concat(':3000')
+//     : `api.example.com`
+const BASE_URL = 'https://workout-party.herokuapp.com'
 
 // For testing purposes
 function sleep(ms = 1000) {
@@ -21,6 +22,9 @@ async function fetch(...args) {
   console.log(...args)
   const res = await window.fetch(...args)
   console.log(`[DEBUG] Performed fetch with response code ${res.status}`)
+  if (!res.ok) {
+    throw { status: res.status }
+  }
   return res
 }
 
@@ -38,14 +42,16 @@ const API = {
   // doesNotExist field lets the login process know that we need to create a
   // new user. (sorry for the bad design)
   async getUserByFacebookID(facebookID) {
-    const res = await fetch(`${BASE_URL}/facebook/${facebookID}`)
-    if (res.status === 404) {
-      return { doesNotExist: true, user: null }
-    } else if (!res.ok) {
+    try {
+      const res = await fetch(`${BASE_URL}/facebook/${facebookID}`)
+      const user = await res.json()
+      return { user, doesNotExist: false }
+    } catch (err) {
+      if (err.status === 404) {
+        return { doesNotExist: true, user: null }
+      }
       throw new Error()
     }
-    const user = await res.json()
-    return { user, doesNotExist: false }
   },
 
   // Untested - comment this out when you test it
@@ -67,20 +73,23 @@ const API = {
   },
 
   // Untested - comment this out when you test it
-  async logWorkoutToUser(userID, workoutID) {
-    await fetch(`${BASE_URL}/users/${userID}`, {
+  async logWorkoutToUser(userID, workoutID, time) {
+    await fetch(`${BASE_URL}/users/${userID}/history`, {
       method: 'POST',
-      body: JSON.stringify({ workoutID })
+      body: JSON.stringify({ workoutID, time }),
+      headers: { 'Content-Type': 'application/json' }
     })
   },
 
   // Untested - comment this out when you test it
   async addFriendToUser(userID, friendUsername) {
-    await fetch(`${BASE_URL}/users/${userID}`, {
+    const res = await fetch(`${BASE_URL}/users/${userID}/friends`, {
       method: 'POST',
       body: JSON.stringify({ username: friendUsername }),
       headers: { 'Content-Type': 'application/json' }
     })
+    const { id } = await res.json()
+    return id
   },
 
   // Untested - comment this out when you test it
@@ -88,7 +97,7 @@ const API = {
   async updateUser(userID, updates) {
     const res = await fetch(`${BASE_URL}/users/${userID}`, {
       method: 'POST',
-      body: JSON.stringify(userInfo),
+      body: JSON.stringify(updates),
       headers: { 'Content-Type': 'application/json' }
     })
     const createdUser = res.json()
@@ -125,7 +134,7 @@ const API = {
   },
 
   async addWorkoutToParty(wpID, workoutID) {
-    await fetch(`${BASE_URL}/workoutParty/${wpID}`, {
+    await fetch(`${BASE_URL}/workoutParty/${wpID}/workouts`, {
       method: 'POST',
       body: JSON.stringify({ workoutID }),
       headers: { 'Content-Type': 'application/json' }

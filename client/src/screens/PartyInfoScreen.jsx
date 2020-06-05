@@ -1,66 +1,42 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView
-} from 'react-native'
-import MoreVertIcon from '../../assets/images/more_vert-24px.svg'
-import AddCircleIcon from '../../assets/images/add_circle_outline-24px.svg'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import API from '../utils/API'
 import { H3 } from '../components/Header'
+import FullPageSpinner from '../components/FullPageSpinner'
+import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function MemberListItem(props) {
   return (
-    // add navigation to profile?
-    <Text style={{ fontFamily: 'Roboto', fontSize: 20, textAlign: 'left' }}>
-      {props.name} {'\n'}{' '}
-    </Text>
+    <Bubble style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Icon name="face" size={32} color="#565a5e" />
+      <Text style={{ marginLeft: 12 }}>{props.name}</Text>
+    </Bubble>
   )
 }
 
 function EventListItem(props) {
   return (
-    // add navigation to workout page?
-    <Text style={{ fontFamily: 'Roboto', fontSize: 20, textAlign: 'left' }}>
-      {props.name} {'\n'}{' '}
-    </Text>
+    <Bubble style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Icon name="event" size={32} color="#565a5e" />
+      <Text style={{ marginLeft: 12 }}>{props.name}</Text>
+    </Bubble>
   )
 }
 
-function AddWorkoutButton(props) {
+function AddWorkoutButton({ partyID }) {
   const navigation = useNavigation()
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate('Create Event', {
-          partyID: props.partyID
+          partyID
         })
       }
-      style={{ width: 50, height: 50, marginTop: 10, marginLeft: 15 }}
     >
-      <AddCircleIcon width={40} height={40} fill="black" />
-    </TouchableOpacity>
-  )
-}
-
-function PartySettingsButton({ partyID, partyName, members, routeKey }) {
-  const navigation = useNavigation()
-  return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('Party Settings', {
-          partyID: partyID,
-          partyName: partyName,
-          members: members,
-          routeKey: routeKey
-        })
-      }
-      style={{ width: 50, marginTop: 10, marginLeft: 5 }}
-    >
-      <MoreVertIcon width={40} height={40} fill="black" />
+      <Icon name="add" size={32} color="#ff2559" />
     </TouchableOpacity>
   )
 }
@@ -73,12 +49,38 @@ class PartyInfoScreen extends React.Component {
       members: [],
       workouts: []
     }
-    this._isMounted = false
     this.navigation = props.navigation
   }
 
+  handleEdit = () => {
+    if (!this.state.loading) {
+      this.props.navigation.navigate('Party Settings', {
+        partyID: this.props.route.params.partyID,
+        partyName: this.props.route.params.partyName,
+        members: this.state.members,
+        routeKey: this.props.route.key
+      })
+    }
+  }
+
   componentDidMount() {
-    if (!this._isMounted) {
+    this.props.navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => this.handleEdit()}
+          style={{
+            marginRight: 16
+          }}
+        >
+          <Icon name="edit" size={32} color="white" />
+        </TouchableOpacity>
+      ),
+      title: this.props.route.params.partyName
+    })
+    const refreshPage = () => {
+      if (!this.state.loading) {
+        this.setState({ loading: true })
+      }
       try {
         API.getWorkoutParty(this.props.route.params.partyID).then(
           async (data) => {
@@ -96,105 +98,64 @@ class PartyInfoScreen extends React.Component {
               wIDs.map(async (id) => await API.getWorkout(id))
             ).then((workouts) => {
               const ws = workouts.map((w) => {
-                return w.name
+                return { name: w.name, id: w._id }
               })
               this.setState({ workouts: ws, loading: false })
             })
           }
         )
-        this._isMounted = true
       } catch (error) {
         console.log(error)
       }
     }
+    this.props.navigation.addListener('focus', refreshPage)
+    refreshPage()
   }
 
   componentDidUpdate() {
-    if (this._isMounted) {
-      const { route } = this.props
-      if (route.params && route.params.forceUpdate) {
-        this.setState({ members: this.props.route.params.members })
-        this.navigation.setParams({ forceUpdate: false })
-      }
+    const { route } = this.props
+    if (route.params && route.params.forceUpdate) {
+      this.setState({ members: this.props.route.params.members })
+      this.navigation.setParams({ forceUpdate: false })
     }
   }
 
-  componentWillUnmount() {
-    this._isMounted = false
-  }
-
   render() {
-    const memberList = this.state.members.map((m) => (
-      <MemberListItem key={m.id} name={m.name} />
-    ))
-
-    const eventList = this.state.workouts.map((w) => <EventListItem name={w} />)
+    if (this.state.loading) {
+      return <FullPageSpinner />
+    }
 
     return (
-      <ScrollView style={styles.container}>
-        <H3>{this.props.route.params.partyName}</H3>
-        <Text
-          style={{
-            marginTop: 10,
-            marginLeft: 15,
-            alignContent: 'center',
-            justifyContent: 'center',
-            textAlign: 'left',
-            fontSize: 25
-          }}
-        >
-          Member List:
-        </Text>
-
-        <ScrollView
-          style={{
-            borderWidth: 2,
-            borderColor: '#20232a',
-            margin: 8,
-            marginBottom: 0,
-            padding: 5,
-            width: '95%',
-            height: 250
-          }}
-        >
-          <Text> {memberList} </Text>
-        </ScrollView>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-          <Text
+      <View style={styles.container}>
+        <View style={{ height: '50%' }}>
+          <H3 style={{ textAlign: 'left' }}>Members</H3>
+          <ScrollView>
+            {this.state.members.map((m) => (
+              <MemberListItem key={m.id} name={m.name} />
+            ))}
+          </ScrollView>
+        </View>
+        <View style={{ height: '50%' }}>
+          <View
             style={{
-              marginTop: 10,
-              marginLeft: 15,
-              alignContent: 'center',
-              justifyContent: 'center',
-              textAlign: 'left',
-              fontSize: 25
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 12
             }}
           >
-            Upcoming Events:
-          </Text>
-          <AddWorkoutButton />
-          <PartySettingsButton
-            partyID={this.props.route.params.partyID}
-            partyName={this.props.route.params.partyName}
-            members={this.state.members}
-            routeKey={this.props.route.key}
-          />
+            <H3 style={{ textAlign: 'left', width: 'auto', marginBottom: 0 }}>
+              Events
+            </H3>
+            <AddWorkoutButton partyID={this.props.route.params.partyID} />
+          </View>
+          <ScrollView>
+            {this.state.workouts.map((e) => (
+              <EventListItem name={e.name} key={e.id} />
+            ))}
+          </ScrollView>
         </View>
-        <ScrollView
-          style={{
-            borderWidth: 2,
-            borderColor: '#20232a',
-            marginLeft: 8,
-            marginRight: 8,
-            padding: 5,
-            width: '95%',
-            height: 250
-          }}
-        >
-          <Text> {eventList} </Text>
-        </ScrollView>
-      </ScrollView>
+      </View>
     )
   }
 }
@@ -202,7 +163,8 @@ class PartyInfoScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f7f7f7',
+    padding: 18
   }
 })
 

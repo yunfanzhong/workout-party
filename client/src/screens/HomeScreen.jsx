@@ -1,10 +1,9 @@
 import React from 'react'
 import {
   StyleSheet,
-  Text,
   View,
   ScrollView,
-  TouchableOpacity,
+  Alert,
   ActivityIndicator
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -12,80 +11,85 @@ import { useNavigation } from '@react-navigation/native'
 import moment from 'moment'
 import API from '../utils/API'
 import UserContext from '../context/UserContext'
+import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function getTimeOfNextOccurrence(day, hour, minute) {
   const time = moment().startOf('isoWeek').day(day).hour(hour).minute(minute)
-  if (time < moment()) {
+  const next = time.clone()
+  if (next.add(1, 'hour') < moment()) {
     return time.add(1, 'week')
   }
   return time
 }
 
-function HomeScreen() {
+function HomeScreen({ navigation }) {
   return (
     <UserContext.Consumer>
-      {(context) => <HomeScreenContent userID={context.user._id} />}
+      {(context) => (
+        <HomeScreenContent
+          workoutHistory={context.user.workoutHistory}
+          userID={context.user._id}
+          navigation={navigation}
+        />
+      )}
     </UserContext.Consumer>
   )
 }
 
 class HomeScreenContent extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      upcomingWorkouts: null
-    }
-    this._isMounted = false
+  state = {
+    upcomingWorkouts: null
   }
 
   componentDidMount() {
-    if (!this._isMounted) {
-      try {
-        API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
-          console.log(upcomingWorkouts)
-          const workouts = upcomingWorkouts.flatMap((workout) =>
-            workout.days.map((day) => ({
+    const refresh = () => {
+      this.setState({ upcomingWorkouts: null })
+      API.getUpcomingWorkouts(this.props.userID).then((upcomingWorkouts) => {
+        const workouts = upcomingWorkouts.flatMap((workout) =>
+          workout.days.map((day) => {
+            const time = getTimeOfNextOccurrence(
+              day,
+              workout.hour,
+              workout.minute
+            )
+            let completed = false
+            for (const prevWorkout of this.props.workoutHistory) {
+              if (
+                prevWorkout.id === workout._id &&
+                Math.abs(moment(prevWorkout.time).diff(time)) /
+                  (60 * 60 * 1000) <
+                  1
+              ) {
+                completed = true
+              }
+            }
+            return {
+              time,
+              completed,
               name: workout.name,
-              id: workout._id,
-              time: getTimeOfNextOccurrence(day, workout.hour, workout.minute)
-            }))
-          )
-          workouts.sort((a, b) => a.time.diff(b.time))
-          this.setState({
-            upcomingWorkouts: workouts.map(({ name, id, time }) => ({
-              name,
-              id,
-              time: time.format('ddd, MMM D, YY - h:mm A'),
-              key: id + time.format()
-            }))
+              id: workout._id
+            }
           })
+        )
+        workouts.sort((a, b) => a.time.diff(b.time))
+        this.setState({
+          upcomingWorkouts: workouts.map(({ name, completed, id, time }) => ({
+            name,
+            id,
+            completed,
+            time: time.format('ddd, MMM D, YY - h:mm A'),
+            key: id + time.format(),
+            timeObject: time
+          }))
         })
-        this._isMounted = true
-      } catch (error) {
-        console.log(error)
-      }
+      })
     }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false
+    this.props.navigation.addListener('focus', refresh)
+    refresh()
   }
 
   render() {
-    if (!this.state.upcomingWorkouts) {
-      return (
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <ActivityIndicator size="large" color="#ff2559" />
-        </View>
-      )
-    }
     return (
       <View style={styles.container}>
         <QuoteText>
@@ -102,19 +106,44 @@ class HomeScreenContent extends React.Component {
         >
           Upcoming Workouts 🏋️‍♀️
         </Text>
-        <View
-          style={{
-            height: '100%',
-            borderRadius: 8,
-            flexShrink: 1
-          }}
-        >
-          <ScrollView>
-            {this.state.upcomingWorkouts.map(({ id, key, name, time }) => (
-              <UpcomingListItem id={id} name={name} time={time} key={key} />
-            ))}
-          </ScrollView>
-        </View>
+        {this.state.upcomingWorkouts ? (
+          this.state.upcomingWorkouts.length ? (
+            <View
+              style={{
+                height: '100%',
+                borderRadius: 8,
+                flexShrink: 1
+              }}
+            >
+              <ScrollView>
+                {this.state.upcomingWorkouts.map(
+                  ({ id, key, name, time, timeObject, completed }) => (
+                    <UpcomingListItem
+                      completed={completed}
+                      id={id}
+                      name={name}
+                      time={time}
+                      key={key}
+                      timeObject={timeObject}
+                    />
+                  )
+                )}
+              </ScrollView>
+            </View>
+          ) : (
+            <View
+              style={{ alignItems: 'center', width: '100%', marginBottom: 8 }}
+            >
+              <Text style={{ fontSize: 16, color: '#ababab' }}>
+                You have no upcoming workouts.
+              </Text>
+            </View>
+          )
+        ) : (
+          <View style={{ alignItems: 'center', width: '100%', marginTop: 32 }}>
+            <ActivityIndicator size="large" color={'#ff2559'} />
+          </View>
+        )}
       </View>
     )
   }
@@ -122,18 +151,11 @@ class HomeScreenContent extends React.Component {
 
 function QuoteText({ children }) {
   return (
-    <View
+    <Bubble
       style={{
-        padding: 12,
-        borderWidth: 1,
-        borderColor: '#ff2559',
-        borderRadius: 8,
         backgroundColor: '#ffe9ee',
-        elevation: 8,
-        shadowColor: 'rgba(0, 0, 0, 0.1)',
-        shadowOpacity: 0.8,
-        shadowRadius: 10,
-        shadowOffset: { height: 24 }
+        borderColor: '#ff2559',
+        elevation: 8
       }}
     >
       <Text
@@ -148,56 +170,61 @@ function QuoteText({ children }) {
 
       <Text
         style={{
-          fontFamily: 'Roboto',
           fontSize: 20
         }}
       >
         {children}
       </Text>
-    </View>
+    </Bubble>
   )
 }
 
-function UpcomingListItem({ name, id, time }) {
+function UpcomingListItem({ completed, name, id, time, timeObject }) {
   const navigation = useNavigation()
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate('Event', {
-          partyName: name,
-          id: props.id
-        })
+    <Bubble
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...(completed ? { backgroundColor: '#eafaf1' } : undefined)
       }}
+      onPress={
+        !completed
+          ? () => {
+              if (Math.abs(moment().diff(timeObject)) / (1000 * 60 * 60) <= 1) {
+                navigation.navigate('Event', {
+                  id,
+                  partyName: name,
+                  time: timeObject.toISOString()
+                })
+              } else {
+                Alert.alert(
+                  'Come back later!',
+                  `This event isn't happening right now. Please come back within an hour of when this event is happening!`
+                )
+              }
+            }
+          : undefined
+      }
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 12,
-          width: '100%',
-          backgroundColor: '#fff',
-          borderWidth: 1,
-          borderColor: '#ededed',
-          borderRadius: 8,
-          marginBottom: 8
-        }}
-      >
-        <Icon name="fitness-center" size={32} color="#ff2559" />
-        <View style={{ flexDirection: 'column', marginLeft: 12 }}>
-          <Text
-            style={{
-              fontFamily: 'Roboto',
-              fontSize: 18,
-              textAlign: 'left'
-            }}
-          >
-            {name}
-          </Text>
-          <Text style={{ color: 'gray' }}>{time}</Text>
-        </View>
+      <Icon
+        name={completed ? 'done' : 'event'}
+        size={32}
+        color={completed ? 'green' : '#565a5e'}
+      />
+      <View style={{ flexDirection: 'column', marginLeft: 12 }}>
+        <Text
+          style={{
+            fontSize: 18,
+            textAlign: 'left'
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ color: 'gray' }}>{time}</Text>
       </View>
-    </TouchableOpacity>
+    </Bubble>
   )
 }
 
@@ -205,8 +232,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f7f7f7',
-    borderBottomWidth: 10,
-    padding: 24,
+    padding: 18,
     flexDirection: 'column'
   }
 })

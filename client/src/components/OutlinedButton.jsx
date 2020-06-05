@@ -1,6 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import Text from '../components/Text'
 
 const OutlinedButton = ({
   onPress,

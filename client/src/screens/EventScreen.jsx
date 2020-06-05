@@ -1,22 +1,19 @@
 import {
-  Text,
   View,
   TouchableOpacity,
   Image,
   StyleSheet,
-  Button,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions,
+  Alert
 } from 'react-native'
-import {
-  FlingGestureHandler,
-  Directions,
-  State
-} from 'react-native-gesture-handler'
 import React from 'react'
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import exercises from '../utils/exercises.json'
 import API from '../utils/API'
+import UserContext from '../context/UserContext'
+import Text from '../components/Text'
 
 class Event extends React.Component {
   imageSources = {
@@ -57,7 +54,7 @@ class Event extends React.Component {
     }
   }
 
-  incrementExercise() {
+  incrementExercise(context) {
     if (this.state.currentExerciseNumber !== this.state.data.length - 1) {
       this.setState({
         currentExerciseNumber: this.state.currentExerciseNumber + 1,
@@ -66,7 +63,25 @@ class Event extends React.Component {
         ]
       })
     } else {
-      this.navigation.navigate('Home')
+      const { id, time } = this.props.route.params
+      API.logWorkoutToUser(context.user._id, id, time)
+        .then(() =>
+          context.update({
+            workoutHistory: context.user.workoutHistory.concat({ id, time })
+          })
+        )
+        .then(() =>
+          Alert.alert('Yay! 🥳', 'You completed your workout!', [
+            {
+              text: 'finish',
+              onPress: () => this.navigation.navigate('Home')
+            }
+          ])
+        )
+        .catch((err) => {
+          Alert.alert('Oops!', 'There was an error completing the workout :(')
+          console.log(err)
+        })
     }
   }
 
@@ -103,27 +118,36 @@ class Event extends React.Component {
         <View style={styles.image}>
           <Image
             source={currentImageSource}
-            style={{ width: 300, height: 320 }}
+            style={{
+              width: Math.round(Dimensions.get('window').width * 0.8),
+              height: Math.round(Dimensions.get('window').width * 0.8)
+            }}
           />
         </View>
         <View
           style={{
             flexDirection: 'row',
-            width: '80%',
-            marginTop: 80,
-            justifyContent: 'space-between',
+            marginTop: 48,
             alignItems: 'center'
           }}
         >
-          <View>
-            <TouchableOpacity onPress={() => this.decrementExercise()}>
-              {currentExerciseNumber !== 0 ? (
-                <Icon name="skip-previous" size={60} color="black" />
-              ) : (
-                <Icon name="skip-previous" size={60} color="grey" />
-              )}
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={{
+              borderRadius: 24,
+              borderColor: '#ededed',
+              borderWidth: 1,
+              backgroundColor: 'white',
+              padding: 8,
+              elevation: currentExerciseNumber ? 8 : 0
+            }}
+            onPress={() => this.decrementExercise()}
+          >
+            <Icon
+              name="skip-previous"
+              size={32}
+              color={currentExerciseNumber ? 'black' : 'gray'}
+            />
+          </TouchableOpacity>
           <View style={styles.exercises}>
             <Text style={styles.exerciseNameText}>
               {exercises[data[currentExerciseNumber].exerciseID]}
@@ -132,19 +156,31 @@ class Event extends React.Component {
               Reps: {data[currentExerciseNumber].reps}
             </Text>
           </View>
-          <View>
-            <TouchableOpacity onPress={() => this.incrementExercise()}>
-              {currentExerciseNumber !== data.length - 1 ? (
-                <Icon name="skip-next" size={60} color="black" />
-              ) : (
-                <Icon name="done" size={60} color="green" />
-              )}
-            </TouchableOpacity>
-          </View>
+          <UserContext.Consumer>
+            {(context) => (
+              <TouchableOpacity
+                style={{
+                  borderRadius: 24,
+                  borderColor: '#ededed',
+                  borderWidth: 1,
+                  backgroundColor: 'white',
+                  padding: 8,
+                  elevation: 8
+                }}
+                onPress={() => this.incrementExercise(context)}
+              >
+                {currentExerciseNumber !== data.length - 1 ? (
+                  <Icon name="skip-next" size={32} color="black" />
+                ) : (
+                  <Icon name="done" size={32} color="green" />
+                )}
+              </TouchableOpacity>
+            )}
+          </UserContext.Consumer>
         </View>
-        <View style={{ marginTop: 40 }}>
-          <Text style={styles.exerciseRepText}>
-            Exercise: {currentExerciseNumber + 1} of {data.length}
+        <View style={{ marginTop: 32 }}>
+          <Text style={{ textAlign: 'center', fontSize: 24 }}>
+            Exercise {currentExerciseNumber + 1} of {data.length}
           </Text>
         </View>
       </View>
@@ -154,18 +190,21 @@ class Event extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 18,
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#fff'
+    backgroundColor: '#fafafa'
   },
   exercises: {
     justifyContent: 'center',
     width: '60%',
-    alignContent: 'center'
+    alignContent: 'center',
+    height: 96
   },
   exerciseRepText: {
-    fontSize: 24,
-    textAlign: 'center'
+    fontSize: 18,
+    textAlign: 'center',
+    color: 'gray'
   },
   exerciseNameText: {
     fontSize: 36,
@@ -173,10 +212,9 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   image: {
-    marginTop: '10%',
-    width: 300,
-    height: 320,
-    marginHorizontal: '10%'
+    borderColor: '#ededed',
+    borderWidth: 1,
+    marginTop: '7%'
   }
 })
 
