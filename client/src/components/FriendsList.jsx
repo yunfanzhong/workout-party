@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  Text,
   View,
   ScrollView,
   TouchableOpacity,
@@ -8,6 +7,7 @@ import {
   Linking
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import Text from '../components/Text'
 
 const UserFriend = ({ onPress, friend, button }) => {
   const baseComponent = (

@@ -15,7 +15,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     borderRadius: 8,
-    width: '100%'
+    width: '100%',
+    fontFamily: 'source-sans-pro-regular'
   }
 })
 

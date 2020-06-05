@@ -1,5 +1,4 @@
 import {
-  Text,
   View,
   TouchableOpacity,
   Image,
@@ -14,6 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import exercises from '../utils/exercises.json'
 import API from '../utils/API'
 import UserContext from '../context/UserContext'
+import Text from '../components/Text'
 
 class Event extends React.Component {
   imageSources = {

@@ -1,10 +1,4 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView
-} from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
@@ -12,6 +6,7 @@ import UserContext from '../context/UserContext'
 import API from '../utils/API'
 import FullPageSpinner from '../components/FullPageSpinner'
 import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function PartyListItem(props) {
   const navigation = useNavigation()

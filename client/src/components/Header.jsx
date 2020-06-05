@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Text from '../components/Text'
 
 export const H1 = ({ children }) => {
   return <Text style={styles.h1}>{children}</Text>

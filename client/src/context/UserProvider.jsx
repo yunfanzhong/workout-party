@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Text } from 'react-native'
+import { Alert } from 'react-native'
 
 import logInWithFacebook from '../utils/logInWithFacebook.js'
 import UserContext from './UserContext.jsx'
@@ -8,6 +8,7 @@ import BlankModal from '../components/BlankModal'
 import { H3 } from '../components/Header'
 import ErrorText from '../components/ErrorText'
 import RedButton from '../components/RedButton'
+import Text from '../components/Text'
 import FormInput from '../components/FormInput.jsx'
 
 class UserProvider extends React.Component {

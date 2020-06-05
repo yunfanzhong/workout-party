@@ -80,6 +80,10 @@ function AuthenticatedApp() {
           component={HomeScreen}
           options={({ navigation, route }) => ({
             headerTitle: 'Welcome Back!',
+            headerTitleStyle: {
+              fontFamily: 'source-sans-pro-semibold',
+              fontSize: 30
+            },
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => navigation.navigate('Account')}

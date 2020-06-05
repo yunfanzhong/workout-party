@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Text from '../components/Text'
 
 function FormLabel({ style, children }) {
   return <Text style={{ ...styles.formLabel, ...style }}>{children}</Text>

@@ -1,10 +1,4 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView
-} from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
@@ -12,6 +6,7 @@ import API from '../utils/API'
 import { H3 } from '../components/Header'
 import FullPageSpinner from '../components/FullPageSpinner'
 import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function MemberListItem(props) {
   return (

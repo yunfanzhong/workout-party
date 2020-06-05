@@ -1,16 +1,7 @@
-import {
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  RefreshControl,
-  TouchableOpacity,
-  Keyboard
-} from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import OutlinedButton from '../components/OutlinedButton'
-import RedButton from '../components/RedButton'
 import API from '../utils/API'
 import FormInput from '../components/FormInput'
 import FormLabel from '../components/FormLabel'
@@ -20,6 +11,7 @@ import FriendsList from '../components/FriendsList'
 import UserContext from '../context/UserContext'
 import { useNavigation, CommonActions } from '@react-navigation/native'
 import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function Member({
   name,

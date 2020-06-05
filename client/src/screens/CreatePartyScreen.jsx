@@ -1,10 +1,4 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView
-} from 'react-native'
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import UserContext from '../context/UserContext'
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -16,6 +10,7 @@ import API from '../utils/API'
 import ErrorText from '../components/ErrorText'
 import Bubble from '../components/Bubble.jsx'
 import OutlinedButton from '../components/OutlinedButton'
+import Text from '../components/Text'
 
 function PartyNameInput(props) {
   const [value, onChangeText] = React.useState('')

@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   StyleSheet,
-  Text,
   View,
   ScrollView,
   Alert,
@@ -13,6 +12,7 @@ import moment from 'moment'
 import API from '../utils/API'
 import UserContext from '../context/UserContext'
 import Bubble from '../components/Bubble'
+import Text from '../components/Text'
 
 function getTimeOfNextOccurrence(day, hour, minute) {
   const time = moment().startOf('isoWeek').day(day).hour(hour).minute(minute)

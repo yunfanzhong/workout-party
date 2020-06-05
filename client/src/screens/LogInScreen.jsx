@@ -3,23 +3,26 @@ import {
   ActivityIndicator,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native'
 import Icon from 'react-native-vector-icons/EvilIcons'
 
 import UserContext from '../context/UserContext'
+import Text from '../components/Text'
 
 function LogInScreen() {
   return (
     <View style={styles.screen}>
-      <View>
+      <View
+        style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
+      >
         <Image
           style={styles.logo}
           source={require('../../assets/images/bicep.png')}
         />
-        <Text style={styles.homeText}>Workout{'\n'}Party</Text>
+        <Text style={styles.homeText}>Workout Party</Text>
       </View>
       <LoginButton />
     </View>
@@ -73,10 +76,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ff2559',
     alignContent: 'center',
-    justifyContent: 'space-between',
     paddingVertical: 48
   },
-  logo: { alignContent: 'center', width: 400, height: 400 },
+  logo: {
+    alignContent: 'center',
+    width: Math.round(Dimensions.get('window').width * 0.45),
+    height: Math.round(Dimensions.get('window').width * 0.6)
+  },
   button: {
     backgroundColor: '#ffffff',
     alignItems: 'center',
@@ -89,13 +95,14 @@ const styles = StyleSheet.create({
     elevation: 4
   },
   homeText: {
-    fontSize: 64,
+    fontSize: 40,
     textAlign: 'center',
     color: 'white',
-    marginBottom: 10
+    marginTop: 32,
+    fontWeight: 'bold'
   },
   fbButtonText: {
-    fontSize: 19,
+    fontSize: 18,
     color: '#22181c',
     marginLeft: 12
   },

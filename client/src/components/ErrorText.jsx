@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Text from '../components/Text'
 
 function ErrorText({ children }) {
   return <Text style={styles.text}>{children}</Text>

@@ -2,7 +2,6 @@ import React from 'react'
 import {
   View,
   StyleSheet,
-  Text,
   Picker,
   TouchableOpacity,
   ActivityIndicator
@@ -22,6 +21,7 @@ import { H3 } from '../components/Header'
 import OutlinedButton from '../components/OutlinedButton'
 import API from '../utils/API'
 import EXERCISES from '../utils/exercises.json'
+import Text from '../components/Text'
 
 const BASE_TIME = 3600000 * 8 // The first 12 AM of all time
 
