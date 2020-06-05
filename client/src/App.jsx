@@ -70,8 +70,8 @@ function AuthenticatedApp() {
           headerTintColor: 'white',
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            fontSize: 28,
-            fontWeight: 'bold'
+            fontFamily: 'source-sans-pro-semibold',
+            fontSize: 30
           }
         }}
       >
@@ -80,10 +80,6 @@ function AuthenticatedApp() {
           component={HomeScreen}
           options={({ navigation, route }) => ({
             headerTitle: 'Welcome Back!',
-            headerTitleStyle: {
-              fontFamily: 'source-sans-pro-semibold',
-              fontSize: 30
-            },
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => navigation.navigate('Account')}
