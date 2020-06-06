@@ -2,6 +2,7 @@ import { View, StyleSheet, TouchableOpacity, Keyboard } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import OutlinedButton from '../components/OutlinedButton'
+import RedButton from '../components/RedButton'
 import API from '../utils/API'
 import FormInput from '../components/FormInput'
 import FormLabel from '../components/FormLabel'
@@ -13,19 +14,7 @@ import { useNavigation, CommonActions } from '@react-navigation/native'
 import Bubble from '../components/Bubble'
 import Text from '../components/Text'
 
-function Member({
-  name,
-  isRemoving,
-  partyID,
-  id,
-  memberList,
-  routeKey,
-  onPress
-}) {
-  const [visible, setVisible] = useState(true)
-  const navigation = useNavigation()
-  let members = memberList
-
+function Member({ name, onPress }) {
   return (
     <Bubble>
       <View
@@ -94,18 +83,11 @@ function Member({
   // }
 }
 
-function MemberList({
-  memberList,
-  isRemoving,
-  partyID,
-  routeKey,
-  handleRemove
-}) {
+function MemberList({ memberList, partyID, routeKey, handleRemove }) {
   const list = memberList.map((member) => (
     <Member
       key={member.id}
       name={member.name}
-      isRemoving={isRemoving}
       partyID={partyID}
       id={member.id}
       memberList={memberList}
@@ -141,19 +123,42 @@ const AddMemberModal = ({ visible, setVisible, onPress }) => {
   )
 }
 
+const LeavePartyModal = ({ visible, setVisible, onPress }) => {
+  return (
+    <BlankModal visible={visible} setVisible={setVisible}>
+      <View>
+        <Text style={styles.friendText}>Are you sure?</Text>
+        <View
+          style={{
+            marginTop: 12,
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            width: '100%'
+          }}
+        >
+          <RedButton text="Yes" style={{ marginRight: 12 }} onPress={onPress} />
+          <OutlinedButton text="Go Back" onPress={() => setVisible(false)} />
+        </View>
+      </View>
+    </BlankModal>
+  )
+}
+
 function ConfirmPartyName({ id, name, routeKey, onPress }) {
+  const navigation = useNavigation()
+
   return (
     <OutlinedButton
       icon="check"
       text="Save"
       onPress={() => {
         API.updateWorkoutParty(id, { name })
-        // navigation.dispatch({
-        //   ...CommonActions.setParams({
-        //     partyName: name
-        //   }),
-        //   source: routeKey
-        // })
+        navigation.dispatch({
+          ...CommonActions.setParams({
+            partyName: name
+          }),
+          source: routeKey
+        })
         onPress()
         Keyboard.dismiss()
       }}
@@ -169,9 +174,8 @@ class PartySettingsScreen extends React.Component {
       refreshing: false,
       name: props.route.params.partyName,
       keyboardOpen: false,
-      isRemoving: false,
-      modalVisible: false,
-      buttonText: 'Remove Members',
+      addModalVisible: false,
+      leaveModalVisible: false,
       saved: true
     }
     this.id = props.route.params.partyID
@@ -248,8 +252,8 @@ class PartySettingsScreen extends React.Component {
     return (
       <View style={styles.container}>
         <AddMemberModal
-          visible={this.state.modalVisible}
-          setVisible={(modalVisible) => this.setState({ modalVisible })}
+          visible={this.state.addModalVisible}
+          setVisible={(addModalVisible) => this.setState({ addModalVisible })}
           onPress={async (member) => {
             const memberIDs = this.state.members.map((member) => member.id)
             if (!memberIDs.includes(member._id)) {
@@ -257,7 +261,7 @@ class PartySettingsScreen extends React.Component {
               const members = this.state.members
               const newMember = await API.getUser(member._id)
               members.push({ id: newMember._id, name: newMember.username })
-              this.setState({ members: members, modalVisible: false })
+              this.setState({ members: members, addModalVisible: false })
               // this.navigation.dispatch({
               //   ...CommonActions.setParams({
               //     members: members,
@@ -270,6 +274,25 @@ class PartySettingsScreen extends React.Component {
             }
           }}
         />
+        <UserContext.Consumer>
+          {(context) => (
+            <LeavePartyModal
+              visible={this.state.leaveModalVisible}
+              setVisible={(leaveModalVisible) =>
+                this.setState({ leaveModalVisible })
+              }
+              onPress={async () => {
+                await API.removeMemberFromParty(this.id, context.user._id)
+                this.setState({
+                  members: this.state.members.filter(
+                    (m) => m.id !== context.user._id
+                  )
+                })
+                this.navigation.navigate('My Parties')
+              }}
+            />
+          )}
+        </UserContext.Consumer>
         <View>
           <FormLabel>Change Name{!this.state.saved && ' (unsaved)'}</FormLabel>
           <View
@@ -299,9 +322,7 @@ class PartySettingsScreen extends React.Component {
               memberList={this.state.members.filter(
                 (m) => m.id !== context.user._id
               )}
-              isRemoving={this.state.isRemoving}
               partyID={this.id}
-              routeKey={this.prevRouteKey}
               handleRemove={async (id) => {
                 await API.removeMemberFromParty(this.id, id)
                 this.setState({
@@ -311,17 +332,31 @@ class PartySettingsScreen extends React.Component {
             />
           )}
         </UserContext.Consumer>
-        <View style={{ alignItems: 'center', marginTop: 16 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: 16
+          }}
+        >
           {!this.state.keyboardOpen && (
             <OutlinedButton
               text="Add Member"
               onPress={() => {
                 this._onRefresh()
                 this.setState({
-                  isRemoving: false,
-                  buttonText: 'Remove Members',
-                  modalVisible: true
+                  addModalVisible: true
                 })
+              }}
+            />
+          )}
+          {!this.state.keyboardOpen && (
+            <RedButton
+              text="Leave Party"
+              onPress={() => {
+                this._onRefresh()
+                this.setState({ leaveModalVisible: true })
               }}
             />
           )}

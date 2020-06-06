@@ -38,8 +38,25 @@ function HomeScreen({ navigation }) {
 }
 
 class HomeScreenContent extends React.Component {
-  state = {
-    upcomingWorkouts: null
+  constructor(props) {
+    super(props)
+    quoteOptions = [
+      'Act as if what you do makes a difference. It does.',
+      'Do more of what makes you happy.',
+      'A positive attitude causes a chain reaction of positive thoughts, events, and outcomes.',
+      'Go ahead, let them judge you.',
+      'Give yourself permission to slow down. You can speed up by slowing down.',
+      'The reason why people give up so fast is because they tend to look at how far they still have to go, instead of how far they have gotten.',
+      'You are confined only by the walls you build yourself.',
+      'Yesterday is gone. Tomorrow has not yet come. We have only today. Let us begin.',
+      'Decide that you want it more than you are afraid of it.',
+      "Don't envy what people have, emulate what they did to have it.",
+      "Unfortunately, sitting on your couch all day isn't making you any slimmer."
+    ]
+    this.state = {
+      upcomingWorkouts: null,
+      quote: quoteOptions[Math.floor(Math.random() * quoteOptions.length)]
+    }
   }
 
   componentDidMount() {
@@ -92,10 +109,7 @@ class HomeScreenContent extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <QuoteText>
-          Unfortunately, sitting at your computer 24/7 won't make you any
-          slimmer.
-        </QuoteText>
+        <QuoteText>{this.state.quote}</QuoteText>
         <Text
           style={{
             fontSize: 20,
@@ -162,10 +176,11 @@ function QuoteText({ children }) {
         style={{
           fontSize: 14,
           fontWeight: '100',
-          fontStyle: 'italic'
+          fontStyle: 'italic',
+          marginBottom: 4
         }}
       >
-        Quote of the Day
+        Motivational Quote
       </Text>
 
       <Text
