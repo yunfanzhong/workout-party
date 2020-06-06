@@ -56,4 +56,5 @@ const BASE_URL =
 
 ## Considerations
 
-Keep in mind that the backend is hosted on a free Heroku dyno. It may take up to a minute for the first request to get through, so be patient when first loading the app.
+- Keep in mind that the backend is hosted on a free Heroku dyno. It may take up to a minute for the first request to get through, so be patient when first loading the app.
+- If you would like to be able to create a workout party, you need to add some friends first! Here are a few usernames you can use that are currently in our database: `boiledwatermelon`, `bufa`, `eshah22`.
